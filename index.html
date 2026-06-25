@@ -1,297 +1,1001 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>雾凇会馆 · 妖精公会</title>
-    <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'PingFang SC','Microsoft YaHei',sans-serif; background:#e0dacb; color:#3b392f; min-height:100vh; }
-        .login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(160deg,#2c3828,#4a5b3e); z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column; color:#fff; }
-        .login-overlay.hidden { display:none; }
-        .login-card { background:#fffef7; border-radius:24px; padding:32px; width:360px; max-width:90%; box-shadow:0 20px 50px rgba(0,0,0,0.4); text-align:center; color:#3b392f; }
-        .login-cat { font-size:3.5rem; }
-        .login-title { font-size:1.5rem; font-weight:bold; color:#4a5b3e; }
-        .login-sub { font-size:0.8rem; color:#888; margin:8px 0 20px; }
-        .login-input { width:100%; padding:14px; border:2px solid #cdc6b4; border-radius:14px; font-size:0.95rem; margin-bottom:12px; text-align:center; background:#fefcf5; outline:none; }
-        .login-tabs { display:flex; gap:8px; margin-bottom:16px; }
-        .login-tab { flex:1; padding:10px; border-radius:20px; cursor:pointer; font-size:0.85rem; background:#f0ede0; border:2px solid transparent; }
-        .login-tab.active { background:#556b4b; color:#fff; border-color:#556b4b; }
-        .login-btn { width:100%; padding:14px; background:#556b4b; color:#fff; border:none; border-radius:14px; font-weight:bold; cursor:pointer; font-size:1rem; margin-top:8px; }
-        .top-bar { background:#2e3824; color:#f1edda; padding:0 16px; display:flex; align-items:center; justify-content:space-between; height:52px; position:sticky; top:0; z-index:100; }
-        .user-mini { display:flex; align-items:center; gap:8px; font-size:0.85rem; }
-        .avatar-thumb { width:34px; height:34px; border-radius:50%; border:2px solid #dbb57c; background:#fff; display:flex; align-items:center; justify-content:center; font-size:1.2rem; }
-        .logout-btn { background:rgba(255,255,255,0.2); border:none; color:#f1edda; padding:6px 14px; border-radius:14px; font-size:0.7rem; cursor:pointer; }
-        .nav-tabs { display:flex; background:#fffef7; border-bottom:2px solid #cdc6b4; overflow-x:auto; position:sticky; top:52px; z-index:99; }
-        .nav-tab { padding:14px 16px; cursor:pointer; white-space:nowrap; font-size:0.85rem; color:#6b6857; border-bottom:3px solid transparent; user-select:none; }
-        .nav-tab.active { color:#556b4b; border-bottom-color:#556b4b; font-weight:bold; }
-        .main-container { max-width:800px; margin:0 auto; padding:16px 12px 100px; }
-        .panel { display:none; }
-        .panel.active { display:block; }
-        .card { background:#fffdf5; border-radius:14px; padding:18px; margin-bottom:14px; box-shadow:0 2px 16px rgba(0,0,0,0.06); border:1px solid #cdc6b4; }
-        .card-header { font-weight:bold; font-size:0.95rem; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid #e4decf; }
-        .post-item { padding:14px 0; border-bottom:1px solid #e4decf; cursor:pointer; display:flex; gap:12px; }
-        .post-item:hover { background:#faf8f0; }
-        .post-avatar { width:44px; height:44px; border-radius:8px; background:#efe9d8; display:flex; align-items:center; justify-content:center; font-size:1.8rem; flex-shrink:0; }
-        .post-title { font-weight:bold; font-size:0.95rem; color:#3b4a2e; }
-        .post-meta { font-size:0.75rem; color:#999; }
-        .btn { display:inline-block; padding:8px 18px; border-radius:20px; cursor:pointer; border:none; font-size:0.8rem; font-weight:500; text-align:center; }
-        .btn-primary { background:#556b4b; color:#fff; }
-        .btn-outline { background:#fff; color:#556b4b; border:2px solid #556b4b; }
-        .btn-sm { padding:6px 14px; font-size:0.75rem; }
-        .map-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:12px; }
-        .build-card { background:#faf7ed; border-radius:14px; padding:16px; text-align:center; cursor:pointer; border:2px solid transparent; }
-        .build-card:hover { border-color:#556b4b; }
-        .build-card .icon { font-size:2.5rem; margin-bottom:8px; }
-        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:200; display:flex; align-items:center; justify-content:center; }
-        .modal { background:#fffef7; border-radius:20px; padding:24px; width:90%; max-width:460px; }
-        .modal textarea,.modal input[type="text"] { width:100%; border:2px solid #cdc6b4; border-radius:12px; padding:12px; font-size:0.9rem; margin-bottom:10px; font-family:inherit; }
-        .modal textarea { min-height:80px; resize:vertical; }
-        .toast-container { position:fixed; top:60px; left:50%; transform:translateX(-50%); z-index:300; }
-        .toast { background:#3b392f; color:#fff; padding:12px 24px; border-radius:20px; font-size:0.85rem; margin-bottom:6px; }
-        .toast.success { background:#4caf50; }
-        .toast.error { background:#f44336; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌲 雾凇会馆 · 妖精公会</title>
+  <style>
+    /* ===== 全局重置 & 基础样式 ===== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: #e0dacb;
+      color: #3b392f;
+      min-height: 100vh;
+    }
+    /* ===== 登录遮罩 ===== */
+    .login-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(160deg, #2c3828, #4a5b3e);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: #fff;
+      transition: opacity 0.3s;
+    }
+    .login-overlay.hidden { display: none; }
+    .login-card {
+      background: #fffef7;
+      border-radius: 24px;
+      padding: 32px 24px;
+      width: 360px;
+      max-width: 90%;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      text-align: center;
+      color: #3b392f;
+    }
+    .login-cat { font-size: 3.5rem; margin-bottom: 4px; }
+    .login-title { font-size: 1.6rem; font-weight: bold; color: #4a5b3e; }
+    .login-sub { font-size: 0.8rem; color: #888; margin: 6px 0 16px; }
+    .login-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .login-tab {
+      flex: 1;
+      padding: 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      background: #f0ede0;
+      border: 2px solid transparent;
+      transition: 0.2s;
+    }
+    .login-tab.active {
+      background: #556b4b;
+      color: #fff;
+      border-color: #556b4b;
+    }
+    .login-input {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #cdc6b4;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      text-align: center;
+      background: #fefcf5;
+      outline: none;
+    }
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: #556b4b;
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 8px;
+      transition: 0.2s;
+    }
+    .login-btn:hover { background: #3f5236; }
+    .login-error {
+      color: #d32f2f;
+      font-size: 0.8rem;
+      margin-top: 8px;
+      min-height: 1.2em;
+    }
+    /* ===== 顶部导航 ===== */
+    .top-bar {
+      background: #2e3824;
+      color: #f1edda;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 52px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-weight: bold;
+      font-size: 1.1rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .user-mini {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+    }
+    .avatar-thumb {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid #dbb57c;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+    .logout-btn {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: #f1edda;
+      padding: 6px 14px;
+      border-radius: 14px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .logout-btn:hover { background: rgba(255,255,255,0.25); }
+    /* ===== 二级导航 ===== */
+    .nav-tabs {
+      display: flex;
+      background: #fffef7;
+      border-bottom: 2px solid #cdc6b4;
+      overflow-x: auto;
+      position: sticky;
+      top: 52px;
+      z-index: 99;
+    }
+    .nav-tab {
+      padding: 14px 20px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 0.9rem;
+      color: #6b6857;
+      border-bottom: 3px solid transparent;
+      user-select: none;
+      transition: 0.2s;
+    }
+    .nav-tab.active {
+      color: #556b4b;
+      border-bottom-color: #556b4b;
+      font-weight: bold;
+    }
+    /* ===== 主容器 ===== */
+    .main-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 16px 12px 100px;
+    }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    /* ===== 卡片 ===== */
+    .card {
+      background: #fffdf5;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+      border: 1px solid #cdc6b4;
+    }
+    .card-header {
+      font-weight: bold;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e4decf;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    /* ===== 帖子列表 ===== */
+    .post-item {
+      padding: 14px 0;
+      border-bottom: 1px solid #e4decf;
+      cursor: pointer;
+      display: flex;
+      gap: 12px;
+      transition: background 0.1s;
+    }
+    .post-item:hover { background: #faf8f0; }
+    .post-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: #efe9d8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      flex-shrink: 0;
+    }
+    .post-title {
+      font-weight: bold;
+      font-size: 0.95rem;
+      color: #3b4a2e;
+    }
+    .post-meta {
+      font-size: 0.75rem;
+      color: #999;
+      margin-top: 4px;
+    }
+    .post-content-preview {
+      color: #555;
+      font-size: 0.85rem;
+      margin-top: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    /* ===== 按钮 ===== */
+    .btn {
+      display: inline-block;
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      border: none;
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-align: center;
+      transition: 0.2s;
+    }
+    .btn-primary { background: #556b4b; color: #fff; }
+    .btn-primary:hover { background: #3f5236; }
+    .btn-outline { background: #fff; color: #556b4b; border: 2px solid #556b4b; }
+    .btn-outline:hover { background: #f0f5ec; }
+    .btn-sm { padding: 6px 14px; font-size: 0.75rem; }
+    .btn-danger { background: #c62828; color: #fff; }
+    .btn-danger:hover { background: #b71c1c; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    /* ===== 基建网格 ===== */
+    .map-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .build-card {
+      background: #faf7ed;
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: 0.2s;
+    }
+    .build-card:hover { border-color: #556b4b; }
+    .build-card .icon { font-size: 2.5rem; margin-bottom: 8px; }
+    /* ===== 模态框 ===== */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: #fffef7;
+      border-radius: 20px;
+      padding: 24px;
+      width: 90%;
+      max-width: 460px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal h3 { margin-bottom: 16px; }
+    .modal input, .modal textarea {
+      width: 100%;
+      border: 2px solid #cdc6b4;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      font-family: inherit;
+      background: #fefcf5;
+    }
+    .modal textarea { min-height: 80px; resize: vertical; }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+    /* ===== Toast ===== */
+    .toast-container {
+      position: fixed;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .toast {
+      background: #3b392f;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      animation: fadeIn 0.3s;
+    }
+    .toast.success { background: #2e7d32; }
+    .toast.error { background: #c62828; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    /* ===== 响应式 ===== */
+    @media (max-width: 480px) {
+      .login-card { padding: 24px 16px; }
+      .top-bar { flex-wrap: wrap; height: auto; padding: 8px 12px; gap: 6px; }
+      .user-mini { font-size: 0.75rem; }
+    }
+  </style>
 </head>
 <body>
-    <div class="login-overlay" id="loginOverlay">
-        <div class="login-card">
-            <div class="login-cat">🐱</div>
-            <div class="login-title">雾凇会馆</div>
-            <div class="login-sub">—— 东北吉林 · 妖精公会 ——</div>
-            <div class="login-tabs">
-                <div class="login-tab active" data-mode="login">登录</div>
-                <div class="login-tab" data-mode="register">注册</div>
+
+<!-- ===== 登录遮罩 ===== -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <div class="login-cat">🐱</div>
+    <div class="login-title">雾凇会馆</div>
+    <div class="login-sub">—— 东北吉林 · 妖精公会 ——</div>
+    <div class="login-tabs">
+      <div class="login-tab active" data-mode="login">登录</div>
+      <div class="login-tab" data-mode="register">注册</div>
+    </div>
+    <input type="text" class="login-input" id="loginUsername" placeholder="妖精名号" maxlength="12">
+    <input type="password" class="login-input" id="loginPassword" placeholder="密码">
+    <div class="login-error" id="loginError"></div>
+    <button class="login-btn" id="loginBtn">进入会馆</button>
+  </div>
+</div>
+
+<!-- ===== 顶部栏 ===== -->
+<div class="top-bar">
+  <div class="logo" id="logoHome">🌲 雾凇会馆</div>
+  <div class="user-mini">
+    <div class="avatar-thumb" id="miniAvatar">🐱</div>
+    <span id="miniName">未登录</span>
+    <span style="font-size:0.7rem;">Lv.<span id="miniLevel">1</span></span>
+    <button class="logout-btn" id="logoutBtn">离开</button>
+  </div>
+</div>
+
+<!-- ===== 二级导航 ===== -->
+<div class="nav-tabs">
+  <div class="nav-tab active" data-tab="forum">📜 论坛</div>
+  <div class="nav-tab" data-tab="map">🏗️ 基建</div>
+</div>
+
+<!-- ===== 主容器 ===== -->
+<div class="main-container">
+  <div class="panel active" id="panel-forum"></div>
+  <div class="panel" id="panel-map"></div>
+</div>
+
+<!-- ===== Toast 容器 ===== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ===== 模态框 ===== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<!-- ===== 使用 import map 引入 Supabase ===== -->
+<script type="importmap">
+{
+  "imports": {
+    "@supabase/supabase-js": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"
+  }
+}
+</script>
+
+<script type="module">
+// ============================================================
+// 1. 配置 Supabase（请替换为你的真实值）
+// ============================================================
+import { createClient } from '@supabase/supabase-js';
+
+const SUPABASE_URL = 'https://buoecihowzgqjwfhexsw.supabase.co';    // 替换！
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1b2VjaWhvd3pncWp3ZmhleHN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMDgwMDAsImV4cCI6MjA5Nzg4NDAwMH0.8sEfcTZIJ5mDixNqyqWEe245iFLR9PBh11Wk27SN5nY';                 // 替换！
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ============================================================
+// 2. 全局状态
+// ============================================================
+let currentUser = null;           // auth 用户对象
+let currentProfile = null;        // profiles 表数据
+let currentTab = 'forum';
+let viewingPostId = null;         // 正在查看的帖子ID
+
+// DOM 引用
+const $ = id => document.getElementById(id);
+const loginOverlay = $('loginOverlay');
+const loginUsername = $('loginUsername');
+const loginPassword = $('loginPassword');
+const loginError = $('loginError');
+const loginBtn = $('loginBtn');
+const loginTabs = document.querySelectorAll('.login-tab');
+const miniAvatar = $('miniAvatar');
+const miniName = $('miniName');
+const miniLevel = $('miniLevel');
+const logoutBtn = $('logoutBtn');
+const logoHome = $('logoHome');
+const navTabs = document.querySelectorAll('.nav-tab');
+const panelForum = $('panel-forum');
+const panelMap = $('panel-map');
+const modalOverlay = $('modalOverlay');
+const modalContent = $('modalContent');
+const toastContainer = $('toastContainer');
+
+// ============================================================
+// 3. 工具函数
+// ============================================================
+function toast(msg, type = '') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  toastContainer.appendChild(el);
+  setTimeout(() => el.remove(), 2500);
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function timeAgo(ts) {
+  if (!ts) return '未知';
+  const diff = Date.now() - new Date(ts).getTime();
+  if (diff < 60000) return '刚刚';
+  if (diff < 3600000) return Math.floor(diff/60000) + '分钟前';
+  if (diff < 86400000) return Math.floor(diff/3600000) + '小时前';
+  if (diff < 2592000000) return Math.floor(diff/86400000) + '天前';
+  return new Date(ts).toLocaleDateString();
+}
+
+function closeModal() {
+  modalOverlay.classList.remove('show');
+  modalContent.innerHTML = '';
+}
+
+// ============================================================
+// 4. 登录 / 注册
+// ============================================================
+let loginMode = 'login'; // 'login' | 'register'
+
+loginTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    loginTabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    loginMode = tab.dataset.mode;
+    loginError.textContent = '';
+  });
+});
+
+loginBtn.addEventListener('click', async () => {
+  const username = loginUsername.value.trim();
+  const password = loginPassword.value;
+  if (!username || !password) {
+    loginError.textContent = '请填写完整';
+    return;
+  }
+
+  try {
+    if (loginMode === 'register') {
+      // 注册：使用 Supabase Auth，并把 username 存入 user_metadata
+      const { data, error } = await supabase.auth.signUp({
+        email: `${username}@fog.local`, // 因为 auth 需要 email，我们伪造一个唯一邮箱
+        password: password,
+        options: {
+          data: { username: username }
+        }
+      });
+      if (error) throw error;
+      toast('注册成功！请登录', 'success');
+      loginError.textContent = '';
+      // 切换到登录标签
+      loginTabs.forEach(t => t.classList.remove('active'));
+      document.querySelector('.login-tab[data-mode="login"]').classList.add('active');
+      loginMode = 'login';
+      loginPassword.value = '';
+    } else {
+      // 登录：用 email 登录（我们构造 email）
+      const email = `${username}@fog.local`;
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+      if (error) throw error;
+      // 登录成功，获取 profile
+      await fetchProfile(data.user);
+      loginOverlay.classList.add('hidden');
+      toast(`🌲 欢迎 ${currentProfile.username}`);
+      renderCurrentTab();
+    }
+  } catch (err) {
+    loginError.textContent = err.message || '操作失败';
+    console.error(err);
+  }
+});
+
+// ============================================================
+// 5. 获取用户资料
+// ============================================================
+async function fetchProfile(user) {
+  if (!user) return;
+  currentUser = user;
+  // 从 profiles 表读取
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+  if (error && error.code !== 'PGRST116') {
+    console.error('获取 profile 失败', error);
+    return;
+  }
+  if (data) {
+    currentProfile = data;
+  } else {
+    // 如果 profile 不存在（一般触发器会自动创建，但以防万一）
+    const username = user.user_metadata?.username || '未知';
+    const { data: newProfile, error: insertError } = await supabase
+      .from('profiles')
+      .insert([{ id: user.id, username }])
+      .select()
+      .single();
+    if (!insertError) currentProfile = newProfile;
+  }
+  updateUI();
+}
+
+function updateUI() {
+  if (!currentProfile) return;
+  miniAvatar.textContent = currentProfile.avatar || '🐱';
+  miniName.textContent = currentProfile.username;
+  miniLevel.textContent = currentProfile.level || 1;
+}
+
+// ============================================================
+// 6. 登出
+// ============================================================
+logoutBtn.addEventListener('click', async () => {
+  await supabase.auth.signOut();
+  currentUser = null;
+  currentProfile = null;
+  loginOverlay.classList.remove('hidden');
+  loginError.textContent = '';
+  // 清空输入
+  loginUsername.value = '';
+  loginPassword.value = '';
+  // 切换回登录模式
+  loginTabs.forEach(t => t.classList.remove('active'));
+  document.querySelector('.login-tab[data-mode="login"]').classList.add('active');
+  loginMode = 'login';
+  toast('已离开会馆');
+});
+
+// ============================================================
+// 7. 导航切换
+// ============================================================
+function renderCurrentTab() {
+  if (currentTab === 'forum') renderForum();
+  else if (currentTab === 'map') renderMap();
+}
+
+navTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    navTabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentTab = tab.dataset.tab;
+    // 如果正在查看帖子详情，切换时回到列表
+    viewingPostId = null;
+    renderCurrentTab();
+  });
+});
+
+logoHome.addEventListener('click', () => {
+  // 回到论坛首页
+  navTabs.forEach(t => t.classList.remove('active'));
+  document.querySelector('.nav-tab[data-tab="forum"]').classList.add('active');
+  currentTab = 'forum';
+  viewingPostId = null;
+  renderCurrentTab();
+});
+
+// ============================================================
+// 8. 论坛渲染
+// ============================================================
+async function renderForum() {
+  if (viewingPostId) {
+    await renderPostDetail(viewingPostId);
+    return;
+  }
+  // 显示帖子列表
+  panelForum.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <span>📢 最新帖子</span>
+        <button class="btn btn-primary btn-sm" id="newPostBtn">✏️ 发帖</button>
+      </div>
+    </div>
+    <div class="card" id="postsList">
+      <div style="text-align:center;padding:20px;color:#888;">加载中...</div>
+    </div>
+  `;
+  document.getElementById('newPostBtn').addEventListener('click', openNewPost);
+
+  const { data: posts, error } = await supabase
+    .from('posts')
+    .select(`
+      *,
+      profiles (username, avatar),
+      replies_count:replies(count),
+      likes_count:likes(count)
+    `)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    document.getElementById('postsList').innerHTML = `<p style="color:#c62828;">加载失败: ${error.message}</p>`;
+    return;
+  }
+
+  if (!posts || posts.length === 0) {
+    document.getElementById('postsList').innerHTML = `<p style="color:#999;text-align:center;">还没有帖子，快来发第一篇吧！</p>`;
+    return;
+  }
+
+  let html = '';
+  for (const post of posts) {
+    const author = post.profiles || { username: '已注销', avatar: '👻' };
+    const replyCount = post.replies_count?.[0]?.count || 0;
+    const likeCount = post.likes_count?.[0]?.count || 0;
+    const isHot = replyCount >= 5;
+    html += `
+      <div class="post-item" data-postid="${post.id}">
+        <div class="post-avatar">${escHtml(author.avatar || '🐱')}</div>
+        <div style="flex:1;">
+          <div class="post-title">${escHtml(post.title)} ${isHot ? '🔥' : ''}</div>
+          <div class="post-content-preview">${escHtml(post.content)}</div>
+          <div class="post-meta">
+            ${escHtml(author.username)} · ${timeAgo(post.created_at)} · 
+            ❤️ ${likeCount} · 💬 ${replyCount}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  document.getElementById('postsList').innerHTML = html;
+
+  // 点击帖子进入详情
+  document.querySelectorAll('.post-item').forEach(el => {
+    el.addEventListener('click', () => {
+      viewingPostId = parseInt(el.dataset.postid);
+      renderForum();
+    });
+  });
+}
+
+// ============================================================
+// 9. 帖子详情
+// ============================================================
+async function renderPostDetail(postId) {
+  const { data: post, error } = await supabase
+    .from('posts')
+    .select(`
+      *,
+      profiles (username, avatar)
+    `)
+    .eq('id', postId)
+    .single();
+
+  if (error || !post) {
+    toast('帖子不存在', 'error');
+    viewingPostId = null;
+    renderForum();
+    return;
+  }
+
+  // 获取回复
+  const { data: replies, error: repliesError } = await supabase
+    .from('replies')
+    .select(`
+      *,
+      profiles (username, avatar)
+    `)
+    .eq('post_id', postId)
+    .order('created_at', { ascending: true });
+
+  // 获取点赞数 & 当前用户是否点赞
+  const { count: likeCount } = await supabase
+    .from('likes')
+    .select('*', { count: 'exact', head: true })
+    .eq('post_id', postId);
+
+  let userLiked = false;
+  if (currentUser) {
+    const { data: likeData } = await supabase
+      .from('likes')
+      .select('*')
+      .eq('post_id', postId)
+      .eq('user_id', currentUser.id)
+      .maybeSingle();
+    userLiked = !!likeData;
+  }
+
+  const author = post.profiles || { username: '已注销', avatar: '👻' };
+  const replyList = replies || [];
+
+  let html = `
+    <div class="card">
+      <button class="btn btn-outline btn-sm" id="backToList">← 返回列表</button>
+      <div style="margin-top:12px;">
+        <h2 style="font-size:1.2rem;">${escHtml(post.title)}</h2>
+        <div style="color:#888;font-size:0.8rem;margin:6px 0 12px;">
+          ${escHtml(author.username)} · ${timeAgo(post.created_at)}
+        </div>
+        <div style="white-space:pre-wrap;word-break:break-word;background:#f8f6ee;padding:12px;border-radius:8px;">
+          ${escHtml(post.content)}
+        </div>
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn ${userLiked ? 'btn-primary' : 'btn-outline'} btn-sm" id="likeBtn">
+            ${userLiked ? '❤️' : '🤍'} ${likeCount || 0}
+          </button>
+          <button class="btn btn-primary btn-sm" id="replyBtn">💬 回复</button>
+          ${currentUser && currentUser.id === post.author_id ? `
+            <button class="btn btn-danger btn-sm" id="deletePostBtn">🗑️ 删除</button>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">💬 回复 (${replyList.length})</div>
+      ${replyList.length === 0 ? '<p style="color:#999;">还没有回复</p>' : ''}
+      ${replyList.map(r => {
+        const rAuthor = r.profiles || { username: '已注销', avatar: '👻' };
+        return `
+          <div style="padding:10px 0;border-bottom:1px solid #e4decf;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span>${escHtml(rAuthor.avatar || '🐱')}</span>
+              <strong>${escHtml(rAuthor.username)}</strong>
+              <span style="color:#999;font-size:0.7rem;">${timeAgo(r.created_at)}</span>
             </div>
-            <input type="text" class="login-input" id="loginUsername" placeholder="妖精名号" maxlength="12">
-            <input type="password" class="login-input" id="loginPassword" placeholder="密码">
-            <button class="login-btn" id="loginBtn">进入会馆</button>
-            <p style="font-size:0.7rem;color:#aaa;margin-top:12px;">注册后即可登录</p>
+            <div style="margin-top:4px;white-space:pre-wrap;word-break:break-word;">${escHtml(r.content)}</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+  panelForum.innerHTML = html;
+
+  // 事件绑定
+  document.getElementById('backToList').addEventListener('click', () => {
+    viewingPostId = null;
+    renderForum();
+  });
+
+  const likeBtn = document.getElementById('likeBtn');
+  if (likeBtn) {
+    likeBtn.addEventListener('click', async () => {
+      if (!currentUser) { toast('请先登录', 'error'); return; }
+      const { data: existing } = await supabase
+        .from('likes')
+        .select('*')
+        .eq('post_id', postId)
+        .eq('user_id', currentUser.id)
+        .maybeSingle();
+      if (existing) {
+        // 取消点赞
+        await supabase
+          .from('likes')
+          .delete()
+          .eq('post_id', postId)
+          .eq('user_id', currentUser.id);
+        toast('已取消点赞');
+      } else {
+        // 点赞
+        await supabase
+          .from('likes')
+          .insert([{ post_id: postId, user_id: currentUser.id }]);
+        toast('❤️ 点赞成功', 'success');
+      }
+      // 刷新详情
+      renderPostDetail(postId);
+    });
+  }
+
+  const replyBtn = document.getElementById('replyBtn');
+  if (replyBtn) {
+    replyBtn.addEventListener('click', () => openReply(postId));
+  }
+
+  const deleteBtn = document.getElementById('deletePostBtn');
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', async () => {
+      if (!confirm('确定删除此帖吗？')) return;
+      await supabase.from('posts').delete().eq('id', postId);
+      toast('帖子已删除', 'success');
+      viewingPostId = null;
+      renderForum();
+    });
+  }
+}
+
+// ============================================================
+// 10. 发帖 & 回复
+// ============================================================
+function openNewPost() {
+  if (!currentUser) { toast('请先登录', 'error'); return; }
+  modalContent.innerHTML = `
+    <h3>✏️ 发新帖</h3>
+    <input type="text" id="newPostTitle" placeholder="标题" maxlength="100">
+    <textarea id="newPostContent" rows="5" placeholder="内容"></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-outline btn-sm" id="modalCancel">取消</button>
+      <button class="btn btn-primary btn-sm" id="modalConfirm">发布</button>
+    </div>
+  `;
+  modalOverlay.classList.add('show');
+  document.getElementById('modalCancel').addEventListener('click', closeModal);
+  document.getElementById('modalConfirm').addEventListener('click', async () => {
+    const title = document.getElementById('newPostTitle').value.trim();
+    const content = document.getElementById('newPostContent').value.trim();
+    if (!title || !content) { toast('请填写完整', 'error'); return; }
+    const { error } = await supabase
+      .from('posts')
+      .insert([{ title, content, author_id: currentUser.id }]);
+    if (error) { toast('发布失败: ' + error.message, 'error'); return; }
+    toast('发布成功', 'success');
+    closeModal();
+    viewingPostId = null;
+    renderForum();
+  });
+}
+
+function openReply(postId) {
+  if (!currentUser) { toast('请先登录', 'error'); return; }
+  modalContent.innerHTML = `
+    <h3>💬 回复</h3>
+    <textarea id="replyContent" rows="4" placeholder="写回复..."></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-outline btn-sm" id="modalCancel">取消</button>
+      <button class="btn btn-primary btn-sm" id="modalConfirm">发表</button>
+    </div>
+  `;
+  modalOverlay.classList.add('show');
+  document.getElementById('modalCancel').addEventListener('click', closeModal);
+  document.getElementById('modalConfirm').addEventListener('click', async () => {
+    const content = document.getElementById('replyContent').value.trim();
+    if (!content) { toast('请填写内容', 'error'); return; }
+    const { error } = await supabase
+      .from('replies')
+      .insert([{ post_id: postId, author_id: currentUser.id, content }]);
+    if (error) { toast('回复失败: ' + error.message, 'error'); return; }
+    toast('回复成功', 'success');
+    closeModal();
+    // 刷新详情
+    renderPostDetail(postId);
+  });
+}
+
+// ============================================================
+// 11. 基建（map）渲染
+// ============================================================
+async function renderMap() {
+  if (!currentProfile) {
+    panelMap.innerHTML = `<div class="card"><p style="color:#888;">请先登录</p></div>`;
+    return;
+  }
+  const buildings = currentProfile.buildings || { farm: 0, house: 0, land: 0 };
+  const gold = currentProfile.gold || 0;
+
+  panelMap.innerHTML = `
+    <div class="card">
+      <div class="card-header">🏗️ 基建中心</div>
+      <p>🪙 金币：${gold}</p>
+      <div class="map-grid">
+        <div class="build-card" data-type="farm">
+          <div class="icon">🌾</div>
+          <div>农场</div>
+          <div>${buildings.farm || 0} 块</div>
+          <div style="font-size:0.7rem;color:#888;">💰50 金币</div>
         </div>
-    </div>
-    <div class="top-bar">
-        <div class="logo" onclick="switchTab('forum')">🌲 雾凇会馆</div>
-        <div class="user-mini">
-            <div class="avatar-thumb" id="miniAvatar">🐱</div>
-            <span id="miniName">未登录</span>
-            <span style="font-size:0.7rem;">Lv.<span id="miniLevel">1</span></span>
-            <button class="logout-btn" onclick="handleLogout()">离开</button>
+        <div class="build-card" data-type="house">
+          <div class="icon">🏡</div>
+          <div>小屋</div>
+          <div>${buildings.house || 0} 间</div>
+          <div style="font-size:0.7rem;color:#888;">💰200 金币</div>
         </div>
+        <div class="build-card" data-type="land">
+          <div class="icon">🏔️</div>
+          <div>领地</div>
+          <div>${buildings.land || 0} 处</div>
+          <div style="font-size:0.7rem;color:#888;">💰500 金币</div>
+        </div>
+      </div>
     </div>
-    <div class="nav-tabs">
-        <div class="nav-tab active" data-tab="forum">📜 论坛</div>
-        <div class="nav-tab" data-tab="map">🏗️ 基建</div>
-    </div>
-    <div class="main-container">
-        <div class="panel active" id="panel-forum"></div>
-        <div class="panel" id="panel-map"></div>
-    </div>
-    <div class="toast-container" id="toastContainer"></div>
-    <div class="modal-overlay" id="modalOverlay" style="display:none;"><div class="modal" id="modalContent"></div></div>
+  `;
 
-    <!-- CDN 引入（会自动创建全局变量 supabase） -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // ⚠️ 不再用 const supabase = ...，直接用 CDN 提供的全局 supabase
-        var client = supabase.createClient(
-            'https://buoecihowzgqjwfhexsw.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1b2VjaWhvd3pncWp3ZmhleHN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMDgwMDAsImV4cCI6MjA5Nzg4NDAwMH0.8sEfcTZIJ5mDixNqyqWEe245iFLR9PBh11Wk27SN5nY'
-        );
+  // 建设事件
+  document.querySelectorAll('.build-card').forEach(card => {
+    card.addEventListener('click', async () => {
+      const type = card.dataset.type;
+      const costs = { farm: 50, house: 200, land: 500 };
+      const cost = costs[type];
+      if (!currentProfile) return;
+      if ((currentProfile.gold || 0) < cost) {
+        toast('金币不足', 'error');
+        return;
+      }
+      // 更新数据库
+      const newBuildings = { ...(currentProfile.buildings || {}) };
+      newBuildings[type] = (newBuildings[type] || 0) + 1;
+      const newGold = (currentProfile.gold || 0) - cost;
+      const { error } = await supabase
+        .from('profiles')
+        .update({ gold: newGold, buildings: newBuildings })
+        .eq('id', currentUser.id);
+      if (error) {
+        toast('建设失败: ' + error.message, 'error');
+        return;
+      }
+      // 更新本地状态
+      currentProfile.gold = newGold;
+      currentProfile.buildings = newBuildings;
+      toast('建设成功！', 'success');
+      renderMap(); // 刷新
+    });
+  });
+}
 
-        var ADMIN_NAME = '雾凇馆长';
-        var ADMIN_PASS = 'zxcvbnm';
-        var currentUser = null;
-        var currentUserData = null;
+// ============================================================
+// 12. 检查登录状态（页面加载时）
+// ============================================================
+async function init() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    await fetchProfile(session.user);
+    loginOverlay.classList.add('hidden');
+    renderCurrentTab();
+  } else {
+    loginOverlay.classList.remove('hidden');
+  }
+}
 
-        function showToast(msg, type) {
-            var c = document.getElementById('toastContainer');
-            var t = document.createElement('div');
-            t.className = 'toast ' + (type || '');
-            t.textContent = msg;
-            c.appendChild(t);
-            setTimeout(function(){ t.remove(); }, 2200);
-        }
+// 监听 Auth 变化（多标签登录同步）
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'SIGNED_IN' && session) {
+    await fetchProfile(session.user);
+    loginOverlay.classList.add('hidden');
+    renderCurrentTab();
+  } else if (event === 'SIGNED_OUT') {
+    currentUser = null;
+    currentProfile = null;
+    loginOverlay.classList.remove('hidden');
+  }
+});
 
-        function escHtml(s) {
-            var d = document.createElement('div');
-            d.textContent = s;
-            return d.innerHTML;
-        }
+// 点击模态框外部关闭
+modalOverlay.addEventListener('click', (e) => {
+  if (e.target === modalOverlay) closeModal();
+});
 
-        function timeAgo(ts) {
-            var diff = Date.now() - ts;
-            if (diff < 60000) return '刚刚';
-            if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前';
-            if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前';
-            return Math.floor(diff / 86400000) + '天前';
-        }
+// 启动
+init();
 
-        function updateUI() {
-            if (!currentUserData) return;
-            document.getElementById('miniName').textContent = currentUserData.username;
-            document.getElementById('miniLevel').textContent = currentUserData.level || 1;
-            document.getElementById('miniAvatar').textContent = currentUserData.avatar || '🐱';
-        }
-
-        async function switchTab(tab) {
-            document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
-            document.getElementById('panel-' + tab).classList.add('active');
-            document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
-            var el = document.querySelector('.nav-tab[data-tab="' + tab + '"]');
-            if (el) el.classList.add('active');
-            if (tab === 'forum') await loadForum();
-            if (tab === 'map') await loadMap();
-        }
-
-        async function loadForum() {
-            var panel = document.getElementById('panel-forum');
-            panel.innerHTML = '<div class="card"><div style="display:flex;justify-content:space-between;"><span>📢 公告板</span><button class="btn btn-primary btn-sm" onclick="openNewPost()">✏️ 发帖</button></div></div><div class="card" id="postsContainer"><p style="text-align:center;color:#999;">加载中...</p></div>';
-            try {
-                var result = await client.from('posts').select('*').order('timestamp', { ascending: false });
-                var container = document.getElementById('postsContainer');
-                if (result.error) { container.innerHTML = '<p style="color:#f44336;">加载失败: ' + result.error.message + '</p>'; return; }
-                var data = result.data;
-                if (!data || data.length === 0) { container.innerHTML = '<p style="color:#999;">暂无帖子</p>'; return; }
-                container.innerHTML = data.map(function(p){
-                    var rc = p.replies ? p.replies.length : 0;
-                    return '<div class="post-item" onclick="viewPost(' + p.id + ')"><div class="post-avatar">' + (p.authorAvatar || '🐱') + '</div><div style="flex:1;"><div class="post-title">' + escHtml(p.title) + (rc >= 5 ? ' 🔥' : '') + '</div><div class="post-meta">' + escHtml(p.author) + ' · ' + timeAgo(p.timestamp) + ' · ❤️' + (p.likes || 0) + ' · 💬' + rc + '</div></div></div>';
-                }).join('');
-            } catch(e) {
-                document.getElementById('postsContainer').innerHTML = '<p style="color:#f44336;">加载失败</p>';
-            }
-        }
-
-        window.openNewPost = function() {
-            var modal = document.getElementById('modalOverlay');
-            modal.style.display = 'flex';
-            document.getElementById('modalContent').innerHTML = '<h3>发帖</h3><input type="text" id="npTitle" placeholder="标题"><textarea id="npContent" rows="4" placeholder="内容"></textarea><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;"><button class="btn btn-outline btn-sm" onclick="document.getElementById(\'modalOverlay\').style.display=\'none\'">取消</button><button class="btn btn-primary btn-sm" id="submitPost">发布</button></div>';
-            document.getElementById('submitPost').onclick = async function(){
-                var title = document.getElementById('npTitle').value.trim();
-                var content = document.getElementById('npContent').value.trim();
-                if (!title || !content) { showToast('请填写完整', 'error'); return; }
-                await client.from('posts').insert({ title:title, content:content, author:currentUser, authorAvatar:currentUserData.avatar||'🐱', timestamp:Date.now(), likes:0, likedBy:[], replies:[] });
-                modal.style.display = 'none';
-                showToast('发布成功', 'success');
-                await loadForum();
-            };
-        };
-
-        window.viewPost = async function(postId) {
-            var result = await client.from('posts').select('*').eq('id', postId).single();
-            if (!result.data) return;
-            var post = result.data;
-            var replies = post.replies || [];
-            document.getElementById('panel-forum').innerHTML = '<div class="card"><button class="btn btn-outline btn-sm" onclick="switchTab(\'forum\')">← 返回</button><div style="margin-top:12px;"><strong>' + escHtml(post.title) + '</strong><p>' + escHtml(post.content) + '</p><button class="btn btn-sm btn-outline" onclick="likePost(' + post.id + ')">❤️ ' + (post.likes||0) + '</button><button class="btn btn-sm btn-primary" onclick="openReply(' + post.id + ')">💬 回复</button></div></div><div class="card"><div class="card-header">💬 回复 (' + replies.length + ')</div>' + replies.map(function(r){ return '<div style="padding:8px;border-bottom:1px solid #e4decf;"><strong>' + escHtml(r.author) + '</strong><p>' + escHtml(r.content) + '</p></div>'; }).join('') + '<button class="btn btn-primary btn-sm" style="margin-top:8px;width:100%;" onclick="openReply(' + post.id + ')">回复</button></div>';
-        };
-
-        window.likePost = async function(postId) {
-            var result = await client.from('posts').select('*').eq('id', postId).single();
-            var post = result.data;
-            if ((post.likedBy||[]).indexOf(currentUser) !== -1) { showToast('已点赞'); return; }
-            await client.from('posts').update({ likes:(post.likes||0)+1, likedBy:(post.likedBy||[]).concat([currentUser]) }).eq('id', postId);
-            showToast('❤️ 已点赞');
-        };
-
-        window.openReply = function(postId) {
-            var modal = document.getElementById('modalOverlay');
-            modal.style.display = 'flex';
-            document.getElementById('modalContent').innerHTML = '<h3>回复</h3><textarea id="replyContent" rows="4"></textarea><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;"><button class="btn btn-outline btn-sm" onclick="document.getElementById(\'modalOverlay\').style.display=\'none\'">取消</button><button class="btn btn-primary btn-sm" id="submitReply">发表</button></div>';
-            document.getElementById('submitReply').onclick = async function(){
-                var content = document.getElementById('replyContent').value.trim();
-                if (!content) return;
-                var result = await client.from('posts').select('*').eq('id', postId).single();
-                var post = result.data;
-                var newReplies = (post.replies||[]).concat([{ author:currentUser, content:content, timestamp:Date.now() }]);
-                await client.from('posts').update({ replies:newReplies }).eq('id', postId);
-                modal.style.display = 'none';
-                showToast('回复成功');
-                await viewPost(postId);
-            };
-        };
-
-        async function loadMap() {
-            var b = currentUserData ? (currentUserData.buildings || { farm:0, house:0, land:0 }) : { farm:0, house:0, land:0 };
-            document.getElementById('panel-map').innerHTML = '<div class="card"><div class="card-header">🏗️ 基建中心</div><p>金币：🪙 ' + (currentUserData?currentUserData.gold||0:0) + '</p><div class="map-grid"><div class="build-card" onclick="build(\'farm\')"><div class="icon">🌾</div><div>农场</div><div>' + b.farm + '块</div><div>💰50金币</div></div><div class="build-card" onclick="build(\'house\')"><div class="icon">🏡</div><div>小屋</div><div>' + b.house + '间</div><div>💰200金币</div></div><div class="build-card" onclick="build(\'land\')"><div class="icon">🏔️</div><div>领地</div><div>' + b.land + '处</div><div>💰500金币</div></div></div></div>';
-        }
-
-        window.build = async function(type) {
-            if (!currentUserData) return;
-            var costs = { farm:50, house:200, land:500 };
-            if ((currentUserData.gold||0) < costs[type]) { showToast('金币不足', 'error'); return; }
-            var b = {};
-            if (currentUserData.buildings) { b.farm = currentUserData.buildings.farm || 0; b.house = currentUserData.buildings.house || 0; b.land = currentUserData.buildings.land || 0; }
-            b[type] = (b[type]||0) + 1;
-            var newGold = currentUserData.gold - costs[type];
-            await client.from('users').update({ gold:newGold, buildings:b }).eq('username', currentUser);
-            currentUserData.gold = newGold;
-            currentUserData.buildings = b;
-            showToast('建设成功', 'success');
-            await loadMap();
-        };
-
-        document.getElementById('loginBtn').addEventListener('click', async function(){
-            var username = document.getElementById('loginUsername').value.trim();
-            var password = document.getElementById('loginPassword').value;
-            var mode = document.querySelector('.login-tab.active').dataset.mode;
-            if (!username || !password) { showToast('请填写完整', 'error'); return; }
-            
-            // 馆长
-            if (username === ADMIN_NAME && password === ADMIN_PASS) {
-                currentUser = username;
-                currentUserData = { username:username, level:99, gold:9999, avatar:'🐱', buildings:{farm:0,house:0,land:0} };
-                document.getElementById('loginOverlay').classList.add('hidden');
-                updateUI();
-                await switchTab('forum');
-                showToast('🌲 馆长大人！');
-                return;
-            }
-            
-            // 注册
-            if (mode === 'register') {
-                var check = await client.from('users').select('username').eq('username', username);
-                if (check.data && check.data.length > 0) { showToast('该名号已存在', 'error'); return; }
-                await client.from('users').insert({ username:username, password:password, level:1, exp:0, gold:200, avatar:'', totalPosts:0, totalReplies:0, friends:[], buildings:{farm:0,house:0,land:0} });
-                showToast('注册成功！请登录', 'success');
-                document.querySelector('.login-tab[data-mode="login"]').click();
-                return;
-            }
-            
-            // 登录
-            var loginResult = await client.from('users').select('*').eq('username', username).single();
-            if (!loginResult.data) { showToast('用户不存在', 'error'); return; }
-            var user = loginResult.data;
-            if (user.password !== password) { showToast('密码错误', 'error'); return; }
-            currentUser = username;
-            currentUserData = user;
-            document.getElementById('loginOverlay').classList.add('hidden');
-            updateUI();
-            await switchTab('forum');
-            showToast('🌲 欢迎 ' + username);
-        });
-
-        function handleLogout() { location.reload(); }
-
-        document.querySelectorAll('.login-tab').forEach(function(t){
-            t.addEventListener('click', function(){
-                document.querySelectorAll('.login-tab').forEach(function(x){ x.classList.remove('active'); });
-                this.classList.add('active');
-            });
-        });
-
-        document.querySelectorAll('.nav-tab').forEach(function(t){
-            t.addEventListener('click', function(){ switchTab(this.dataset.tab); });
-        });
-
-        document.getElementById('modalOverlay').addEventListener('click', function(e){
-            if (e.target === this) this.style.display = 'none';
-        });
-
-        document.getElementById('loginPassword').addEventListener('keypress', function(e){
-            if (e.key === 'Enter') document.getElementById('loginBtn').click();
-        });
-
-        window.switchTab = switchTab;
-        window.handleLogout = handleLogout;
-    </script>
+</script>
 </body>
 </html>
