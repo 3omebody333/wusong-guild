@@ -377,20 +377,20 @@
 
 <script type="module">
 // ================================================================
-// 1. 配置 Supabase
+// 1. 配置 Supabase（请替换为你的真实值）
 // ================================================================
 import { createClient } from '@supabase/supabase-js';
 
-// ★★★ 请替换为你的真实值 ★★★
-const SUPABASE_URL = 'https://你的项目ID.supabase.co';
-const SUPABASE_ANON_KEY = '你的anon密钥';
+// ★★★ 下面两行务必替换成你自己的 URL 和 anon key ★★★
+const SUPABASE_URL = 'https://buoecihowzgqjwfhexsw.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1b2VjaWhvd3pncWp3ZmhleHN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMDgwMDAsImV4cCI6MjA5Nzg4NDAwMH0.8sEfcTZIJ5mDixNqyqWEe245iFLR9PBh11Wk27SN5nY';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ================================================================
 // 2. 全局状态
 // ================================================================
-let currentUser = null;        // 当前登录用户对象（包含 id, username, gold, level 等）
+let currentUser = null;        // 当前登录用户对象（id, username, gold, level, buildings）
 let currentTab = 'forum';
 let viewingPostId = null;
 
@@ -436,9 +436,9 @@ function timeAgo(ts) {
   if (!ts) return '未知';
   const diff = Date.now() - new Date(ts).getTime();
   if (diff < 60000) return '刚刚';
-  if (diff < 3600000) return Math.floor(diff/60000) + '分钟前';
-  if (diff < 86400000) return Math.floor(diff/3600000) + '小时前';
-  if (diff < 2592000000) return Math.floor(diff/86400000) + '天前';
+  if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前';
+  if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前';
+  if (diff < 2592000000) return Math.floor(diff / 86400000) + '天前';
   return new Date(ts).toLocaleDateString();
 }
 
@@ -447,17 +447,17 @@ function closeModal() {
   modalContent.innerHTML = '';
 }
 
-// 简单哈希（仅供演示，生产应使用 bcrypt）
+// 前端哈希（SHA-256 + 固定盐），与数据库存储一致
 async function hashPassword(password) {
   const encoder = new TextEncoder();
-  const data = encoder.encode(password + 'fog-salt-2026'); // 加盐
+  const data = encoder.encode(password + 'fog-salt-2026');
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 // ================================================================
-// 4. 登录 / 注册 逻辑（完全自定义）
+// 4. 登录 / 注册
 // ================================================================
 let loginMode = 'login'; // 'login' | 'register'
 
@@ -482,8 +482,8 @@ loginBtn.addEventListener('click', async () => {
   try {
     if (loginMode === 'register') {
       // ---- 注册 ----
-      // 1. 检查用户名是否已存在
-      const { data: existing, error: checkError } = await supabase
+      // 1) 检查用户名是否已存在
+      const { data: existing } = await supabase
         .from('users')
         .select('id')
         .eq('username', username)
@@ -492,17 +492,15 @@ loginBtn.addEventListener('click', async () => {
         loginError.textContent = '用户名已被占用';
         return;
       }
-      // 2. 哈希密码
+      // 2) 哈希密码
       const passwordHash = await hashPassword(password);
-      // 3. 插入用户
-      const { data: newUser, error: insertError } = await supabase
+      // 3) 插入用户
+      const { error: insertError } = await supabase
         .from('users')
-        .insert([{ username, password_hash: passwordHash }])
-        .select()
-        .single();
+        .insert([{ username, password_hash: passwordHash }]);
       if (insertError) throw insertError;
       toast('注册成功！请登录', 'success');
-      // 切到登录标签
+      // 切换到登录标签
       loginTabs.forEach(t => t.classList.remove('active'));
       document.querySelector('.login-tab[data-mode="login"]').classList.add('active');
       loginMode = 'login';
@@ -510,7 +508,7 @@ loginBtn.addEventListener('click', async () => {
       loginUsername.value = '';
     } else {
       // ---- 登录 ----
-      // 1. 根据用户名查用户
+      // 1) 根据用户名查用户
       const { data: user, error: userError } = await supabase
         .from('users')
         .select('*')
@@ -520,13 +518,13 @@ loginBtn.addEventListener('click', async () => {
         loginError.textContent = '用户名不存在';
         return;
       }
-      // 2. 验证密码
+      // 2) 验证密码
       const inputHash = await hashPassword(password);
       if (inputHash !== user.password_hash) {
         loginError.textContent = '密码错误';
         return;
       }
-      // 3. 登录成功
+      // 3) 登录成功
       currentUser = user;
       loginOverlay.classList.add('hidden');
       updateUI();
@@ -610,6 +608,7 @@ async function renderForum() {
   `;
   document.getElementById('newPostBtn').addEventListener('click', openNewPost);
 
+  // 从视图中获取帖子及作者信息
   const { data: posts, error } = await supabase
     .from('posts_with_authors')
     .select('*')
@@ -624,9 +623,9 @@ async function renderForum() {
     return;
   }
 
-  // 获取统计
+  // 获取每个帖子的统计（回复数、点赞数）
   const postIds = posts.map(p => p.id);
-  const { data: stats, error: statsErr } = await supabase
+  const { data: stats } = await supabase
     .from('posts_stats')
     .select('*')
     .in('id', postIds);
@@ -653,6 +652,8 @@ async function renderForum() {
     `;
   }
   document.getElementById('postsList').innerHTML = html;
+
+  // 点击帖子进入详情
   document.querySelectorAll('.post-item').forEach(el => {
     el.addEventListener('click', () => {
       viewingPostId = parseInt(el.dataset.postid);
@@ -677,7 +678,8 @@ async function renderPostDetail(postId) {
     return;
   }
 
-  const { data: replies, error: repliesErr } = await supabase
+  // 获取回复（带作者信息）
+  const { data: replies } = await supabase
     .from('replies')
     .select(`
       *,
@@ -686,11 +688,13 @@ async function renderPostDetail(postId) {
     .eq('post_id', postId)
     .order('created_at', { ascending: true });
 
+  // 获取点赞数
   const { count: likeCount } = await supabase
     .from('likes')
     .select('*', { count: 'exact', head: true })
     .eq('post_id', postId);
 
+  // 当前用户是否已点赞
   let userLiked = false;
   if (currentUser) {
     const { data: likeData } = await supabase
@@ -745,11 +749,12 @@ async function renderPostDetail(postId) {
   `;
   panelForum.innerHTML = html;
 
-  // 事件绑定
+  // ---- 事件绑定 ----
   document.getElementById('backToList').addEventListener('click', () => {
     viewingPostId = null;
     renderForum();
   });
+
   const likeBtn = document.getElementById('likeBtn');
   if (likeBtn) {
     likeBtn.addEventListener('click', async () => {
@@ -761,22 +766,30 @@ async function renderPostDetail(postId) {
         .eq('user_id', currentUser.id)
         .maybeSingle();
       if (existing) {
-        await supabase.from('likes').delete().eq('post_id', postId).eq('user_id', currentUser.id);
+        await supabase
+          .from('likes')
+          .delete()
+          .eq('post_id', postId)
+          .eq('user_id', currentUser.id);
         toast('已取消点赞');
       } else {
-        await supabase.from('likes').insert([{ post_id: postId, user_id: currentUser.id }]);
+        await supabase
+          .from('likes')
+          .insert([{ post_id: postId, user_id: currentUser.id }]);
         toast('❤️ 点赞成功', 'success');
       }
       renderPostDetail(postId);
     });
   }
+
   document.getElementById('replyBtn').addEventListener('click', () => openReply(postId));
+
   const deleteBtn = document.getElementById('deletePostBtn');
   if (deleteBtn) {
     deleteBtn.addEventListener('click', async () => {
-      if (!confirm('确定删除吗？')) return;
+      if (!confirm('确定删除此帖吗？')) return;
       await supabase.from('posts').delete().eq('id', postId);
-      toast('已删除', 'success');
+      toast('帖子已删除', 'success');
       viewingPostId = null;
       renderForum();
     });
@@ -896,33 +909,30 @@ async function renderMap() {
         .eq('id', currentUser.id)
         .select()
         .single();
-      if (error) { toast('建设失败', 'error'); return; }
-      // 更新当前用户数据
+      if (error) { toast('建设失败: ' + error.message, 'error'); return; }
+      // 更新当前用户对象
       currentUser.gold = newGold;
       currentUser.buildings = newBuildings;
       toast('建设成功！', 'success');
-      renderMap();
+      renderMap(); // 刷新
     });
   });
 }
 
 // ================================================================
-// 12. 初始化：检查 session（不使用 Supabase Auth，所以直接显示登录框）
+// 12. 初始化
 // ================================================================
 function init() {
-  // 我们不用 session，每次刷新都是未登录状态，需要重新登录
-  // 但可以简单检查 localStorage 是否有用户信息（不安全，仅演示）
-  // 这里不持久化，每次刷新都需登录，为了安全。
+  // 默认显示登录界面（无持久化 session）
   loginOverlay.classList.remove('hidden');
 }
-
-init();
 
 // 点击模态框外部关闭
 modalOverlay.addEventListener('click', (e) => {
   if (e.target === modalOverlay) closeModal();
 });
 
+init();
 </script>
 </body>
 </html>
