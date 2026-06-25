@@ -25,7 +25,6 @@
       justify-content: center;
       flex-direction: column;
       color: #fff;
-      transition: opacity 0.3s;
     }
     .login-overlay.hidden { display: none; }
     .login-card {
@@ -38,7 +37,7 @@
       text-align: center;
       color: #3b392f;
     }
-    .login-cat { font-size: 3.5rem; margin-bottom: 4px; }
+    .login-cat { font-size: 3.5rem; }
     .login-title { font-size: 1.6rem; font-weight: bold; color: #4a5b3e; }
     .login-sub { font-size: 0.8rem; color: #888; margin: 6px 0 16px; }
     .login-tabs {
@@ -105,12 +104,7 @@
       top: 0;
       z-index: 100;
     }
-    .logo {
-      font-weight: bold;
-      font-size: 1.1rem;
-      cursor: pointer;
-      user-select: none;
-    }
+    .logo { font-weight: bold; font-size: 1.1rem; cursor: pointer; }
     .user-mini {
       display: flex;
       align-items: center;
@@ -118,8 +112,7 @@
       font-size: 0.85rem;
     }
     .avatar-thumb {
-      width: 34px;
-      height: 34px;
+      width: 34px; height: 34px;
       border-radius: 50%;
       border: 2px solid #dbb57c;
       background: #fff;
@@ -136,7 +129,6 @@
       border-radius: 14px;
       font-size: 0.7rem;
       cursor: pointer;
-      transition: 0.2s;
     }
     .logout-btn:hover { background: rgba(255,255,255,0.25); }
     /* ===== 二级导航 ===== */
@@ -157,7 +149,6 @@
       color: #6b6857;
       border-bottom: 3px solid transparent;
       user-select: none;
-      transition: 0.2s;
     }
     .nav-tab.active {
       color: #556b4b;
@@ -198,12 +189,10 @@
       cursor: pointer;
       display: flex;
       gap: 12px;
-      transition: background 0.1s;
     }
     .post-item:hover { background: #faf8f0; }
     .post-avatar {
-      width: 44px;
-      height: 44px;
+      width: 44px; height: 44px;
       border-radius: 8px;
       background: #efe9d8;
       display: flex;
@@ -212,16 +201,8 @@
       font-size: 1.8rem;
       flex-shrink: 0;
     }
-    .post-title {
-      font-weight: bold;
-      font-size: 0.95rem;
-      color: #3b4a2e;
-    }
-    .post-meta {
-      font-size: 0.75rem;
-      color: #999;
-      margin-top: 4px;
-    }
+    .post-title { font-weight: bold; font-size: 0.95rem; color: #3b4a2e; }
+    .post-meta { font-size: 0.75rem; color: #999; margin-top: 4px; }
     .post-content-preview {
       color: #555;
       font-size: 0.85rem;
@@ -240,7 +221,6 @@
       border: none;
       font-size: 0.8rem;
       font-weight: 500;
-      text-align: center;
       transition: 0.2s;
     }
     .btn-primary { background: #556b4b; color: #fff; }
@@ -250,7 +230,6 @@
     .btn-sm { padding: 6px 14px; font-size: 0.75rem; }
     .btn-danger { background: #c62828; color: #fff; }
     .btn-danger:hover { background: #b71c1c; }
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
     /* ===== 基建网格 ===== */
     .map-grid {
       display: grid;
@@ -265,7 +244,6 @@
       text-align: center;
       cursor: pointer;
       border: 2px solid transparent;
-      transition: 0.2s;
     }
     .build-card:hover { border-color: #556b4b; }
     .build-card .icon { font-size: 2.5rem; margin-bottom: 8px; }
@@ -342,9 +320,7 @@
 </head>
 <body>
 
-<!-- ============================================================ -->
-<!-- 登录遮罩 -->
-<!-- ============================================================ -->
+<!-- ===== 登录遮罩 ===== -->
 <div class="login-overlay" id="loginOverlay">
   <div class="login-card">
     <div class="login-cat">🐱</div>
@@ -361,9 +337,7 @@
   </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- 顶部导航 -->
-<!-- ============================================================ -->
+<!-- ===== 顶部栏 ===== -->
 <div class="top-bar">
   <div class="logo" id="logoHome">🌲 雾凇会馆</div>
   <div class="user-mini">
@@ -374,33 +348,25 @@
   </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- 二级导航 -->
-<!-- ============================================================ -->
+<!-- ===== 导航 ===== -->
 <div class="nav-tabs">
   <div class="nav-tab active" data-tab="forum">📜 论坛</div>
   <div class="nav-tab" data-tab="map">🏗️ 基建</div>
 </div>
 
-<!-- ============================================================ -->
-<!-- 主容器 -->
-<!-- ============================================================ -->
+<!-- ===== 主容器 ===== -->
 <div class="main-container">
   <div class="panel active" id="panel-forum"></div>
   <div class="panel" id="panel-map"></div>
 </div>
 
-<!-- ============================================================ -->
-<!-- Toast & 模态框 -->
-<!-- ============================================================ -->
+<!-- ===== Toast & 模态框 ===== -->
 <div class="toast-container" id="toastContainer"></div>
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal" id="modalContent"></div>
 </div>
 
-<!-- ============================================================ -->
-<!-- 使用 import map 加载 Supabase -->
-<!-- ============================================================ -->
+<!-- ===== 引入 Supabase ===== -->
 <script type="importmap">
 {
   "imports": {
@@ -411,23 +377,22 @@
 
 <script type="module">
 // ================================================================
-// 1. 配置 Supabase（请替换为你的真实值）
+// 1. 配置 Supabase
 // ================================================================
 import { createClient } from '@supabase/supabase-js';
 
-// ★★★ 下面两行务必替换成你自己的 URL 和 anon key ★★★
-const SUPABASE_URL = 'https://buoecihowzgqjwfhexsw.supabase.co';        // 替换！
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1b2VjaWhvd3pncWp3ZmhleHN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMDgwMDAsImV4cCI6MjA5Nzg4NDAwMH0.8sEfcTZIJ5mDixNqyqWEe245iFLR9PBh11Wk27SN5nY';                     // 替换！
+// ★★★ 请替换为你的真实值 ★★★
+const SUPABASE_URL = 'https://你的项目ID.supabase.co';
+const SUPABASE_ANON_KEY = '你的anon密钥';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ================================================================
 // 2. 全局状态
 // ================================================================
-let currentUser = null;        // auth 用户
-let currentProfile = null;     // profiles 数据
+let currentUser = null;        // 当前登录用户对象（包含 id, username, gold, level 等）
 let currentTab = 'forum';
-let viewingPostId = null;      // 当前查看的帖子ID
+let viewingPostId = null;
 
 // DOM 引用
 const $ = id => document.getElementById(id);
@@ -471,9 +436,9 @@ function timeAgo(ts) {
   if (!ts) return '未知';
   const diff = Date.now() - new Date(ts).getTime();
   if (diff < 60000) return '刚刚';
-  if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前';
-  if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前';
-  if (diff < 2592000000) return Math.floor(diff / 86400000) + '天前';
+  if (diff < 3600000) return Math.floor(diff/60000) + '分钟前';
+  if (diff < 86400000) return Math.floor(diff/3600000) + '小时前';
+  if (diff < 2592000000) return Math.floor(diff/86400000) + '天前';
   return new Date(ts).toLocaleDateString();
 }
 
@@ -482,8 +447,17 @@ function closeModal() {
   modalContent.innerHTML = '';
 }
 
+// 简单哈希（仅供演示，生产应使用 bcrypt）
+async function hashPassword(password) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password + 'fog-salt-2026'); // 加盐
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 // ================================================================
-// 4. 登录 / 注册 逻辑
+// 4. 登录 / 注册 逻辑（完全自定义）
 // ================================================================
 let loginMode = 'login'; // 'login' | 'register'
 
@@ -503,65 +477,60 @@ loginBtn.addEventListener('click', async () => {
     loginError.textContent = '请填写完整';
     return;
   }
-
-  // 清除旧错误
   loginError.textContent = '';
-
-  // 用用户名构造一个唯一的虚拟邮箱（只保留字母数字，避免非法字符）
-  const clean = username.replace(/[^a-zA-Z0-9]/g, '');
-  if (!clean) {
-    loginError.textContent = '用户名只能包含字母和数字';
-    return;
-  }
-  const email = `${clean}@fog.local`;
 
   try {
     if (loginMode === 'register') {
       // ---- 注册 ----
-      const { data, error } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-          data: { username: username }  // 保存原始用户名到 metadata
-        }
-      });
-      if (error) throw error;
-
-      // 注册成功后，触发器会自动创建 profile，但为了保险，我们主动查一下
-      if (data.user) {
-        // 等待触发器完成，稍后查询
-        await new Promise(resolve => setTimeout(resolve, 500));
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', data.user.id)
-          .maybeSingle();
-        if (!profile) {
-          // 如果触发器没执行，手动插入
-          await supabase
-            .from('profiles')
-            .insert([{ id: data.user.id, username: username }]);
-        }
-        toast('注册成功！请登录', 'success');
-        // 切换到登录标签
-        loginTabs.forEach(t => t.classList.remove('active'));
-        document.querySelector('.login-tab[data-mode="login"]').classList.add('active');
-        loginMode = 'login';
-        loginPassword.value = '';
-        loginUsername.value = '';
+      // 1. 检查用户名是否已存在
+      const { data: existing, error: checkError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('username', username)
+        .maybeSingle();
+      if (existing) {
+        loginError.textContent = '用户名已被占用';
+        return;
       }
+      // 2. 哈希密码
+      const passwordHash = await hashPassword(password);
+      // 3. 插入用户
+      const { data: newUser, error: insertError } = await supabase
+        .from('users')
+        .insert([{ username, password_hash: passwordHash }])
+        .select()
+        .single();
+      if (insertError) throw insertError;
+      toast('注册成功！请登录', 'success');
+      // 切到登录标签
+      loginTabs.forEach(t => t.classList.remove('active'));
+      document.querySelector('.login-tab[data-mode="login"]').classList.add('active');
+      loginMode = 'login';
+      loginPassword.value = '';
+      loginUsername.value = '';
     } else {
       // ---- 登录 ----
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password
-      });
-      if (error) throw error;
-
-      // 登录成功，获取 profile
-      await fetchProfile(data.user);
+      // 1. 根据用户名查用户
+      const { data: user, error: userError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('username', username)
+        .maybeSingle();
+      if (userError || !user) {
+        loginError.textContent = '用户名不存在';
+        return;
+      }
+      // 2. 验证密码
+      const inputHash = await hashPassword(password);
+      if (inputHash !== user.password_hash) {
+        loginError.textContent = '密码错误';
+        return;
+      }
+      // 3. 登录成功
+      currentUser = user;
       loginOverlay.classList.add('hidden');
-      toast(`🌲 欢迎 ${currentProfile.username}`);
+      updateUI();
+      toast(`🌲 欢迎 ${user.username}`);
       renderCurrentTab();
     }
   } catch (err) {
@@ -571,55 +540,24 @@ loginBtn.addEventListener('click', async () => {
 });
 
 // ================================================================
-// 5. 获取用户资料
+// 5. UI 更新
 // ================================================================
-async function fetchProfile(user) {
-  if (!user) return;
-  currentUser = user;
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .maybeSingle();
-
-  if (error) {
-    console.error('获取 profile 失败', error);
-    return;
-  }
-  if (data) {
-    currentProfile = data;
-  } else {
-    // 如果没有，尝试创建（兜底）
-    const username = user.user_metadata?.username || '未知';
-    const { data: newProfile } = await supabase
-      .from('profiles')
-      .insert([{ id: user.id, username }])
-      .select()
-      .single();
-    currentProfile = newProfile;
-  }
-  updateUI();
-}
-
 function updateUI() {
-  if (!currentProfile) return;
-  miniAvatar.textContent = currentProfile.avatar || '🐱';
-  miniName.textContent = currentProfile.username;
-  miniLevel.textContent = currentProfile.level || 1;
+  if (!currentUser) return;
+  miniAvatar.textContent = currentUser.avatar || '🐱';
+  miniName.textContent = currentUser.username;
+  miniLevel.textContent = currentUser.level || 1;
 }
 
 // ================================================================
 // 6. 登出
 // ================================================================
-logoutBtn.addEventListener('click', async () => {
-  await supabase.auth.signOut();
+logoutBtn.addEventListener('click', () => {
   currentUser = null;
-  currentProfile = null;
   loginOverlay.classList.remove('hidden');
   loginError.textContent = '';
   loginUsername.value = '';
   loginPassword.value = '';
-  // 切回登录模式
   loginTabs.forEach(t => t.classList.remove('active'));
   document.querySelector('.login-tab[data-mode="login"]').classList.add('active');
   loginMode = 'login';
@@ -653,7 +591,7 @@ logoHome.addEventListener('click', () => {
 });
 
 // ================================================================
-// 8. 论坛 - 帖子列表
+// 8. 论坛列表
 // ================================================================
 async function renderForum() {
   if (viewingPostId) {
@@ -668,14 +606,10 @@ async function renderForum() {
         <button class="btn btn-primary btn-sm" id="newPostBtn">✏️ 发帖</button>
       </div>
     </div>
-    <div class="card" id="postsList">
-      <div style="text-align:center;padding:20px;color:#888;">加载中...</div>
-    </div>
+    <div class="card" id="postsList"><div style="text-align:center;padding:20px;color:#888;">加载中...</div></div>
   `;
-
   document.getElementById('newPostBtn').addEventListener('click', openNewPost);
 
-  // 使用视图 posts_with_authors 一次获取所有数据
   const { data: posts, error } = await supabase
     .from('posts_with_authors')
     .select('*')
@@ -685,23 +619,19 @@ async function renderForum() {
     document.getElementById('postsList').innerHTML = `<p style="color:#c62828;">加载失败: ${error.message}</p>`;
     return;
   }
-
   if (!posts || posts.length === 0) {
     document.getElementById('postsList').innerHTML = `<p style="color:#999;text-align:center;">还没有帖子，快来发第一篇吧！</p>`;
     return;
   }
 
-  // 批量获取每个帖子的回复数和点赞数（使用视图 posts_stats）
+  // 获取统计
   const postIds = posts.map(p => p.id);
   const { data: stats, error: statsErr } = await supabase
     .from('posts_stats')
     .select('*')
     .in('id', postIds);
-
   const statMap = {};
-  if (stats) {
-    stats.forEach(s => { statMap[s.id] = s; });
-  }
+  if (stats) stats.forEach(s => { statMap[s.id] = s; });
 
   let html = '';
   for (const post of posts) {
@@ -723,7 +653,6 @@ async function renderForum() {
     `;
   }
   document.getElementById('postsList').innerHTML = html;
-
   document.querySelectorAll('.post-item').forEach(el => {
     el.addEventListener('click', () => {
       viewingPostId = parseInt(el.dataset.postid);
@@ -741,7 +670,6 @@ async function renderPostDetail(postId) {
     .select('*')
     .eq('id', postId)
     .single();
-
   if (error || !post) {
     toast('帖子不存在', 'error');
     viewingPostId = null;
@@ -749,23 +677,20 @@ async function renderPostDetail(postId) {
     return;
   }
 
-  // 获取回复
   const { data: replies, error: repliesErr } = await supabase
     .from('replies')
     .select(`
       *,
-      profiles (username, avatar)
+      users!author_id (username, avatar)
     `)
     .eq('post_id', postId)
     .order('created_at', { ascending: true });
 
-  // 获取点赞数
   const { count: likeCount } = await supabase
     .from('likes')
     .select('*', { count: 'exact', head: true })
     .eq('post_id', postId);
 
-  // 当前用户是否点赞
   let userLiked = false;
   if (currentUser) {
     const { data: likeData } = await supabase
@@ -778,7 +703,6 @@ async function renderPostDetail(postId) {
   }
 
   const replyList = replies || [];
-
   let html = `
     <div class="card">
       <button class="btn btn-outline btn-sm" id="backToList">← 返回列表</button>
@@ -805,7 +729,7 @@ async function renderPostDetail(postId) {
       <div class="card-header">💬 回复 (${replyList.length})</div>
       ${replyList.length === 0 ? '<p style="color:#999;">还没有回复</p>' : ''}
       ${replyList.map(r => {
-        const rAuthor = r.profiles || { username: '已注销', avatar: '👻' };
+        const rAuthor = r.users || { username: '已注销', avatar: '👻' };
         return `
           <div style="padding:10px 0;border-bottom:1px solid #e4decf;">
             <div style="display:flex;align-items:center;gap:8px;">
@@ -821,12 +745,11 @@ async function renderPostDetail(postId) {
   `;
   panelForum.innerHTML = html;
 
-  // ---- 绑定事件 ----
+  // 事件绑定
   document.getElementById('backToList').addEventListener('click', () => {
     viewingPostId = null;
     renderForum();
   });
-
   const likeBtn = document.getElementById('likeBtn');
   if (likeBtn) {
     likeBtn.addEventListener('click', async () => {
@@ -838,33 +761,22 @@ async function renderPostDetail(postId) {
         .eq('user_id', currentUser.id)
         .maybeSingle();
       if (existing) {
-        await supabase
-          .from('likes')
-          .delete()
-          .eq('post_id', postId)
-          .eq('user_id', currentUser.id);
+        await supabase.from('likes').delete().eq('post_id', postId).eq('user_id', currentUser.id);
         toast('已取消点赞');
       } else {
-        await supabase
-          .from('likes')
-          .insert([{ post_id: postId, user_id: currentUser.id }]);
+        await supabase.from('likes').insert([{ post_id: postId, user_id: currentUser.id }]);
         toast('❤️ 点赞成功', 'success');
       }
       renderPostDetail(postId);
     });
   }
-
-  const replyBtn = document.getElementById('replyBtn');
-  if (replyBtn) {
-    replyBtn.addEventListener('click', () => openReply(postId));
-  }
-
+  document.getElementById('replyBtn').addEventListener('click', () => openReply(postId));
   const deleteBtn = document.getElementById('deletePostBtn');
   if (deleteBtn) {
     deleteBtn.addEventListener('click', async () => {
-      if (!confirm('确定删除此帖吗？')) return;
+      if (!confirm('确定删除吗？')) return;
       await supabase.from('posts').delete().eq('id', postId);
-      toast('帖子已删除', 'success');
+      toast('已删除', 'success');
       viewingPostId = null;
       renderForum();
     });
@@ -928,15 +840,15 @@ function openReply(postId) {
 }
 
 // ================================================================
-// 11. 基建（map）
+// 11. 基建
 // ================================================================
 async function renderMap() {
-  if (!currentProfile) {
+  if (!currentUser) {
     panelMap.innerHTML = `<div class="card"><p style="color:#888;">请先登录</p></div>`;
     return;
   }
-  const buildings = currentProfile.buildings || { farm: 0, house: 0, land: 0 };
-  const gold = currentProfile.gold || 0;
+  const buildings = currentUser.buildings || { farm: 0, house: 0, land: 0 };
+  const gold = currentUser.gold || 0;
 
   panelMap.innerHTML = `
     <div class="card">
@@ -970,24 +882,24 @@ async function renderMap() {
       const type = card.dataset.type;
       const costs = { farm: 50, house: 200, land: 500 };
       const cost = costs[type];
-      if (!currentProfile) return;
-      if ((currentProfile.gold || 0) < cost) {
+      if (!currentUser) return;
+      if ((currentUser.gold || 0) < cost) {
         toast('金币不足', 'error');
         return;
       }
-      const newBuildings = { ...(currentProfile.buildings || {}) };
+      const newBuildings = { ...(currentUser.buildings || {}) };
       newBuildings[type] = (newBuildings[type] || 0) + 1;
-      const newGold = (currentProfile.gold || 0) - cost;
+      const newGold = (currentUser.gold || 0) - cost;
       const { error } = await supabase
-        .from('profiles')
+        .from('users')
         .update({ gold: newGold, buildings: newBuildings })
-        .eq('id', currentUser.id);
-      if (error) {
-        toast('建设失败: ' + error.message, 'error');
-        return;
-      }
-      currentProfile.gold = newGold;
-      currentProfile.buildings = newBuildings;
+        .eq('id', currentUser.id)
+        .select()
+        .single();
+      if (error) { toast('建设失败', 'error'); return; }
+      // 更新当前用户数据
+      currentUser.gold = newGold;
+      currentUser.buildings = newBuildings;
       toast('建设成功！', 'success');
       renderMap();
     });
@@ -995,36 +907,21 @@ async function renderMap() {
 }
 
 // ================================================================
-// 12. 初始化与 Auth 状态监听
+// 12. 初始化：检查 session（不使用 Supabase Auth，所以直接显示登录框）
 // ================================================================
-async function init() {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session) {
-    await fetchProfile(session.user);
-    loginOverlay.classList.add('hidden');
-    renderCurrentTab();
-  } else {
-    loginOverlay.classList.remove('hidden');
-  }
+function init() {
+  // 我们不用 session，每次刷新都是未登录状态，需要重新登录
+  // 但可以简单检查 localStorage 是否有用户信息（不安全，仅演示）
+  // 这里不持久化，每次刷新都需登录，为了安全。
+  loginOverlay.classList.remove('hidden');
 }
 
-supabase.auth.onAuthStateChange(async (event, session) => {
-  if (event === 'SIGNED_IN' && session) {
-    await fetchProfile(session.user);
-    loginOverlay.classList.add('hidden');
-    renderCurrentTab();
-  } else if (event === 'SIGNED_OUT') {
-    currentUser = null;
-    currentProfile = null;
-    loginOverlay.classList.remove('hidden');
-  }
-});
+init();
 
+// 点击模态框外部关闭
 modalOverlay.addEventListener('click', (e) => {
   if (e.target === modalOverlay) closeModal();
 });
-
-init();
 
 </script>
 </body>
