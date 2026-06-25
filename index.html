@@ -200,6 +200,7 @@
       border-bottom: 3px solid transparent;
       user-select: none;
       transition: 0.2s;
+      position: relative;
     }
     .nav-tab.active {
       color: #556b4b;
@@ -207,6 +208,19 @@
       font-weight: bold;
     }
     .nav-tab:hover { background: #f0ede0; }
+    /* 未读消息小红点 */
+    .nav-tab .badge {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: #c62828;
+      color: #fff;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 0.6rem;
+      min-width: 18px;
+      text-align: center;
+    }
 
     /* ===== 面板容器 ===== */
     .panel { display: none; }
@@ -252,15 +266,75 @@
     }
     .post-title { font-weight: bold; color: #3b4a2e; }
     .post-meta { font-size: 0.75rem; color: #999; }
-    /* ===== 好友列表 ===== */
+    /* ===== 好友/聊天列表 ===== */
     .friend-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 8px 0;
       border-bottom: 1px solid #f0ede0;
+      cursor: pointer;
     }
-    .friend-avatar { width: 32px; height: 32px; border-radius: 50%; background: #ddd; margin-right: 8px; }
+    .friend-item:hover { background: #f8f6ee; }
+    .friend-item .unread {
+      background: #c62828;
+      color: #fff;
+      border-radius: 50%;
+      padding: 0 6px;
+      font-size: 0.7rem;
+      min-width: 20px;
+      text-align: center;
+    }
+    /* ===== 聊天窗口 ===== */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 500px;
+    }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      background: #f8f6ee;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #cdc6b4;
+    }
+    .chat-message {
+      margin-bottom: 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      max-width: 75%;
+      word-wrap: break-word;
+    }
+    .chat-message.sent {
+      background: #556b4b;
+      color: #fff;
+      align-self: flex-end;
+      margin-left: auto;
+    }
+    .chat-message.received {
+      background: #fff;
+      border: 1px solid #cdc6b4;
+      align-self: flex-start;
+    }
+    .chat-message .time {
+      font-size: 0.6rem;
+      color: #999;
+      margin-top: 4px;
+      text-align: right;
+    }
+    .chat-input-area {
+      display: flex;
+      gap: 8px;
+    }
+    .chat-input-area input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 20px;
+      border: 2px solid #cdc6b4;
+    }
+
     /* ===== 按钮 ===== */
     .btn {
       display: inline-block;
@@ -398,6 +472,7 @@
       .left-panel .bio { width: 100%; }
       .left-panel .logout-btn { margin-top: 8px; }
       .right-content { max-width: 100%; padding: 12px; }
+      .chat-container { height: 350px; }
     }
   </style>
 </head>
@@ -446,6 +521,7 @@
     <div class="nav-tabs" id="navTabs">
       <div class="nav-tab active" data-tab="forum">📜 论坛</div>
       <div class="nav-tab" data-tab="friends">👥 好友</div>
+      <div class="nav-tab" data-tab="chat">💬 聊天 <span class="badge" id="chatBadge" style="display:none;">0</span></div>
       <div class="nav-tab" data-tab="build">🏗️ 基建</div>
       <div class="nav-tab" data-tab="tasks">📋 任务</div>
     </div>
@@ -453,6 +529,7 @@
     <!-- 面板容器 -->
     <div id="panel-forum" class="panel active"></div>
     <div id="panel-friends" class="panel"></div>
+    <div id="panel-chat" class="panel"></div>
     <div id="panel-build" class="panel"></div>
     <div id="panel-tasks" class="panel"></div>
   </div>
@@ -472,14 +549,13 @@
   }
 }
 </script>
-
 <script type="module">
 // ================================================================
-// 1. 配置 Supabase
+// 1. 配置 Supabase（请替换为你的真实值）
 // ================================================================
 import { createClient } from '@supabase/supabase-js';
 
-// ★★★ 请替换为你的真实值 ★★★
+// ★★★ 下面两行务必替换成你自己的 URL 和 anon key ★★★
 const SUPABASE_URL = 'https://buoecihowzgqjwfhexsw.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1b2VjaWhvd3pncWp3ZmhleHN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMDgwMDAsImV4cCI6MjA5Nzg4NDAwMH0.8sEfcTZIJ5mDixNqyqWEe245iFLR9PBh11Wk27SN5nY';
 
@@ -488,9 +564,11 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ================================================================
 // 2. 全局状态
 // ================================================================
-let currentUser = null;        // 当前登录用户完整对象
-let currentTab = 'forum';
-let viewingPostId = null;
+let currentUser = null;          // 当前登录用户完整对象
+let currentTab = 'forum';        // 当前激活的标签
+let viewingPostId = null;        // 正在查看的帖子ID（详情模式）
+let chatWithFriendId = null;     // 当前聊天对象的好友ID
+let chatSubscription = null;     // 消息订阅对象
 
 // DOM 引用
 const $ = id => document.getElementById(id);
@@ -504,11 +582,13 @@ const appContainer = $('appContainer');
 const navTabs = document.querySelectorAll('.nav-tab');
 const panelForum = $('panel-forum');
 const panelFriends = $('panel-friends');
+const panelChat = $('panel-chat');
 const panelBuild = $('panel-build');
 const panelTasks = $('panel-tasks');
 const toastContainer = $('toastContainer');
 const modalOverlay = $('modalOverlay');
 const modalContent = $('modalContent');
+const chatBadge = $('chatBadge');
 
 // 左侧面板元素
 const avatarWrapper = $('avatarWrapper');
@@ -557,7 +637,7 @@ function closeModal() {
   modalContent.innerHTML = '';
 }
 
-// SHA-256哈希
+// SHA-256 哈希（用于密码）
 async function hashPassword(password) {
   const encoder = new TextEncoder();
   const data = encoder.encode(password + 'fog-salt-2026');
@@ -566,7 +646,7 @@ async function hashPassword(password) {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// 检查今日是否已重置任务（每天0点重置）
+// 检查今日是否已重置任务
 function isNewDay(lastDate) {
   if (!lastDate) return true;
   const today = new Date().toDateString();
@@ -598,7 +678,7 @@ loginBtn.addEventListener('click', async () => {
 
   try {
     if (loginMode === 'register') {
-      // 检查用户名
+      // 注册：检查用户名是否已存在
       const { data: existing } = await supabase
         .from('users')
         .select('id')
@@ -614,7 +694,7 @@ loginBtn.addEventListener('click', async () => {
         .insert([{ username, password_hash: passwordHash }]);
       if (insertError) throw insertError;
       toast('注册成功！请登录', 'success');
-      // 切到登录
+      // 切换到登录标签
       loginTabs.forEach(t => t.classList.remove('active'));
       document.querySelector('.login-tab[data-mode="login"]').classList.add('active');
       loginMode = 'login';
@@ -640,11 +720,16 @@ loginBtn.addEventListener('click', async () => {
       currentUser = user;
       loginOverlay.classList.add('hidden');
       appContainer.style.display = 'flex';
-      // 如果今日任务未重置，重置
+      // 重置每日任务（如果需要）
       await resetDailyTasksIfNeeded();
-      // 更新界面
+      // 更新左侧面板
       updateLeftPanel();
+      // 渲染当前标签
       renderCurrentTab();
+      // 启动聊天订阅
+      startChatSubscription();
+      // 更新未读消息数
+      updateUnreadCount();
       toast(`🌲 欢迎 ${user.username}`);
     }
   } catch (err) {
@@ -661,7 +746,6 @@ async function resetDailyTasksIfNeeded() {
   const tasks = currentUser.daily_tasks || {};
   const lastReset = tasks.last_reset;
   if (isNewDay(lastReset)) {
-    // 重置所有任务状态
     const newTasks = {
       signed: false,
       posted: false,
@@ -680,7 +764,7 @@ async function resetDailyTasksIfNeeded() {
 }
 
 // ================================================================
-// 6. 更新左侧面板
+// 6. 更新左侧面板（头像、用户名、等级、金币、经验、简介、统计）
 // ================================================================
 function updateLeftPanel() {
   if (!currentUser) return;
@@ -699,9 +783,8 @@ function updateLeftPanel() {
     avatarEmoji.style.display = 'block';
     avatarEmoji.textContent = currentUser.avatar || '🐱';
   }
-  // 统计好友数
+  // 好友数和帖子数
   updateFriendCount();
-  // 统计帖子数
   updatePostCount();
 }
 
@@ -734,7 +817,6 @@ avatarWrapper.addEventListener('click', () => {
 avatarInput.addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  // 上传到 Supabase Storage
   const fileExt = file.name.split('.').pop();
   const fileName = `${currentUser.id}_${Date.now()}.${fileExt}`;
   const { data, error } = await supabase.storage
@@ -744,12 +826,10 @@ avatarInput.addEventListener('change', async (e) => {
     toast('上传失败: ' + error.message, 'error');
     return;
   }
-  // 获取公共URL
   const { data: urlData } = supabase.storage
     .from('avatars')
     .getPublicUrl(fileName);
   const avatarUrl = urlData.publicUrl;
-  // 更新数据库
   const { error: updateError } = await supabase
     .from('users')
     .update({ avatar_url: avatarUrl })
@@ -802,14 +882,15 @@ function renderCurrentTab() {
   // 显示当前面板
   const target = document.getElementById(`panel-${currentTab}`);
   if (target) target.classList.add('active');
-  // 高亮导航
+  // 高亮导航标签
   navTabs.forEach(tab => {
     tab.classList.toggle('active', tab.dataset.tab === currentTab);
   });
-  // 渲染具体内容
+  // 根据标签渲染内容
   switch (currentTab) {
     case 'forum': renderForum(); break;
     case 'friends': renderFriends(); break;
+    case 'chat': renderChat(); break;
     case 'build': renderBuild(); break;
     case 'tasks': renderTasks(); break;
   }
@@ -818,19 +899,22 @@ function renderCurrentTab() {
 navTabs.forEach(tab => {
   tab.addEventListener('click', () => {
     currentTab = tab.dataset.tab;
-    viewingPostId = null;
+    viewingPostId = null; // 退出帖子详情
     renderCurrentTab();
   });
 });
 
 // ================================================================
-// 10. 论坛（沿用之前逻辑，略作调整）
+// 10. 论坛 - 帖子列表
 // ================================================================
 async function renderForum() {
+  // 如果正在查看帖子详情，则渲染详情
   if (viewingPostId) {
     await renderPostDetail(viewingPostId);
     return;
   }
+
+  // 列表视图
   panelForum.innerHTML = `
     <div class="card">
       <div class="card-header">
@@ -840,8 +924,14 @@ async function renderForum() {
     </div>
     <div class="card" id="postsList"><div style="text-align:center;padding:20px;color:#888;">加载中...</div></div>
   `;
-  document.getElementById('newPostBtn').addEventListener('click', openNewPost);
 
+  // 发帖按钮事件
+  const newPostBtn = document.getElementById('newPostBtn');
+  if (newPostBtn) {
+    newPostBtn.addEventListener('click', openNewPost);
+  }
+
+  // 查询帖子（带作者信息）
   const { data: posts, error } = await supabase
     .from('posts_with_authors')
     .select('*')
@@ -856,6 +946,7 @@ async function renderForum() {
     return;
   }
 
+  // 获取每个帖子的统计（回复数、点赞数）
   const postIds = posts.map(p => p.id);
   const { data: stats } = await supabase
     .from('posts_stats')
@@ -878,12 +969,15 @@ async function renderForum() {
           <div class="post-meta">
             ${escHtml(post.username || '已注销')} · ${timeAgo(post.created_at)} · 
             ❤️ ${likeCount} · 💬 ${replyCount}
+            ${post.updated_at && post.updated_at !== post.created_at ? ' ✏️已编辑' : ''}
           </div>
         </div>
       </div>
     `;
   }
   document.getElementById('postsList').innerHTML = html;
+
+  // 点击帖子进入详情
   document.querySelectorAll('.post-item').forEach(el => {
     el.addEventListener('click', () => {
       viewingPostId = parseInt(el.dataset.postid);
@@ -892,26 +986,292 @@ async function renderForum() {
   });
 }
 
-// 发帖、回复、详情等函数（因篇幅，略作精简，实际功能保留）
+// ================================================================
+// 11. 帖子详情（包含编辑功能）
+// ================================================================
 async function renderPostDetail(postId) {
-  // ... 与之前相同，可参考之前代码，因篇幅此处省略，但完整功能在最终代码中保留
-  // 实际我会在最终输出中补全，这里为了演示，先写简略
-  // 请放心，最终交付的代码会包含全部功能。
+  const { data: post, error } = await supabase
+    .from('posts_with_authors')
+    .select('*')
+    .eq('id', postId)
+    .single();
+  if (error || !post) {
+    toast('帖子不存在', 'error');
+    viewingPostId = null;
+    renderForum();
+    return;
+  }
+
+  // 获取回复
+  const { data: replies } = await supabase
+    .from('replies')
+    .select(`
+      *,
+      users!author_id (username, avatar, avatar_url)
+    `)
+    .eq('post_id', postId)
+    .order('created_at', { ascending: true });
+
+  // 获取点赞数
+  const { count: likeCount } = await supabase
+    .from('likes')
+    .select('*', { count: 'exact', head: true })
+    .eq('post_id', postId);
+
+  // 当前用户是否点赞
+  let userLiked = false;
+  if (currentUser) {
+    const { data: likeData } = await supabase
+      .from('likes')
+      .select('*')
+      .eq('post_id', postId)
+      .eq('user_id', currentUser.id)
+      .maybeSingle();
+    userLiked = !!likeData;
+  }
+
+  const replyList = replies || [];
+  const isAuthor = currentUser && currentUser.id === post.author_id;
+
+  let html = `
+    <div class="card">
+      <button class="btn btn-outline btn-sm" id="backToList">← 返回列表</button>
+      <div style="margin-top:12px;">
+        <h2 style="font-size:1.2rem;">${escHtml(post.title)}</h2>
+        <div style="color:#888;font-size:0.8rem;margin:6px 0 12px;">
+          ${escHtml(post.username || '已注销')} · ${timeAgo(post.created_at)}
+          ${post.updated_at && post.updated_at !== post.created_at ? `（最后编辑 ${timeAgo(post.updated_at)}）` : ''}
+        </div>
+        <div style="white-space:pre-wrap;word-break:break-word;background:#f8f6ee;padding:12px;border-radius:8px;">
+          ${escHtml(post.content)}
+        </div>
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn ${userLiked ? 'btn-primary' : 'btn-outline'} btn-sm" id="likeBtn">
+            ${userLiked ? '❤️' : '🤍'} ${likeCount || 0}
+          </button>
+          <button class="btn btn-primary btn-sm" id="replyBtn">💬 回复</button>
+          ${isAuthor ? `
+            <button class="btn btn-primary btn-sm" id="editPostBtn">✏️ 编辑</button>
+            <button class="btn btn-danger btn-sm" id="deletePostBtn">🗑️ 删除</button>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">💬 回复 (${replyList.length})</div>
+      ${replyList.length === 0 ? '<p style="color:#999;">还没有回复</p>' : ''}
+      ${replyList.map(r => {
+        const rAuthor = r.users || { username: '已注销', avatar: '👻' };
+        return `
+          <div style="padding:10px 0;border-bottom:1px solid #e4decf;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span>${escHtml(rAuthor.avatar || '🐱')}</span>
+              <strong>${escHtml(rAuthor.username)}</strong>
+              <span style="color:#999;font-size:0.7rem;">${timeAgo(r.created_at)}</span>
+            </div>
+            <div style="margin-top:4px;white-space:pre-wrap;word-break:break-word;">${escHtml(r.content)}</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+  panelForum.innerHTML = html;
+
+  // ---- 事件绑定 ----
+  // 返回列表
+  document.getElementById('backToList').addEventListener('click', () => {
+    viewingPostId = null;
+    renderForum();
+  });
+
+  // 点赞
+  const likeBtn = document.getElementById('likeBtn');
+  if (likeBtn) {
+    likeBtn.addEventListener('click', async () => {
+      if (!currentUser) { toast('请先登录', 'error'); return; }
+      const { data: existing } = await supabase
+        .from('likes')
+        .select('*')
+        .eq('post_id', postId)
+        .eq('user_id', currentUser.id)
+        .maybeSingle();
+      if (existing) {
+        await supabase
+          .from('likes')
+          .delete()
+          .eq('post_id', postId)
+          .eq('user_id', currentUser.id);
+        toast('已取消点赞');
+      } else {
+        await supabase
+          .from('likes')
+          .insert([{ post_id: postId, user_id: currentUser.id }]);
+        toast('❤️ 点赞成功', 'success');
+      }
+      renderPostDetail(postId);
+    });
+  }
+
+  // 回复
+  document.getElementById('replyBtn').addEventListener('click', () => openReply(postId));
+
+  // 编辑帖子
+  const editBtn = document.getElementById('editPostBtn');
+  if (editBtn) {
+    editBtn.addEventListener('click', () => openEditPost(postId));
+  }
+
+  // 删除帖子
+  const deleteBtn = document.getElementById('deletePostBtn');
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', async () => {
+      if (!confirm('确定删除此帖吗？')) return;
+      await supabase.from('posts').delete().eq('id', postId);
+      toast('帖子已删除', 'success');
+      viewingPostId = null;
+      renderForum();
+      updateLeftPanel();
+    });
+  }
 }
 
-function openNewPost() { /* ... */ }
-function openReply(postId) { /* ... */ }
+// ================================================================
+// 12. 发帖、编辑帖子、回复
+// ================================================================
+// 发帖
+function openNewPost() {
+  if (!currentUser) {
+    toast('请先登录', 'error');
+    return;
+  }
+  modalContent.innerHTML = `
+    <h3>✏️ 发新帖</h3>
+    <input type="text" id="newPostTitle" placeholder="标题" maxlength="100">
+    <textarea id="newPostContent" rows="5" placeholder="内容"></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-outline btn-sm" id="modalCancel">取消</button>
+      <button class="btn btn-primary btn-sm" id="modalConfirm">发布</button>
+    </div>
+  `;
+  modalOverlay.classList.add('show');
+  document.getElementById('modalCancel').addEventListener('click', closeModal);
+  document.getElementById('modalConfirm').addEventListener('click', async () => {
+    const title = document.getElementById('newPostTitle').value.trim();
+    const content = document.getElementById('newPostContent').value.trim();
+    if (!title || !content) {
+      toast('请填写完整', 'error');
+      return;
+    }
+    const { error } = await supabase
+      .from('posts')
+      .insert([{ title, content, author_id: currentUser.id }]);
+    if (error) {
+      console.error('发帖错误:', error);
+      toast('发布失败: ' + error.message, 'error');
+      return;
+    }
+    // 触发任务
+    await completeTask('posted');
+    toast('发布成功', 'success');
+    closeModal();
+    viewingPostId = null;
+    renderForum();
+    updateLeftPanel();
+  });
+}
+
+// 编辑帖子
+function openEditPost(postId) {
+  if (!currentUser) return;
+  // 先获取当前内容
+  supabase
+    .from('posts')
+    .select('title, content')
+    .eq('id', postId)
+    .single()
+    .then(({ data, error }) => {
+      if (error) { toast('获取帖子失败', 'error'); return; }
+      modalContent.innerHTML = `
+        <h3>✏️ 编辑帖子</h3>
+        <input type="text" id="editPostTitle" value="${escHtml(data.title)}" maxlength="100">
+        <textarea id="editPostContent" rows="5">${escHtml(data.content)}</textarea>
+        <div class="modal-actions">
+          <button class="btn btn-outline btn-sm" id="modalCancel">取消</button>
+          <button class="btn btn-primary btn-sm" id="modalSaveEdit">保存</button>
+        </div>
+      `;
+      modalOverlay.classList.add('show');
+      document.getElementById('modalCancel').addEventListener('click', closeModal);
+      document.getElementById('modalSaveEdit').addEventListener('click', async () => {
+        const title = document.getElementById('editPostTitle').value.trim();
+        const content = document.getElementById('editPostContent').value.trim();
+        if (!title || !content) {
+          toast('请填写完整', 'error');
+          return;
+        }
+        const { error } = await supabase
+          .from('posts')
+          .update({ title, content, updated_at: new Date().toISOString() })
+          .eq('id', postId);
+        if (error) {
+          toast('更新失败: ' + error.message, 'error');
+          return;
+        }
+        toast('帖子已更新', 'success');
+        closeModal();
+        renderPostDetail(postId);
+      });
+    });
+}
+
+// 回复
+function openReply(postId) {
+  if (!currentUser) {
+    toast('请先登录', 'error');
+    return;
+  }
+  modalContent.innerHTML = `
+    <h3>💬 回复</h3>
+    <textarea id="replyContent" rows="4" placeholder="写回复..."></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-outline btn-sm" id="modalCancel">取消</button>
+      <button class="btn btn-primary btn-sm" id="modalConfirm">发表</button>
+    </div>
+  `;
+  modalOverlay.classList.add('show');
+  document.getElementById('modalCancel').addEventListener('click', closeModal);
+  document.getElementById('modalConfirm').addEventListener('click', async () => {
+    const content = document.getElementById('replyContent').value.trim();
+    if (!content) {
+      toast('请填写内容', 'error');
+      return;
+    }
+    const { error } = await supabase
+      .from('replies')
+      .insert([{ post_id: postId, author_id: currentUser.id, content }]);
+    if (error) {
+      toast('回复失败: ' + error.message, 'error');
+      return;
+    }
+    await completeTask('replied');
+    toast('回复成功', 'success');
+    closeModal();
+    renderPostDetail(postId);
+    updateLeftPanel();
+  });
+}
 
 // ================================================================
-// 11. 好友系统
+// 13. 好友系统
 // ================================================================
 async function renderFriends() {
   if (!currentUser) {
     panelFriends.innerHTML = `<div class="card">请先登录</div>`;
     return;
   }
-  // 获取所有好友（已通过的）
-  const { data: friendRows, error } = await supabase
+
+  // 获取所有已接受的好友
+  const { data: friendRows } = await supabase
     .from('friends')
     .select(`
       *,
@@ -920,7 +1280,8 @@ async function renderFriends() {
     `)
     .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
     .eq('status', 'accepted');
-  // 获取待处理请求（别人发给我的，pending）
+
+  // 获取待处理请求（别人发给我的）
   const { data: pendingRows } = await supabase
     .from('friends')
     .select(`
@@ -942,12 +1303,15 @@ async function renderFriends() {
         ${friendRows && friendRows.length > 0 ? friendRows.map(row => {
           const friend = row.sender_id === currentUser.id ? row.receiver : row.sender;
           return `
-            <div class="friend-item">
+            <div class="friend-item" data-friend-id="${friend.id}">
               <div style="display:flex; align-items:center;">
                 <img src="${friend.avatar_url || ''}" style="width:32px;height:32px;border-radius:50%;background:#ddd;margin-right:8px;" onerror="this.style.display='none'">
                 <span>${escHtml(friend.username)}</span>
               </div>
-              <button class="btn btn-danger btn-sm" data-friend-id="${friend.id}">移除</button>
+              <div>
+                <button class="btn btn-primary btn-sm chat-friend-btn" data-friend-id="${friend.id}">💬 聊天</button>
+                <button class="btn btn-danger btn-sm remove-friend-btn" data-friend-id="${friend.id}">移除</button>
+              </div>
             </div>
           `;
         }).join('') : '<p style="color:#999;">暂无好友</p>'}
@@ -968,7 +1332,7 @@ async function renderFriends() {
   `;
   panelFriends.innerHTML = html;
 
-  // 搜索好友
+  // ---- 搜索好友 ----
   document.getElementById('searchFriendBtn').addEventListener('click', async () => {
     const keyword = document.getElementById('searchFriendInput').value.trim();
     if (!keyword) { document.getElementById('searchResult').innerHTML = ''; return; }
@@ -982,7 +1346,7 @@ async function renderFriends() {
       resultDiv.innerHTML = '<p style="color:#999;">未找到</p>';
       return;
     }
-    // 检查是否已是好友或已发送请求
+    // 获取已是好友的id列表
     const friendIds = friendRows ? friendRows.map(r => r.sender_id === currentUser.id ? r.receiver_id : r.sender_id) : [];
     resultDiv.innerHTML = users.map(u => {
       const isFriend = friendIds.includes(u.id);
@@ -1007,7 +1371,7 @@ async function renderFriends() {
     });
   });
 
-  // 处理好友请求（接受/拒绝）
+  // ---- 处理好友请求（接受/拒绝） ----
   document.querySelectorAll('[data-request-id]').forEach(btn => {
     btn.addEventListener('click', async () => {
       const id = parseInt(btn.dataset.requestId);
@@ -1024,8 +1388,8 @@ async function renderFriends() {
     });
   });
 
-  // 移除好友
-  document.querySelectorAll('[data-friend-id]').forEach(btn => {
+  // ---- 移除好友 ----
+  document.querySelectorAll('.remove-friend-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       const friendId = parseInt(btn.dataset.friendId);
       if (!confirm('确定移除该好友吗？')) return;
@@ -1041,10 +1405,265 @@ async function renderFriends() {
       updateLeftPanel();
     });
   });
+
+  // ---- 聊天按钮（跳转到聊天标签并打开该好友） ----
+  document.querySelectorAll('.chat-friend-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const friendId = parseInt(btn.dataset.friendId);
+      chatWithFriendId = friendId;
+      // 切换到聊天标签
+      currentTab = 'chat';
+      renderCurrentTab();
+    });
+  });
 }
 
 // ================================================================
-// 12. 基建中心
+// 14. 聊天系统（实时）
+// ================================================================
+async function renderChat() {
+  if (!currentUser) {
+    panelChat.innerHTML = `<div class="card">请先登录</div>`;
+    return;
+  }
+
+  // 获取所有好友列表（用于左侧选择）
+  const { data: friendRows } = await supabase
+    .from('friends')
+    .select(`
+      *,
+      sender:users!friends_sender_id_fkey (id, username, avatar_url),
+      receiver:users!friends_receiver_id_fkey (id, username, avatar_url)
+    `)
+    .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+    .eq('status', 'accepted');
+
+  const friends = friendRows ? friendRows.map(row => {
+    return row.sender_id === currentUser.id ? row.receiver : row.sender;
+  }) : [];
+
+  // 构建聊天界面：左侧好友列表 + 右侧聊天窗口
+  let html = `
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div style="display:flex; flex-wrap:wrap; height:580px;">
+        <!-- 好友列表（左侧） -->
+        <div style="width:200px; border-right:1px solid #e4decf; overflow-y:auto; padding:10px; flex-shrink:0;">
+          <h4 style="margin-bottom:10px;">我的好友</h4>
+          ${friends.length === 0 ? '<p style="color:#999;font-size:0.8rem;">暂无好友</p>' : ''}
+          ${friends.map(f => `
+            <div class="friend-item" style="padding:8px 6px; cursor:pointer;" data-friend-id="${f.id}">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <img src="${f.avatar_url || ''}" style="width:28px;height:28px;border-radius:50%;background:#ddd;" onerror="this.style.display='none'">
+                <span style="font-size:0.85rem;">${escHtml(f.username)}</span>
+                ${chatWithFriendId === f.id ? ' <span style="color:#556b4b;">✓</span>' : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <!-- 聊天区域（右侧） -->
+        <div style="flex:1; display:flex; flex-direction:column; min-width:260px;">
+          ${chatWithFriendId ? `
+            <div style="padding:8px 16px; border-bottom:1px solid #e4decf; font-weight:bold;">
+              🗨️ 与 ${escHtml(friends.find(f => f.id === chatWithFriendId)?.username || '好友')} 聊天
+            </div>
+            <div id="chatMessages" class="chat-messages" style="flex:1; overflow-y:auto; padding:10px; background:#f8f6ee; display:flex; flex-direction:column;">
+              <div style="text-align:center;color:#999;font-size:0.8rem;">加载中...</div>
+            </div>
+            <div class="chat-input-area" style="padding:8px; border-top:1px solid #e4decf; display:flex; gap:8px;">
+              <input type="text" id="chatInput" placeholder="输入消息..." style="flex:1; padding:8px 14px; border-radius:20px; border:2px solid #cdc6b4;">
+              <button class="btn btn-primary" id="sendChatBtn">发送</button>
+            </div>
+          ` : `
+            <div style="flex:1; display:flex; align-items:center; justify-content:center; color:#999;">
+              请从左侧选择一位好友开始聊天
+            </div>
+          `}
+        </div>
+      </div>
+    </div>
+  `;
+  panelChat.innerHTML = html;
+
+  // ---- 好友点击事件（切换聊天对象） ----
+  document.querySelectorAll('.friend-item[data-friend-id]').forEach(el => {
+    el.addEventListener('click', () => {
+      chatWithFriendId = parseInt(el.dataset.friendId);
+      renderChat(); // 刷新聊天界面
+      // 切换后滚动到底部
+      setTimeout(() => {
+        const container = document.getElementById('chatMessages');
+        if (container) container.scrollTop = container.scrollHeight;
+      }, 100);
+    });
+  });
+
+  // ---- 加载消息 & 发送 ----
+  if (chatWithFriendId) {
+    // 加载历史消息
+    await loadMessages(chatWithFriendId);
+    // 滚动到底部
+    const container = document.getElementById('chatMessages');
+    if (container) container.scrollTop = container.scrollHeight;
+
+    // 发送按钮
+    document.getElementById('sendChatBtn').addEventListener('click', () => {
+      sendMessage(chatWithFriendId);
+    });
+    document.getElementById('chatInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage(chatWithFriendId);
+    });
+  }
+
+  // 更新未读消息数
+  updateUnreadCount();
+}
+
+// 加载消息
+async function loadMessages(friendId) {
+  const container = document.getElementById('chatMessages');
+  if (!container) return;
+  container.innerHTML = '<div style="text-align:center;color:#999;">加载中...</div>';
+
+  const { data: messages, error } = await supabase
+    .from('messages')
+    .select('*')
+    .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${friendId}),and(sender_id.eq.${friendId},receiver_id.eq.${currentUser.id})`)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    container.innerHTML = '<p style="color:#c62828;">加载失败</p>';
+    return;
+  }
+
+  if (!messages || messages.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:#999;font-size:0.8rem;">还没有消息，打个招呼吧 👋</div>';
+    return;
+  }
+
+  // 显示消息
+  container.innerHTML = messages.map(msg => {
+    const isSent = msg.sender_id === currentUser.id;
+    return `
+      <div class="chat-message ${isSent ? 'sent' : 'received'}" style="max-width:75%; word-wrap:break-word; margin-bottom:6px;">
+        <div>${escHtml(msg.content)}</div>
+        <div class="time" style="font-size:0.6rem;color:#999;text-align:right;margin-top:2px;">${timeAgo(msg.created_at)}</div>
+      </div>
+    `;
+  }).join('');
+
+  // 将对方发来的未读消息标记为已读
+  await supabase
+    .from('messages')
+    .update({ is_read: true })
+    .eq('sender_id', friendId)
+    .eq('receiver_id', currentUser.id)
+    .eq('is_read', false);
+
+  // 更新未读小红点
+  updateUnreadCount();
+}
+
+// 发送消息
+async function sendMessage(friendId) {
+  const input = document.getElementById('chatInput');
+  if (!input) return;
+  const content = input.value.trim();
+  if (!content) return;
+  input.value = '';
+
+  const { error } = await supabase
+    .from('messages')
+    .insert([{ sender_id: currentUser.id, receiver_id: friendId, content }]);
+  if (error) {
+    toast('发送失败: ' + error.message, 'error');
+    return;
+  }
+  // 重新加载消息（会通过订阅自动刷新，但为立即显示，可以手动追加）
+  // 但为了实时性，订阅会处理，但可能延迟，我们立即追加一条本地消息
+  const container = document.getElementById('chatMessages');
+  if (container) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'chat-message sent';
+    msgDiv.style.maxWidth = '75%';
+    msgDiv.style.wordWrap = 'break-word';
+    msgDiv.style.marginBottom = '6px';
+    msgDiv.innerHTML = `<div>${escHtml(content)}</div><div class="time" style="font-size:0.6rem;color:#999;text-align:right;margin-top:2px;">刚刚</div>`;
+    container.appendChild(msgDiv);
+    container.scrollTop = container.scrollHeight;
+  }
+}
+
+// 更新未读消息数（显示小红点）
+async function updateUnreadCount() {
+  if (!currentUser) {
+    chatBadge.style.display = 'none';
+    return;
+  }
+  const { count, error } = await supabase
+    .from('messages')
+    .select('*', { count: 'exact', head: true })
+    .eq('receiver_id', currentUser.id)
+    .eq('is_read', false);
+  if (error) {
+    chatBadge.style.display = 'none';
+    return;
+  }
+  if (count && count > 0) {
+    chatBadge.textContent = count > 99 ? '99+' : count;
+    chatBadge.style.display = 'inline';
+  } else {
+    chatBadge.style.display = 'none';
+  }
+}
+
+// 启动实时订阅（监听新消息）
+function startChatSubscription() {
+  if (chatSubscription) {
+    supabase.removeChannel(chatSubscription);
+    chatSubscription = null;
+  }
+  if (!currentUser) return;
+  // 订阅 messages 表的变化
+  chatSubscription = supabase
+    .channel('messages-channel')
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'messages',
+      filter: `receiver_id=eq.${currentUser.id}` // 只接收发给自己的消息
+    }, (payload) => {
+      const newMsg = payload.new;
+      // 如果当前正在与该发送者聊天，追加消息
+      if (chatWithFriendId === newMsg.sender_id) {
+        const container = document.getElementById('chatMessages');
+        if (container) {
+          // 如果容器内只有“暂无消息”占位，清空
+          if (container.children.length === 1 && container.children[0].tagName === 'DIV' && container.children[0].style?.textAlign === 'center') {
+            container.innerHTML = '';
+          }
+          const msgDiv = document.createElement('div');
+          msgDiv.className = 'chat-message received';
+          msgDiv.style.maxWidth = '75%';
+          msgDiv.style.wordWrap = 'break-word';
+          msgDiv.style.marginBottom = '6px';
+          msgDiv.innerHTML = `<div>${escHtml(newMsg.content)}</div><div class="time" style="font-size:0.6rem;color:#999;text-align:right;margin-top:2px;">刚刚</div>`;
+          container.appendChild(msgDiv);
+          container.scrollTop = container.scrollHeight;
+        }
+        // 自动标记为已读
+        supabase
+          .from('messages')
+          .update({ is_read: true })
+          .eq('id', newMsg.id);
+      }
+      // 更新未读小红点
+      updateUnreadCount();
+    })
+    .subscribe();
+}
+
+// ================================================================
+// 15. 基建中心
 // ================================================================
 async function renderBuild() {
   if (!currentUser) {
@@ -1084,6 +1703,7 @@ async function renderBuild() {
     </div>
   `;
 
+  // 购买事件
   document.querySelectorAll('.build-card').forEach(card => {
     card.querySelector('button').addEventListener('click', async () => {
       const type = card.dataset.type;
@@ -1105,7 +1725,6 @@ async function renderBuild() {
       if (error) { toast('购买失败', 'error'); return; }
       currentUser.gold = newGold;
       currentUser.buildings = newBuildings;
-      // 触发基建任务
       await completeTask('built');
       updateLeftPanel();
       renderBuild();
@@ -1115,7 +1734,7 @@ async function renderBuild() {
 }
 
 // ================================================================
-// 13. 任务系统
+// 16. 任务系统
 // ================================================================
 async function renderTasks() {
   if (!currentUser) {
@@ -1128,7 +1747,6 @@ async function renderTasks() {
   const replied = tasks.replied || false;
   const built = tasks.built || false;
 
-  // 计算完成进度
   const total = 4;
   const done = [signed, posted, replied, built].filter(Boolean).length;
   const progress = Math.round((done / total) * 100);
@@ -1182,7 +1800,6 @@ async function renderTasks() {
       toast('请先完成所有任务', 'error');
       return;
     }
-    // 奖励：金币+50，经验+30
     const newGold = (currentUser.gold || 0) + 50;
     const newExp = (currentUser.exp || 0) + 30;
     const { error } = await supabase
@@ -1202,7 +1819,9 @@ async function renderTasks() {
   });
 }
 
-// 通用任务完成函数（由发帖、回复、基建等触发）
+// ================================================================
+// 17. 通用任务完成函数（由发帖、回复、基建、签到调用）
+// ================================================================
 async function completeTask(taskKey) {
   if (!currentUser) return;
   const tasks = currentUser.daily_tasks || {};
@@ -1214,7 +1833,6 @@ async function completeTask(taskKey) {
     .eq('id', currentUser.id);
   if (!error) {
     currentUser.daily_tasks = tasks;
-    // 任务完成时给予即时小奖励（除签到外）
     if (taskKey !== 'signed') {
       const bonusGold = 10;
       const bonusExp = 5;
@@ -1233,23 +1851,14 @@ async function completeTask(taskKey) {
 }
 
 // ================================================================
-// 14. 初始化
-// ================================================================
-function init() {
-  // 检查是否有session（实际上没有，每次刷新需重新登录）
-  loginOverlay.classList.remove('hidden');
-  appContainer.style.display = 'none';
-}
-
-// 点击模态框外部关闭
-modalOverlay.addEventListener('click', (e) => {
-  if (e.target === modalOverlay) closeModal();
-});
-
-// ================================================================
-// 15. 登出
+// 18. 登出
 // ================================================================
 logoutBtn.addEventListener('click', () => {
+  // 取消订阅
+  if (chatSubscription) {
+    supabase.removeChannel(chatSubscription);
+    chatSubscription = null;
+  }
   currentUser = null;
   loginOverlay.classList.remove('hidden');
   appContainer.style.display = 'none';
@@ -1262,13 +1871,33 @@ logoutBtn.addEventListener('click', () => {
   toast('已离开会馆');
 });
 
-// 启动
+// ================================================================
+// 19. 初始化
+// ================================================================
+function init() {
+  loginOverlay.classList.remove('hidden');
+  appContainer.style.display = 'none';
+}
+
+modalOverlay.addEventListener('click', (e) => {
+  if (e.target === modalOverlay) closeModal();
+});
+
 init();
 
-// ================================================================
-// （注意：为保持完整，以上代码中省略了帖子详情的部分，但实际在最终交付中会补全）
-// 由于篇幅，这里仅作框架展示，完整代码在最终输出中会包含所有功能。
-// ================================================================
+// 暴露全局（方便调试）
+window.openNewPost = openNewPost;
+window.openReply = openReply;
+window.renderForum = renderForum;
+window.renderFriends = renderFriends;
+window.renderChat = renderChat;
+window.renderBuild = renderBuild;
+window.renderTasks = renderTasks;
+window.renderCurrentTab = renderCurrentTab;
+window.updateLeftPanel = updateLeftPanel;
+window.updateUnreadCount = updateUnreadCount;
+
+console.log('🌲 雾凇会馆已加载完毕！');
 </script>
 </body>
 </html>
