@@ -640,12 +640,7 @@ async function renderForum() {
 
   const { data: posts, error } = await supabase
     .from('posts')
-    .select(`
-      *,
-      profiles (username, avatar),
-      replies_count:replies(count),
-      likes_count:likes(count)
-    `)
+    .select('*')
     .order('created_at', { ascending: false });
 
   if (error) {
