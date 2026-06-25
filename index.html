@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🌲 雾凇会馆 · 妖精公会</title>
   <style>
-    /* ===== 全局重置 & 基础样式 ===== */
+    /* ===== 全局样式 ===== */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
@@ -342,7 +342,9 @@
 </head>
 <body>
 
-<!-- ===== 登录遮罩 ===== -->
+<!-- ============================================================ -->
+<!-- 登录遮罩 -->
+<!-- ============================================================ -->
 <div class="login-overlay" id="loginOverlay">
   <div class="login-card">
     <div class="login-cat">🐱</div>
@@ -359,7 +361,9 @@
   </div>
 </div>
 
-<!-- ===== 顶部栏 ===== -->
+<!-- ============================================================ -->
+<!-- 顶部导航 -->
+<!-- ============================================================ -->
 <div class="top-bar">
   <div class="logo" id="logoHome">🌲 雾凇会馆</div>
   <div class="user-mini">
@@ -370,27 +374,33 @@
   </div>
 </div>
 
-<!-- ===== 二级导航 ===== -->
+<!-- ============================================================ -->
+<!-- 二级导航 -->
+<!-- ============================================================ -->
 <div class="nav-tabs">
   <div class="nav-tab active" data-tab="forum">📜 论坛</div>
   <div class="nav-tab" data-tab="map">🏗️ 基建</div>
 </div>
 
-<!-- ===== 主容器 ===== -->
+<!-- ============================================================ -->
+<!-- 主容器 -->
+<!-- ============================================================ -->
 <div class="main-container">
   <div class="panel active" id="panel-forum"></div>
   <div class="panel" id="panel-map"></div>
 </div>
 
-<!-- ===== Toast 容器 ===== -->
+<!-- ============================================================ -->
+<!-- Toast & 模态框 -->
+<!-- ============================================================ -->
 <div class="toast-container" id="toastContainer"></div>
-
-<!-- ===== 模态框 ===== -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal" id="modalContent"></div>
 </div>
 
-<!-- ===== 使用 import map 引入 Supabase ===== -->
+<!-- ============================================================ -->
+<!-- 使用 import map 加载 Supabase -->
+<!-- ============================================================ -->
 <script type="importmap">
 {
   "imports": {
@@ -400,23 +410,24 @@
 </script>
 
 <script type="module">
-// ============================================================
+// ================================================================
 // 1. 配置 Supabase（请替换为你的真实值）
-// ============================================================
+// ================================================================
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = 'NEXT_PUBLIC_SUPABASE_URL=https://buoecihowzgqjwfhexsw.supabase.co';    // 替换！
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1b2VjaWhvd3pncWp3ZmhleHN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMDgwMDAsImV4cCI6MjA5Nzg4NDAwMH0.8sEfcTZIJ5mDixNqyqWEe245iFLR9PBh11Wk27SN5nY';                 // 替换！
+// ★★★ 下面两行务必替换成你自己的 URL 和 anon key ★★★
+const SUPABASE_URL = 'https://buoecihowzgqjwfhexsw.supabase.co';        // 替换！
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1b2VjaWhvd3pncWp3ZmhleHN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMDgwMDAsImV4cCI6MjA5Nzg4NDAwMH0.8sEfcTZIJ5mDixNqyqWEe245iFLR9PBh11Wk27SN5nY';                     // 替换！
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ============================================================
+// ================================================================
 // 2. 全局状态
-// ============================================================
-let currentUser = null;           // auth 用户对象
-let currentProfile = null;        // profiles 表数据
+// ================================================================
+let currentUser = null;        // auth 用户
+let currentProfile = null;     // profiles 数据
 let currentTab = 'forum';
-let viewingPostId = null;         // 正在查看的帖子ID
+let viewingPostId = null;      // 当前查看的帖子ID
 
 // DOM 引用
 const $ = id => document.getElementById(id);
@@ -438,9 +449,9 @@ const modalOverlay = $('modalOverlay');
 const modalContent = $('modalContent');
 const toastContainer = $('toastContainer');
 
-// ============================================================
+// ================================================================
 // 3. 工具函数
-// ============================================================
+// ================================================================
 function toast(msg, type = '') {
   const el = document.createElement('div');
   el.className = `toast ${type}`;
@@ -460,9 +471,9 @@ function timeAgo(ts) {
   if (!ts) return '未知';
   const diff = Date.now() - new Date(ts).getTime();
   if (diff < 60000) return '刚刚';
-  if (diff < 3600000) return Math.floor(diff/60000) + '分钟前';
-  if (diff < 86400000) return Math.floor(diff/3600000) + '小时前';
-  if (diff < 2592000000) return Math.floor(diff/86400000) + '天前';
+  if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前';
+  if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前';
+  if (diff < 2592000000) return Math.floor(diff / 86400000) + '天前';
   return new Date(ts).toLocaleDateString();
 }
 
@@ -471,9 +482,9 @@ function closeModal() {
   modalContent.innerHTML = '';
 }
 
-// ============================================================
-// 4. 登录 / 注册
-// ============================================================
+// ================================================================
+// 4. 登录 / 注册 逻辑
+// ================================================================
 let loginMode = 'login'; // 'login' | 'register'
 
 loginTabs.forEach(tab => {
@@ -493,32 +504,60 @@ loginBtn.addEventListener('click', async () => {
     return;
   }
 
+  // 清除旧错误
+  loginError.textContent = '';
+
+  // 用用户名构造一个唯一的虚拟邮箱（只保留字母数字，避免非法字符）
+  const clean = username.replace(/[^a-zA-Z0-9]/g, '');
+  if (!clean) {
+    loginError.textContent = '用户名只能包含字母和数字';
+    return;
+  }
+  const email = `${clean}@fog.local`;
+
   try {
     if (loginMode === 'register') {
-      // 注册：使用 Supabase Auth，并把 username 存入 user_metadata
+      // ---- 注册 ----
       const { data, error } = await supabase.auth.signUp({
-        email: `${username}@fog.local`, // 因为 auth 需要 email，我们伪造一个唯一邮箱
+        email: email,
         password: password,
         options: {
-          data: { username: username }
+          data: { username: username }  // 保存原始用户名到 metadata
         }
       });
       if (error) throw error;
-      toast('注册成功！请登录', 'success');
-      loginError.textContent = '';
-      // 切换到登录标签
-      loginTabs.forEach(t => t.classList.remove('active'));
-      document.querySelector('.login-tab[data-mode="login"]').classList.add('active');
-      loginMode = 'login';
-      loginPassword.value = '';
+
+      // 注册成功后，触发器会自动创建 profile，但为了保险，我们主动查一下
+      if (data.user) {
+        // 等待触发器完成，稍后查询
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .maybeSingle();
+        if (!profile) {
+          // 如果触发器没执行，手动插入
+          await supabase
+            .from('profiles')
+            .insert([{ id: data.user.id, username: username }]);
+        }
+        toast('注册成功！请登录', 'success');
+        // 切换到登录标签
+        loginTabs.forEach(t => t.classList.remove('active'));
+        document.querySelector('.login-tab[data-mode="login"]').classList.add('active');
+        loginMode = 'login';
+        loginPassword.value = '';
+        loginUsername.value = '';
+      }
     } else {
-      // 登录：用 email 登录（我们构造 email）
-      const email = `${username}@fog.local`;
+      // ---- 登录 ----
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email,
         password: password
       });
       if (error) throw error;
+
       // 登录成功，获取 profile
       await fetchProfile(data.user);
       loginOverlay.classList.add('hidden');
@@ -531,33 +570,33 @@ loginBtn.addEventListener('click', async () => {
   }
 });
 
-// ============================================================
+// ================================================================
 // 5. 获取用户资料
-// ============================================================
+// ================================================================
 async function fetchProfile(user) {
   if (!user) return;
   currentUser = user;
-  // 从 profiles 表读取
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single();
-  if (error && error.code !== 'PGRST116') {
+    .maybeSingle();
+
+  if (error) {
     console.error('获取 profile 失败', error);
     return;
   }
   if (data) {
     currentProfile = data;
   } else {
-    // 如果 profile 不存在（一般触发器会自动创建，但以防万一）
+    // 如果没有，尝试创建（兜底）
     const username = user.user_metadata?.username || '未知';
-    const { data: newProfile, error: insertError } = await supabase
+    const { data: newProfile } = await supabase
       .from('profiles')
       .insert([{ id: user.id, username }])
       .select()
       .single();
-    if (!insertError) currentProfile = newProfile;
+    currentProfile = newProfile;
   }
   updateUI();
 }
@@ -569,28 +608,27 @@ function updateUI() {
   miniLevel.textContent = currentProfile.level || 1;
 }
 
-// ============================================================
+// ================================================================
 // 6. 登出
-// ============================================================
+// ================================================================
 logoutBtn.addEventListener('click', async () => {
   await supabase.auth.signOut();
   currentUser = null;
   currentProfile = null;
   loginOverlay.classList.remove('hidden');
   loginError.textContent = '';
-  // 清空输入
   loginUsername.value = '';
   loginPassword.value = '';
-  // 切换回登录模式
+  // 切回登录模式
   loginTabs.forEach(t => t.classList.remove('active'));
   document.querySelector('.login-tab[data-mode="login"]').classList.add('active');
   loginMode = 'login';
   toast('已离开会馆');
 });
 
-// ============================================================
+// ================================================================
 // 7. 导航切换
-// ============================================================
+// ================================================================
 function renderCurrentTab() {
   if (currentTab === 'forum') renderForum();
   else if (currentTab === 'map') renderMap();
@@ -601,14 +639,12 @@ navTabs.forEach(tab => {
     navTabs.forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     currentTab = tab.dataset.tab;
-    // 如果正在查看帖子详情，切换时回到列表
     viewingPostId = null;
     renderCurrentTab();
   });
 });
 
 logoHome.addEventListener('click', () => {
-  // 回到论坛首页
   navTabs.forEach(t => t.classList.remove('active'));
   document.querySelector('.nav-tab[data-tab="forum"]').classList.add('active');
   currentTab = 'forum';
@@ -616,15 +652,15 @@ logoHome.addEventListener('click', () => {
   renderCurrentTab();
 });
 
-// ============================================================
-// 8. 论坛渲染
-// ============================================================
+// ================================================================
+// 8. 论坛 - 帖子列表
+// ================================================================
 async function renderForum() {
   if (viewingPostId) {
     await renderPostDetail(viewingPostId);
     return;
   }
-  // 显示帖子列表
+
   panelForum.innerHTML = `
     <div class="card">
       <div class="card-header">
@@ -636,10 +672,12 @@ async function renderForum() {
       <div style="text-align:center;padding:20px;color:#888;">加载中...</div>
     </div>
   `;
+
   document.getElementById('newPostBtn').addEventListener('click', openNewPost);
 
+  // 使用视图 posts_with_authors 一次获取所有数据
   const { data: posts, error } = await supabase
-    .from('posts')
+    .from('posts_with_authors')
     .select('*')
     .order('created_at', { ascending: false });
 
@@ -653,20 +691,31 @@ async function renderForum() {
     return;
   }
 
+  // 批量获取每个帖子的回复数和点赞数（使用视图 posts_stats）
+  const postIds = posts.map(p => p.id);
+  const { data: stats, error: statsErr } = await supabase
+    .from('posts_stats')
+    .select('*')
+    .in('id', postIds);
+
+  const statMap = {};
+  if (stats) {
+    stats.forEach(s => { statMap[s.id] = s; });
+  }
+
   let html = '';
   for (const post of posts) {
-    const author = post.profiles || { username: '已注销', avatar: '👻' };
-    const replyCount = post.replies_count?.[0]?.count || 0;
-    const likeCount = post.likes_count?.[0]?.count || 0;
+    const replyCount = statMap[post.id]?.reply_count || 0;
+    const likeCount = statMap[post.id]?.like_count || 0;
     const isHot = replyCount >= 5;
     html += `
       <div class="post-item" data-postid="${post.id}">
-        <div class="post-avatar">${escHtml(author.avatar || '🐱')}</div>
+        <div class="post-avatar">${escHtml(post.avatar || '🐱')}</div>
         <div style="flex:1;">
           <div class="post-title">${escHtml(post.title)} ${isHot ? '🔥' : ''}</div>
           <div class="post-content-preview">${escHtml(post.content)}</div>
           <div class="post-meta">
-            ${escHtml(author.username)} · ${timeAgo(post.created_at)} · 
+            ${escHtml(post.username || '已注销')} · ${timeAgo(post.created_at)} · 
             ❤️ ${likeCount} · 💬 ${replyCount}
           </div>
         </div>
@@ -675,7 +724,6 @@ async function renderForum() {
   }
   document.getElementById('postsList').innerHTML = html;
 
-  // 点击帖子进入详情
   document.querySelectorAll('.post-item').forEach(el => {
     el.addEventListener('click', () => {
       viewingPostId = parseInt(el.dataset.postid);
@@ -684,16 +732,13 @@ async function renderForum() {
   });
 }
 
-// ============================================================
+// ================================================================
 // 9. 帖子详情
-// ============================================================
+// ================================================================
 async function renderPostDetail(postId) {
   const { data: post, error } = await supabase
-    .from('posts')
-    .select(`
-      *,
-      profiles (username, avatar)
-    `)
+    .from('posts_with_authors')
+    .select('*')
     .eq('id', postId)
     .single();
 
@@ -705,7 +750,7 @@ async function renderPostDetail(postId) {
   }
 
   // 获取回复
-  const { data: replies, error: repliesError } = await supabase
+  const { data: replies, error: repliesErr } = await supabase
     .from('replies')
     .select(`
       *,
@@ -714,12 +759,13 @@ async function renderPostDetail(postId) {
     .eq('post_id', postId)
     .order('created_at', { ascending: true });
 
-  // 获取点赞数 & 当前用户是否点赞
+  // 获取点赞数
   const { count: likeCount } = await supabase
     .from('likes')
     .select('*', { count: 'exact', head: true })
     .eq('post_id', postId);
 
+  // 当前用户是否点赞
   let userLiked = false;
   if (currentUser) {
     const { data: likeData } = await supabase
@@ -731,7 +777,6 @@ async function renderPostDetail(postId) {
     userLiked = !!likeData;
   }
 
-  const author = post.profiles || { username: '已注销', avatar: '👻' };
   const replyList = replies || [];
 
   let html = `
@@ -740,7 +785,7 @@ async function renderPostDetail(postId) {
       <div style="margin-top:12px;">
         <h2 style="font-size:1.2rem;">${escHtml(post.title)}</h2>
         <div style="color:#888;font-size:0.8rem;margin:6px 0 12px;">
-          ${escHtml(author.username)} · ${timeAgo(post.created_at)}
+          ${escHtml(post.username || '已注销')} · ${timeAgo(post.created_at)}
         </div>
         <div style="white-space:pre-wrap;word-break:break-word;background:#f8f6ee;padding:12px;border-radius:8px;">
           ${escHtml(post.content)}
@@ -776,7 +821,7 @@ async function renderPostDetail(postId) {
   `;
   panelForum.innerHTML = html;
 
-  // 事件绑定
+  // ---- 绑定事件 ----
   document.getElementById('backToList').addEventListener('click', () => {
     viewingPostId = null;
     renderForum();
@@ -793,7 +838,6 @@ async function renderPostDetail(postId) {
         .eq('user_id', currentUser.id)
         .maybeSingle();
       if (existing) {
-        // 取消点赞
         await supabase
           .from('likes')
           .delete()
@@ -801,13 +845,11 @@ async function renderPostDetail(postId) {
           .eq('user_id', currentUser.id);
         toast('已取消点赞');
       } else {
-        // 点赞
         await supabase
           .from('likes')
           .insert([{ post_id: postId, user_id: currentUser.id }]);
         toast('❤️ 点赞成功', 'success');
       }
-      // 刷新详情
       renderPostDetail(postId);
     });
   }
@@ -829,9 +871,9 @@ async function renderPostDetail(postId) {
   }
 }
 
-// ============================================================
+// ================================================================
 // 10. 发帖 & 回复
-// ============================================================
+// ================================================================
 function openNewPost() {
   if (!currentUser) { toast('请先登录', 'error'); return; }
   modalContent.innerHTML = `
@@ -881,14 +923,13 @@ function openReply(postId) {
     if (error) { toast('回复失败: ' + error.message, 'error'); return; }
     toast('回复成功', 'success');
     closeModal();
-    // 刷新详情
     renderPostDetail(postId);
   });
 }
 
-// ============================================================
-// 11. 基建（map）渲染
-// ============================================================
+// ================================================================
+// 11. 基建（map）
+// ================================================================
 async function renderMap() {
   if (!currentProfile) {
     panelMap.innerHTML = `<div class="card"><p style="color:#888;">请先登录</p></div>`;
@@ -924,7 +965,6 @@ async function renderMap() {
     </div>
   `;
 
-  // 建设事件
   document.querySelectorAll('.build-card').forEach(card => {
     card.addEventListener('click', async () => {
       const type = card.dataset.type;
@@ -935,7 +975,6 @@ async function renderMap() {
         toast('金币不足', 'error');
         return;
       }
-      // 更新数据库
       const newBuildings = { ...(currentProfile.buildings || {}) };
       newBuildings[type] = (newBuildings[type] || 0) + 1;
       const newGold = (currentProfile.gold || 0) - cost;
@@ -947,18 +986,17 @@ async function renderMap() {
         toast('建设失败: ' + error.message, 'error');
         return;
       }
-      // 更新本地状态
       currentProfile.gold = newGold;
       currentProfile.buildings = newBuildings;
       toast('建设成功！', 'success');
-      renderMap(); // 刷新
+      renderMap();
     });
   });
 }
 
-// ============================================================
-// 12. 检查登录状态（页面加载时）
-// ============================================================
+// ================================================================
+// 12. 初始化与 Auth 状态监听
+// ================================================================
 async function init() {
   const { data: { session } } = await supabase.auth.getSession();
   if (session) {
@@ -970,7 +1008,6 @@ async function init() {
   }
 }
 
-// 监听 Auth 变化（多标签登录同步）
 supabase.auth.onAuthStateChange(async (event, session) => {
   if (event === 'SIGNED_IN' && session) {
     await fetchProfile(session.user);
@@ -983,12 +1020,10 @@ supabase.auth.onAuthStateChange(async (event, session) => {
   }
 });
 
-// 点击模态框外部关闭
 modalOverlay.addEventListener('click', (e) => {
   if (e.target === modalOverlay) closeModal();
 });
 
-// 启动
 init();
 
 </script>
