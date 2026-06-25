@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🌲 雾凇会馆 · 妖精公会</title>
   <style>
-    /* ===== 全局样式 ===== */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
@@ -13,6 +12,7 @@
       color: #3b392f;
       min-height: 100vh;
     }
+
     /* ===== 登录遮罩 ===== */
     .login-overlay {
       position: fixed;
@@ -91,6 +91,109 @@
       margin-top: 8px;
       min-height: 1.2em;
     }
+
+    /* ===== 主布局 ===== */
+    .app-layout {
+      display: none;
+      min-height: 100vh;
+    }
+    .app-layout.active { display: flex; }
+
+    /* ===== 左侧面板 ===== */
+    .left-sidebar {
+      width: 240px;
+      min-width: 240px;
+      background: #f5f0e6;
+      border-right: 2px solid #cdc6b4;
+      padding: 16px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .profile-card {
+      text-align: center;
+      background: #fffef7;
+      border-radius: 14px;
+      padding: 16px;
+      border: 1px solid #cdc6b4;
+    }
+    .profile-avatar {
+      font-size: 4rem;
+      cursor: pointer;
+      display: inline-block;
+      transition: 0.2s;
+      position: relative;
+    }
+    .profile-avatar:hover { opacity: 0.7; }
+    .profile-avatar input[type="file"] {
+      display: none;
+    }
+    .profile-name {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-top: 4px;
+    }
+    .profile-level {
+      font-size: 0.8rem;
+      color: #888;
+    }
+    .profile-bio {
+      font-size: 0.85rem;
+      color: #555;
+      margin-top: 8px;
+      padding: 8px;
+      background: #f8f6ee;
+      border-radius: 8px;
+      cursor: pointer;
+      word-break: break-all;
+    }
+    .profile-bio:hover { background: #efe9d8; }
+    .profile-stats {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: #666;
+    }
+    .profile-stats span { font-weight: bold; color: #3b392f; }
+
+    /* ===== 好友列表在左侧 ===== */
+    .friend-list-card {
+      background: #fffef7;
+      border-radius: 14px;
+      padding: 12px;
+      border: 1px solid #cdc6b4;
+      flex: 1;
+      min-height: 100px;
+    }
+    .friend-list-card h4 {
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #e4decf;
+      padding-bottom: 6px;
+    }
+    .friend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+      font-size: 0.85rem;
+    }
+    .friend-item .avatar-sm { font-size: 1.2rem; }
+
+    /* ===== 右侧主内容 ===== */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
     /* ===== 顶部导航 ===== */
     .top-bar {
       background: #2e3824;
@@ -111,16 +214,7 @@
       gap: 8px;
       font-size: 0.85rem;
     }
-    .avatar-thumb {
-      width: 34px; height: 34px;
-      border-radius: 50%;
-      border: 2px solid #dbb57c;
-      background: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-    }
+    .user-mini .avatar-sm { font-size: 1.4rem; }
     .logout-btn {
       background: rgba(255,255,255,0.15);
       border: none;
@@ -131,7 +225,7 @@
       cursor: pointer;
     }
     .logout-btn:hover { background: rgba(255,255,255,0.25); }
-    /* ===== 二级导航 ===== */
+
     .nav-tabs {
       display: flex;
       background: #fffef7;
@@ -155,21 +249,22 @@
       border-bottom-color: #556b4b;
       font-weight: bold;
     }
-    /* ===== 主容器 ===== */
+
     .main-container {
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
       padding: 16px 12px 100px;
+      width: 100%;
     }
     .panel { display: none; }
     .panel.active { display: block; }
+
     /* ===== 卡片 ===== */
     .card {
       background: #fffdf5;
       border-radius: 14px;
       padding: 18px;
       margin-bottom: 14px;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
       border: 1px solid #cdc6b4;
     }
     .card-header {
@@ -182,7 +277,8 @@
       justify-content: space-between;
       align-items: center;
     }
-    /* ===== 帖子列表 ===== */
+
+    /* ===== 帖子 ===== */
     .post-item {
       padding: 14px 0;
       border-bottom: 1px solid #e4decf;
@@ -191,16 +287,7 @@
       gap: 12px;
     }
     .post-item:hover { background: #faf8f0; }
-    .post-avatar {
-      width: 44px; height: 44px;
-      border-radius: 8px;
-      background: #efe9d8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      flex-shrink: 0;
-    }
+    .post-avatar { font-size: 2rem; }
     .post-title { font-weight: bold; font-size: 0.95rem; color: #3b4a2e; }
     .post-meta { font-size: 0.75rem; color: #999; margin-top: 4px; }
     .post-content-preview {
@@ -212,6 +299,7 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
+
     /* ===== 按钮 ===== */
     .btn {
       display: inline-block;
@@ -230,7 +318,13 @@
     .btn-sm { padding: 6px 14px; font-size: 0.75rem; }
     .btn-danger { background: #c62828; color: #fff; }
     .btn-danger:hover { background: #b71c1c; }
-    /* ===== 基建网格 ===== */
+    .btn-success { background: #2e7d32; color: #fff; }
+    .btn-success:hover { background: #1b5e20; }
+    .btn-warning { background: #f9a825; color: #fff; }
+    .btn-warning:hover { background: #f57f17; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ===== 基建 ===== */
     .map-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -247,6 +341,56 @@
     }
     .build-card:hover { border-color: #556b4b; }
     .build-card .icon { font-size: 2.5rem; margin-bottom: 8px; }
+
+    /* ===== 任务进度条 ===== */
+    .task-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #e4decf;
+    }
+    .task-item .task-info { flex: 1; }
+    .task-item .task-name { font-size: 0.9rem; }
+    .task-item .task-status { font-size: 0.8rem; color: #888; }
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e4decf;
+      border-radius: 4px;
+      margin: 4px 0;
+      overflow: hidden;
+    }
+    .progress-bar .fill {
+      height: 100%;
+      background: #556b4b;
+      border-radius: 4px;
+      transition: width 0.5s;
+    }
+    .task-done { color: #2e7d32; }
+    .task-pending { color: #f57f17; }
+
+    /* ===== 好友搜索 ===== */
+    .friend-search {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .friend-search input {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #cdc6b4;
+      border-radius: 12px;
+      font-size: 0.9rem;
+    }
+    .friend-request-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #e4decf;
+    }
+
     /* ===== 模态框 ===== */
     .modal-overlay {
       position: fixed;
@@ -286,6 +430,7 @@
       justify-content: flex-end;
       margin-top: 12px;
     }
+
     /* ===== Toast ===== */
     .toast-container {
       position: fixed;
@@ -309,12 +454,35 @@
     }
     .toast.success { background: #2e7d32; }
     .toast.error { background: #c62828; }
+    .toast.warning { background: #f57f17; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
     /* ===== 响应式 ===== */
-    @media (max-width: 480px) {
-      .login-card { padding: 24px 16px; }
-      .top-bar { flex-wrap: wrap; height: auto; padding: 8px 12px; gap: 6px; }
-      .user-mini { font-size: 0.75rem; }
+    @media (max-width: 768px) {
+      .left-sidebar {
+        width: 180px;
+        min-width: 180px;
+        padding: 10px;
+      }
+      .profile-avatar { font-size: 3rem; }
+    }
+    @media (max-width: 600px) {
+      .app-layout.active { flex-direction: column; }
+      .left-sidebar {
+        width: 100%;
+        min-width: unset;
+        height: auto;
+        position: static;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 10px;
+        border-right: none;
+        border-bottom: 2px solid #cdc6b4;
+      }
+      .left-sidebar .profile-card { flex: 1; min-width: 150px; }
+      .left-sidebar .friend-list-card { flex: 1; min-width: 150px; }
+      .nav-tabs { top: 0; }
+      .top-bar { position: static; }
     }
   </style>
 </head>
@@ -334,30 +502,67 @@
     <input type="password" class="login-input" id="loginPassword" placeholder="密码">
     <div class="login-error" id="loginError"></div>
     <button class="login-btn" id="loginBtn">进入会馆</button>
+    <div style="margin-top:10px;font-size:0.7rem;color:#aaa;">馆长账号：雾凇馆长 / 密码：zxcvbnm</div>
   </div>
 </div>
 
-<!-- ===== 顶部栏 ===== -->
-<div class="top-bar">
-  <div class="logo" id="logoHome">🌲 雾凇会馆</div>
-  <div class="user-mini">
-    <div class="avatar-thumb" id="miniAvatar">🐱</div>
-    <span id="miniName">未登录</span>
-    <span style="font-size:0.7rem;">Lv.<span id="miniLevel">1</span></span>
-    <button class="logout-btn" id="logoutBtn">离开</button>
+<!-- ===== 主应用布局 ===== -->
+<div class="app-layout" id="appLayout">
+
+  <!-- 左侧面板 -->
+  <div class="left-sidebar" id="leftSidebar">
+    <!-- 个人资料 -->
+    <div class="profile-card">
+      <div class="profile-avatar" id="avatarUploadBtn">
+        <span id="profileAvatar">🐱</span>
+        <input type="file" id="avatarInput" accept="image/*">
+      </div>
+      <div class="profile-name" id="profileName">未登录</div>
+      <div class="profile-level">Lv.<span id="profileLevel">1</span></div>
+      <div class="profile-bio" id="profileBio" title="点击修改简介">这个妖精很懒，什么都没写~</div>
+      <div class="profile-stats">
+        <div>💎 <span id="profileExp">0</span></div>
+        <div>🪙 <span id="profileGold">200</span></div>
+      </div>
+    </div>
+
+    <!-- 好友列表 -->
+    <div class="friend-list-card">
+      <h4>👥 好友 (<span id="friendCount">0</span>)</h4>
+      <div id="friendList">
+        <div style="color:#999;font-size:0.8rem;">暂无好友</div>
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- ===== 导航 ===== -->
-<div class="nav-tabs">
-  <div class="nav-tab active" data-tab="forum">📜 论坛</div>
-  <div class="nav-tab" data-tab="map">🏗️ 基建</div>
-</div>
+  <!-- 右侧主内容 -->
+  <div class="main-content">
+    <!-- 顶栏 -->
+    <div class="top-bar">
+      <div class="logo" id="logoHome">🌲 雾凇会馆</div>
+      <div class="user-mini">
+        <span class="avatar-sm" id="topAvatar">🐱</span>
+        <span id="topName">未登录</span>
+        <button class="logout-btn" id="logoutBtn">离开</button>
+      </div>
+    </div>
 
-<!-- ===== 主容器 ===== -->
-<div class="main-container">
-  <div class="panel active" id="panel-forum"></div>
-  <div class="panel" id="panel-map"></div>
+    <!-- 导航 -->
+    <div class="nav-tabs">
+      <div class="nav-tab active" data-tab="forum">📜 论坛</div>
+      <div class="nav-tab" data-tab="friends">👥 好友</div>
+      <div class="nav-tab" data-tab="tasks">📋 任务</div>
+      <div class="nav-tab" data-tab="map">🏗️ 基建</div>
+    </div>
+
+    <!-- 内容 -->
+    <div class="main-container">
+      <div class="panel active" id="panel-forum"></div>
+      <div class="panel" id="panel-friends"></div>
+      <div class="panel" id="panel-tasks"></div>
+      <div class="panel" id="panel-map"></div>
+    </div>
+  </div>
 </div>
 
 <!-- ===== Toast & 模态框 ===== -->
@@ -366,7 +571,7 @@
   <div class="modal" id="modalContent"></div>
 </div>
 
-<!-- ===== 引入 Supabase ===== -->
+<!-- ===== Supabase ===== -->
 <script type="importmap">
 {
   "imports": {
@@ -377,11 +582,10 @@
 
 <script type="module">
 // ================================================================
-// 1. 配置 Supabase（请替换为你的真实值）
+// 1. 配置 Supabase
 // ================================================================
 import { createClient } from '@supabase/supabase-js';
 
-// ★★★ 下面两行务必替换成你自己的 URL 和 anon key ★★★
 const SUPABASE_URL = 'https://buoecihowzgqjwfhexsw.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1b2VjaWhvd3pncWp3ZmhleHN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMDgwMDAsImV4cCI6MjA5Nzg4NDAwMH0.8sEfcTZIJ5mDixNqyqWEe245iFLR9PBh11Wk27SN5nY';
 
@@ -390,11 +594,11 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ================================================================
 // 2. 全局状态
 // ================================================================
-let currentUser = null;        // 当前登录用户对象（id, username, gold, level, buildings）
+let currentUser = null;
 let currentTab = 'forum';
 let viewingPostId = null;
 
-// DOM 引用
+// DOM
 const $ = id => document.getElementById(id);
 const loginOverlay = $('loginOverlay');
 const loginUsername = $('loginUsername');
@@ -402,17 +606,10 @@ const loginPassword = $('loginPassword');
 const loginError = $('loginError');
 const loginBtn = $('loginBtn');
 const loginTabs = document.querySelectorAll('.login-tab');
-const miniAvatar = $('miniAvatar');
-const miniName = $('miniName');
-const miniLevel = $('miniLevel');
-const logoutBtn = $('logoutBtn');
-const logoHome = $('logoHome');
-const navTabs = document.querySelectorAll('.nav-tab');
-const panelForum = $('panel-forum');
-const panelMap = $('panel-map');
+const appLayout = $('appLayout');
+const toastContainer = $('toastContainer');
 const modalOverlay = $('modalOverlay');
 const modalContent = $('modalContent');
-const toastContainer = $('toastContainer');
 
 // ================================================================
 // 3. 工具函数
@@ -447,7 +644,6 @@ function closeModal() {
   modalContent.innerHTML = '';
 }
 
-// 前端哈希（SHA-256 + 固定盐），与数据库存储一致
 async function hashPassword(password) {
   const encoder = new TextEncoder();
   const data = encoder.encode(password + 'fog-salt-2026');
@@ -456,10 +652,14 @@ async function hashPassword(password) {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+function getToday() {
+  return new Date().toISOString().split('T')[0];
+}
+
 // ================================================================
-// 4. 登录 / 注册
+// 4. 登录 / 注册 / 馆长
 // ================================================================
-let loginMode = 'login'; // 'login' | 'register'
+let loginMode = 'login';
 
 loginTabs.forEach(tab => {
   tab.addEventListener('click', () => {
@@ -480,56 +680,68 @@ loginBtn.addEventListener('click', async () => {
   loginError.textContent = '';
 
   try {
+    // ---- 馆长特殊登录 ----
+    if (username === '雾凇馆长' && password === 'zxcvbnm') {
+      const { data: existing } = await supabase
+        .from('users')
+        .select('*')
+        .eq('username', '雾凇馆长')
+        .maybeSingle();
+      if (!existing) {
+        const hash = await hashPassword('zxcvbnm');
+        await supabase.from('users').insert([{
+          username: '雾凇馆长',
+          password_hash: hash,
+          level: 99,
+          gold: 9999,
+          exp: 9999,
+          bio: '🌲 雾凇会馆的馆长大人！'
+        }]);
+      }
+      const { data: user } = await supabase
+        .from('users')
+        .select('*')
+        .eq('username', '雾凇馆长')
+        .single();
+      currentUser = user;
+      enterApp();
+      toast('🌲 馆长大人驾到！', 'success');
+      return;
+    }
+
     if (loginMode === 'register') {
-      // ---- 注册 ----
-      // 1) 检查用户名是否已存在
+      // 注册
       const { data: existing } = await supabase
         .from('users')
         .select('id')
         .eq('username', username)
         .maybeSingle();
-      if (existing) {
-        loginError.textContent = '用户名已被占用';
-        return;
-      }
-      // 2) 哈希密码
-      const passwordHash = await hashPassword(password);
-      // 3) 插入用户
-      const { error: insertError } = await supabase
-        .from('users')
-        .insert([{ username, password_hash: passwordHash }]);
-      if (insertError) throw insertError;
+      if (existing) { loginError.textContent = '用户名已被占用'; return; }
+      const hash = await hashPassword(password);
+      await supabase.from('users').insert([{
+        username,
+        password_hash: hash,
+        bio: '这个妖精很懒，什么都没写~'
+      }]);
       toast('注册成功！请登录', 'success');
-      // 切换到登录标签
       loginTabs.forEach(t => t.classList.remove('active'));
       document.querySelector('.login-tab[data-mode="login"]').classList.add('active');
       loginMode = 'login';
       loginPassword.value = '';
       loginUsername.value = '';
     } else {
-      // ---- 登录 ----
-      // 1) 根据用户名查用户
-      const { data: user, error: userError } = await supabase
+      // 登录
+      const { data: user } = await supabase
         .from('users')
         .select('*')
         .eq('username', username)
         .maybeSingle();
-      if (userError || !user) {
-        loginError.textContent = '用户名不存在';
-        return;
-      }
-      // 2) 验证密码
-      const inputHash = await hashPassword(password);
-      if (inputHash !== user.password_hash) {
-        loginError.textContent = '密码错误';
-        return;
-      }
-      // 3) 登录成功
+      if (!user) { loginError.textContent = '用户名不存在'; return; }
+      const hash = await hashPassword(password);
+      if (hash !== user.password_hash) { loginError.textContent = '密码错误'; return; }
       currentUser = user;
-      loginOverlay.classList.add('hidden');
-      updateUI();
-      toast(`🌲 欢迎 ${user.username}`);
-      renderCurrentTab();
+      enterApp();
+      toast(`🌲 欢迎 ${user.username}`, 'success');
     }
   } catch (err) {
     loginError.textContent = err.message || '操作失败';
@@ -537,23 +749,81 @@ loginBtn.addEventListener('click', async () => {
   }
 });
 
-// ================================================================
-// 5. UI 更新
-// ================================================================
-function updateUI() {
-  if (!currentUser) return;
-  miniAvatar.textContent = currentUser.avatar || '🐱';
-  miniName.textContent = currentUser.username;
-  miniLevel.textContent = currentUser.level || 1;
+function enterApp() {
+  loginOverlay.classList.add('hidden');
+  appLayout.classList.add('active');
+  updateLeftPanel();
+  renderCurrentTab();
 }
 
 // ================================================================
-// 6. 登出
+// 5. 更新左侧面板
 // ================================================================
-logoutBtn.addEventListener('click', () => {
+function updateLeftPanel() {
+  if (!currentUser) return;
+  $('profileAvatar').textContent = currentUser.avatar || '🐱';
+  $('profileName').textContent = currentUser.username;
+  $('profileLevel').textContent = currentUser.level || 1;
+  $('profileExp').textContent = currentUser.exp || 0;
+  $('profileGold').textContent = currentUser.gold || 200;
+  $('profileBio').textContent = currentUser.bio || '这个妖精很懒，什么都没写~';
+  $('topAvatar').textContent = currentUser.avatar || '🐱';
+  $('topName').textContent = currentUser.username;
+  loadFriendList();
+}
+
+// ================================================================
+// 6. 头像上传
+// ================================================================
+$('avatarUploadBtn').addEventListener('click', () => {
+  $('avatarInput').click();
+});
+$('avatarInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async (ev) => {
+    const emoji = ev.target.result; // 实际应该是图片，这里简单用文本
+    // 简化：直接存为文字表情
+    await supabase.from('users').update({ avatar: '😺' }).eq('id', currentUser.id);
+    currentUser.avatar = '😺';
+    updateLeftPanel();
+    toast('头像已更新', 'success');
+  };
+  reader.readAsText(file);
+});
+
+// ================================================================
+// 7. 修改简介
+// ================================================================
+$('profileBio').addEventListener('click', () => {
+  modalContent.innerHTML = `
+    <h3>📝 修改简介</h3>
+    <textarea id="bioInput" rows="3">${escHtml(currentUser.bio || '')}</textarea>
+    <div class="modal-actions">
+      <button class="btn btn-outline btn-sm" id="modalCancel">取消</button>
+      <button class="btn btn-primary btn-sm" id="modalConfirm">保存</button>
+    </div>
+  `;
+  modalOverlay.classList.add('show');
+  document.getElementById('modalCancel').addEventListener('click', closeModal);
+  document.getElementById('modalConfirm').addEventListener('click', async () => {
+    const bio = document.getElementById('bioInput').value.trim() || '这个妖精很懒，什么都没写~';
+    await supabase.from('users').update({ bio }).eq('id', currentUser.id);
+    currentUser.bio = bio;
+    updateLeftPanel();
+    toast('简介已更新', 'success');
+    closeModal();
+  });
+});
+
+// ================================================================
+// 8. 登出
+// ================================================================
+$('logoutBtn').addEventListener('click', () => {
   currentUser = null;
+  appLayout.classList.remove('active');
   loginOverlay.classList.remove('hidden');
-  loginError.textContent = '';
   loginUsername.value = '';
   loginPassword.value = '';
   loginTabs.forEach(t => t.classList.remove('active'));
@@ -563,16 +833,18 @@ logoutBtn.addEventListener('click', () => {
 });
 
 // ================================================================
-// 7. 导航切换
+// 9. 导航
 // ================================================================
 function renderCurrentTab() {
   if (currentTab === 'forum') renderForum();
+  else if (currentTab === 'friends') renderFriends();
+  else if (currentTab === 'tasks') renderTasks();
   else if (currentTab === 'map') renderMap();
 }
 
-navTabs.forEach(tab => {
+document.querySelectorAll('.nav-tab').forEach(tab => {
   tab.addEventListener('click', () => {
-    navTabs.forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     currentTab = tab.dataset.tab;
     viewingPostId = null;
@@ -580,8 +852,8 @@ navTabs.forEach(tab => {
   });
 });
 
-logoHome.addEventListener('click', () => {
-  navTabs.forEach(t => t.classList.remove('active'));
+$('logoHome').addEventListener('click', () => {
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.querySelector('.nav-tab[data-tab="forum"]').classList.add('active');
   currentTab = 'forum';
   viewingPostId = null;
@@ -589,15 +861,14 @@ logoHome.addEventListener('click', () => {
 });
 
 // ================================================================
-// 8. 论坛列表
+// 10. 论坛
 // ================================================================
 async function renderForum() {
   if (viewingPostId) {
     await renderPostDetail(viewingPostId);
     return;
   }
-
-  panelForum.innerHTML = `
+  $('panel-forum').innerHTML = `
     <div class="card">
       <div class="card-header">
         <span>📢 最新帖子</span>
@@ -608,12 +879,10 @@ async function renderForum() {
   `;
   document.getElementById('newPostBtn').addEventListener('click', openNewPost);
 
-  // 从视图中获取帖子及作者信息
   const { data: posts, error } = await supabase
     .from('posts_with_authors')
     .select('*')
     .order('created_at', { ascending: false });
-
   if (error) {
     document.getElementById('postsList').innerHTML = `<p style="color:#c62828;">加载失败: ${error.message}</p>`;
     return;
@@ -623,12 +892,8 @@ async function renderForum() {
     return;
   }
 
-  // 获取每个帖子的统计（回复数、点赞数）
   const postIds = posts.map(p => p.id);
-  const { data: stats } = await supabase
-    .from('posts_stats')
-    .select('*')
-    .in('id', postIds);
+  const { data: stats } = await supabase.from('posts_stats').select('*').in('id', postIds);
   const statMap = {};
   if (stats) stats.forEach(s => { statMap[s.id] = s; });
 
@@ -636,12 +901,11 @@ async function renderForum() {
   for (const post of posts) {
     const replyCount = statMap[post.id]?.reply_count || 0;
     const likeCount = statMap[post.id]?.like_count || 0;
-    const isHot = replyCount >= 5;
     html += `
       <div class="post-item" data-postid="${post.id}">
         <div class="post-avatar">${escHtml(post.avatar || '🐱')}</div>
         <div style="flex:1;">
-          <div class="post-title">${escHtml(post.title)} ${isHot ? '🔥' : ''}</div>
+          <div class="post-title">${escHtml(post.title)} ${replyCount >= 3 ? '🔥' : ''}</div>
           <div class="post-content-preview">${escHtml(post.content)}</div>
           <div class="post-meta">
             ${escHtml(post.username || '已注销')} · ${timeAgo(post.created_at)} · 
@@ -652,8 +916,6 @@ async function renderForum() {
     `;
   }
   document.getElementById('postsList').innerHTML = html;
-
-  // 点击帖子进入详情
   document.querySelectorAll('.post-item').forEach(el => {
     el.addEventListener('click', () => {
       viewingPostId = parseInt(el.dataset.postid);
@@ -662,143 +924,68 @@ async function renderForum() {
   });
 }
 
-// ================================================================
-// 9. 帖子详情
-// ================================================================
 async function renderPostDetail(postId) {
-  const { data: post, error } = await supabase
-    .from('posts_with_authors')
-    .select('*')
-    .eq('id', postId)
-    .single();
-  if (error || !post) {
-    toast('帖子不存在', 'error');
-    viewingPostId = null;
-    renderForum();
-    return;
-  }
+  const { data: post } = await supabase.from('posts_with_authors').select('*').eq('id', postId).single();
+  if (!post) { toast('帖子不存在', 'error'); viewingPostId = null; renderForum(); return; }
 
-  // 获取回复（带作者信息）
   const { data: replies } = await supabase
     .from('replies')
-    .select(`
-      *,
-      users!author_id (username, avatar)
-    `)
+    .select('*, users!author_id(username, avatar)')
     .eq('post_id', postId)
     .order('created_at', { ascending: true });
 
-  // 获取点赞数
-  const { count: likeCount } = await supabase
-    .from('likes')
-    .select('*', { count: 'exact', head: true })
-    .eq('post_id', postId);
-
-  // 当前用户是否已点赞
+  const { count: likeCount } = await supabase.from('likes').select('*', { count: 'exact', head: true }).eq('post_id', postId);
   let userLiked = false;
   if (currentUser) {
-    const { data: likeData } = await supabase
-      .from('likes')
-      .select('*')
-      .eq('post_id', postId)
-      .eq('user_id', currentUser.id)
-      .maybeSingle();
+    const { data: likeData } = await supabase.from('likes').select('*').eq('post_id', postId).eq('user_id', currentUser.id).maybeSingle();
     userLiked = !!likeData;
   }
 
-  const replyList = replies || [];
   let html = `
     <div class="card">
       <button class="btn btn-outline btn-sm" id="backToList">← 返回列表</button>
       <div style="margin-top:12px;">
         <h2 style="font-size:1.2rem;">${escHtml(post.title)}</h2>
-        <div style="color:#888;font-size:0.8rem;margin:6px 0 12px;">
-          ${escHtml(post.username || '已注销')} · ${timeAgo(post.created_at)}
-        </div>
-        <div style="white-space:pre-wrap;word-break:break-word;background:#f8f6ee;padding:12px;border-radius:8px;">
-          ${escHtml(post.content)}
-        </div>
+        <div style="color:#888;font-size:0.8rem;margin:6px 0 12px;">${escHtml(post.username || '已注销')} · ${timeAgo(post.created_at)}</div>
+        <div style="white-space:pre-wrap;word-break:break-word;background:#f8f6ee;padding:12px;border-radius:8px;">${escHtml(post.content)}</div>
         <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="btn ${userLiked ? 'btn-primary' : 'btn-outline'} btn-sm" id="likeBtn">
-            ${userLiked ? '❤️' : '🤍'} ${likeCount || 0}
-          </button>
+          <button class="btn ${userLiked ? 'btn-primary' : 'btn-outline'} btn-sm" id="likeBtn">${userLiked ? '❤️' : '🤍'} ${likeCount || 0}</button>
           <button class="btn btn-primary btn-sm" id="replyBtn">💬 回复</button>
-          ${currentUser && currentUser.id === post.author_id ? `
-            <button class="btn btn-danger btn-sm" id="deletePostBtn">🗑️ 删除</button>
-          ` : ''}
+          ${currentUser && currentUser.id === post.author_id ? `<button class="btn btn-danger btn-sm" id="deletePostBtn">🗑️ 删除</button>` : ''}
         </div>
       </div>
     </div>
-    <div class="card">
-      <div class="card-header">💬 回复 (${replyList.length})</div>
-      ${replyList.length === 0 ? '<p style="color:#999;">还没有回复</p>' : ''}
-      ${replyList.map(r => {
-        const rAuthor = r.users || { username: '已注销', avatar: '👻' };
-        return `
-          <div style="padding:10px 0;border-bottom:1px solid #e4decf;">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <span>${escHtml(rAuthor.avatar || '🐱')}</span>
-              <strong>${escHtml(rAuthor.username)}</strong>
-              <span style="color:#999;font-size:0.7rem;">${timeAgo(r.created_at)}</span>
-            </div>
-            <div style="margin-top:4px;white-space:pre-wrap;word-break:break-word;">${escHtml(r.content)}</div>
-          </div>
-        `;
-      }).join('')}
-    </div>
+    <div class="card"><div class="card-header">💬 回复 (${(replies||[]).length})</div>
+    ${(replies||[]).map(r => {
+      const a = r.users || { username: '已注销', avatar: '👻' };
+      return `<div style="padding:8px 0;border-bottom:1px solid #e4decf;"><strong>${escHtml(a.avatar)} ${escHtml(a.username)}</strong> <span style="color:#999;font-size:0.7rem;">${timeAgo(r.created_at)}</span><p>${escHtml(r.content)}</p></div>`;
+    }).join('')}</div>
   `;
-  panelForum.innerHTML = html;
-
-  // ---- 事件绑定 ----
-  document.getElementById('backToList').addEventListener('click', () => {
+  $('panel-forum').innerHTML = html;
+  document.getElementById('backToList').addEventListener('click', () => { viewingPostId = null; renderForum(); });
+  document.getElementById('likeBtn')?.addEventListener('click', async () => {
+    if (!currentUser) { toast('请先登录', 'error'); return; }
+    const { data: existing } = await supabase.from('likes').select('*').eq('post_id', postId).eq('user_id', currentUser.id).maybeSingle();
+    if (existing) {
+      await supabase.from('likes').delete().eq('post_id', postId).eq('user_id', currentUser.id);
+      toast('已取消点赞');
+    } else {
+      await supabase.from('likes').insert([{ post_id: postId, user_id: currentUser.id }]);
+      toast('❤️ 点赞成功', 'success');
+      await checkTask('replied');
+    }
+    renderPostDetail(postId);
+  });
+  document.getElementById('replyBtn').addEventListener('click', () => openReply(postId));
+  document.getElementById('deletePostBtn')?.addEventListener('click', async () => {
+    if (!confirm('确定删除？')) return;
+    await supabase.from('posts').delete().eq('id', postId);
+    toast('已删除', 'success');
     viewingPostId = null;
     renderForum();
   });
-
-  const likeBtn = document.getElementById('likeBtn');
-  if (likeBtn) {
-    likeBtn.addEventListener('click', async () => {
-      if (!currentUser) { toast('请先登录', 'error'); return; }
-      const { data: existing } = await supabase
-        .from('likes')
-        .select('*')
-        .eq('post_id', postId)
-        .eq('user_id', currentUser.id)
-        .maybeSingle();
-      if (existing) {
-        await supabase
-          .from('likes')
-          .delete()
-          .eq('post_id', postId)
-          .eq('user_id', currentUser.id);
-        toast('已取消点赞');
-      } else {
-        await supabase
-          .from('likes')
-          .insert([{ post_id: postId, user_id: currentUser.id }]);
-        toast('❤️ 点赞成功', 'success');
-      }
-      renderPostDetail(postId);
-    });
-  }
-
-  document.getElementById('replyBtn').addEventListener('click', () => openReply(postId));
-
-  const deleteBtn = document.getElementById('deletePostBtn');
-  if (deleteBtn) {
-    deleteBtn.addEventListener('click', async () => {
-      if (!confirm('确定删除此帖吗？')) return;
-      await supabase.from('posts').delete().eq('id', postId);
-      toast('帖子已删除', 'success');
-      viewingPostId = null;
-      renderForum();
-    });
-  }
 }
 
-// ================================================================
-// 10. 发帖 & 回复
-// ================================================================
 function openNewPost() {
   if (!currentUser) { toast('请先登录', 'error'); return; }
   modalContent.innerHTML = `
@@ -816,11 +1003,9 @@ function openNewPost() {
     const title = document.getElementById('newPostTitle').value.trim();
     const content = document.getElementById('newPostContent').value.trim();
     if (!title || !content) { toast('请填写完整', 'error'); return; }
-    const { error } = await supabase
-      .from('posts')
-      .insert([{ title, content, author_id: currentUser.id }]);
-    if (error) { toast('发布失败: ' + error.message, 'error'); return; }
+    await supabase.from('posts').insert([{ title, content, author_id: currentUser.id }]);
     toast('发布成功', 'success');
+    await checkTask('posted');
     closeModal();
     viewingPostId = null;
     renderForum();
@@ -842,50 +1027,229 @@ function openReply(postId) {
   document.getElementById('modalConfirm').addEventListener('click', async () => {
     const content = document.getElementById('replyContent').value.trim();
     if (!content) { toast('请填写内容', 'error'); return; }
-    const { error } = await supabase
-      .from('replies')
-      .insert([{ post_id: postId, author_id: currentUser.id, content }]);
-    if (error) { toast('回复失败: ' + error.message, 'error'); return; }
+    await supabase.from('replies').insert([{ post_id: postId, author_id: currentUser.id, content }]);
     toast('回复成功', 'success');
+    await checkTask('replied');
     closeModal();
     renderPostDetail(postId);
   });
 }
 
 // ================================================================
-// 11. 基建
+// 11. 好友系统
 // ================================================================
-async function renderMap() {
-  if (!currentUser) {
-    panelMap.innerHTML = `<div class="card"><p style="color:#888;">请先登录</p></div>`;
+async function renderFriends() {
+  if (!currentUser) { $('panel-friends').innerHTML = '<div class="card"><p>请先登录</p></div>'; return; }
+  await loadFriendList();
+
+  $('panel-friends').innerHTML = `
+    <div class="card">
+      <div class="card-header">🔍 搜索好友</div>
+      <div class="friend-search">
+        <input type="text" id="searchFriendInput" placeholder="输入妖精名号...">
+        <button class="btn btn-primary btn-sm" id="searchFriendBtn">搜索</button>
+      </div>
+      <div id="searchResult"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">📩 好友申请 <span id="requestCount" style="font-size:0.8rem;color:#888;">(0)</span></div>
+      <div id="friendRequests"><p style="color:#999;">暂无申请</p></div>
+    </div>
+  `;
+
+  document.getElementById('searchFriendBtn').addEventListener('click', async () => {
+    const q = document.getElementById('searchFriendInput').value.trim();
+    if (!q) { toast('请输入名号', 'warning'); return; }
+    if (q === currentUser.username) { toast('不能搜索自己', 'warning'); return; }
+    const { data: users } = await supabase.from('users').select('id,username,avatar').ilike('username', `%${q}%`).limit(10);
+    const resultDiv = document.getElementById('searchResult');
+    if (!users || users.length === 0) { resultDiv.innerHTML = '<p style="color:#999;">未找到用户</p>'; return; }
+    let html = '';
+    for (const u of users) {
+      const { data: existing } = await supabase.from('friends')
+        .select('status').or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+        .or(`sender_id.eq.${u.id},receiver_id.eq.${u.id}`).maybeSingle();
+      let action = `<button class="btn btn-primary btn-sm" onclick="window._addFriend(${u.id})">➕ 加好友</button>`;
+      if (existing) {
+        if (existing.status === 'pending') action = '<span style="color:#f57f17;">⏳ 待确认</span>';
+        else if (existing.status === 'accepted') action = '<span style="color:#2e7d32;">✅ 已好友</span>';
+        else action = '<span style="color:#999;">已拒绝</span>';
+      }
+      html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #e4decf;">
+        <span>${escHtml(u.avatar || '🐱')} ${escHtml(u.username)}</span> ${action}
+      </div>`;
+    }
+    resultDiv.innerHTML = html;
+  });
+
+  // 加载好友申请
+  const { data: requests } = await supabase.from('friends')
+    .select('*, users!sender_id(username, avatar)')
+    .eq('receiver_id', currentUser.id)
+    .eq('status', 'pending');
+  const reqDiv = document.getElementById('friendRequests');
+  document.getElementById('requestCount').textContent = `(${(requests||[]).length})`;
+  if (!requests || requests.length === 0) {
+    reqDiv.innerHTML = '<p style="color:#999;">暂无申请</p>';
+  } else {
+    reqDiv.innerHTML = requests.map(r => {
+      const s = r.users || { username: '未知', avatar: '🐱' };
+      return `<div class="friend-request-item">
+        <span>${escHtml(s.avatar)} ${escHtml(s.username)}</span>
+        <div>
+          <button class="btn btn-success btn-sm" onclick="window._acceptFriend(${r.id})">✅ 同意</button>
+          <button class="btn btn-danger btn-sm" onclick="window._rejectFriend(${r.id})">❌ 拒绝</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // 暴露全局函数
+  window._addFriend = async (userId) => {
+    await supabase.from('friends').insert([{ sender_id: currentUser.id, receiver_id: userId }]);
+    toast('好友请求已发送', 'success');
+    renderFriends();
+  };
+  window._acceptFriend = async (friendId) => {
+    await supabase.from('friends').update({ status: 'accepted', updated_at: new Date() }).eq('id', friendId);
+    toast('已添加好友！', 'success');
+    await checkTask('built');
+    renderFriends();
+    loadFriendList();
+  };
+  window._rejectFriend = async (friendId) => {
+    await supabase.from('friends').update({ status: 'rejected' }).eq('id', friendId);
+    toast('已拒绝', 'warning');
+    renderFriends();
+  };
+}
+
+async function loadFriendList() {
+  if (!currentUser) return;
+  const { data: friends } = await supabase.from('friends')
+    .select('*, users!sender_id(username, avatar), users!receiver_id(username, avatar)')
+    .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+    .eq('status', 'accepted');
+  const list = $('friendList');
+  const count = $('friendCount');
+  if (!friends || friends.length === 0) {
+    list.innerHTML = '<div style="color:#999;font-size:0.8rem;">暂无好友</div>';
+    count.textContent = '0';
     return;
   }
+  count.textContent = friends.length;
+  list.innerHTML = friends.map(f => {
+    const isSender = f.sender_id === currentUser.id;
+    const friend = isSender ? f.users_receiver_id : f.users_sender_id;
+    return `<div class="friend-item"><span class="avatar-sm">${escHtml(friend?.avatar || '🐱')}</span> ${escHtml(friend?.username || '未知')}</div>`;
+  }).join('');
+}
+
+// ================================================================
+// 12. 任务系统
+// ================================================================
+async function renderTasks() {
+  if (!currentUser) { $('panel-tasks').innerHTML = '<div class="card"><p>请先登录</p></div>'; return; }
+  const today = getToday();
+  const lastSign = currentUser.last_sign_in || '1970-01-01';
+  const tasks = currentUser.daily_tasks || { signed: false, posted: false, replied: false, built: false };
+  const signedToday = lastSign === today;
+
+  // 检查今日任务进度
+  const { count: postCount } = await supabase.from('posts').select('*', { count: 'exact', head: true }).eq('author_id', currentUser.id).gte('created_at', `${today}T00:00:00Z`);
+  const { count: replyCount } = await supabase.from('replies').select('*', { count: 'exact', head: true }).eq('author_id', currentUser.id).gte('created_at', `${today}T00:00:00Z`);
+
+  const taskList = [
+    { key: 'signed', name: '📌 每日签到', done: signedToday || tasks.signed, reward: '💰+30  💎+10' },
+    { key: 'posted', name: '📝 发布帖子', done: (postCount || 0) >= 1 || tasks.posted, reward: '💰+20  💎+8' },
+    { key: 'replied', name: '💬 回复帖子', done: (replyCount || 0) >= 1 || tasks.replied, reward: '💰+15  💎+5' },
+    { key: 'built', name: '🏗️ 建设基建', done: tasks.built, reward: '💰+25  💎+10' },
+  ];
+  const doneCount = taskList.filter(t => t.done).length;
+  const progress = (doneCount / taskList.length) * 100;
+
+  $('panel-tasks').innerHTML = `
+    <div class="card">
+      <div class="card-header">📋 每日任务 <span style="font-size:0.8rem;color:#888;">${doneCount}/${taskList.length}</span></div>
+      <div class="progress-bar"><div class="fill" style="width:${progress}%;"></div></div>
+      <div style="font-size:0.8rem;color:#888;text-align:center;margin-top:4px;">${progress.toFixed(0)}% 完成</div>
+      ${taskList.map(t => `
+        <div class="task-item">
+          <div class="task-info">
+            <div class="task-name">${t.name}</div>
+            <div style="font-size:0.7rem;color:#888;">${t.reward}</div>
+          </div>
+          <div>
+            ${t.done ? '<span class="task-done">✅ 已完成</span>' : `<button class="btn btn-primary btn-sm" onclick="window._doTask('${t.key}')">领取</button>`}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  window._doTask = async (key) => {
+    if (key === 'signed') {
+      const today2 = getToday();
+      if ((currentUser.last_sign_in || '') === today2) { toast('今日已签到', 'warning'); return; }
+      await supabase.from('users').update({
+        last_sign_in: today2,
+        gold: (currentUser.gold || 0) + 30,
+        exp: (currentUser.exp || 0) + 10
+      }).eq('id', currentUser.id);
+      currentUser.gold += 30;
+      currentUser.exp += 10;
+      currentUser.last_sign_in = today2;
+      toast('签到成功！💰+30 💎+10', 'success');
+      updateLeftPanel();
+      renderTasks();
+      return;
+    }
+    // 其他任务通过操作触发，这里引导用户
+    toast('完成对应的操作即可自动领取！', 'warning');
+  };
+}
+
+async function checkTask(type) {
+  // 发帖/回复/基建 完成任务后自动领取奖励
+  if (!currentUser) return;
+  const tasks = currentUser.daily_tasks || {};
+  if (tasks[type]) return; // 已领取过
+  const rewardMap = { posted: { gold: 20, exp: 8 }, replied: { gold: 15, exp: 5 }, built: { gold: 25, exp: 10 } };
+  const reward = rewardMap[type];
+  if (!reward) return;
+  tasks[type] = true;
+  await supabase.from('users').update({
+    daily_tasks: tasks,
+    gold: (currentUser.gold || 0) + reward.gold,
+    exp: (currentUser.exp || 0) + reward.exp
+  }).eq('id', currentUser.id);
+  currentUser.daily_tasks = tasks;
+  currentUser.gold += reward.gold;
+  currentUser.exp += reward.exp;
+  updateLeftPanel();
+  toast(`🎉 任务完成！💰+${reward.gold} 💎+${reward.exp}`, 'success');
+}
+
+// ================================================================
+// 13. 基建中心
+// ================================================================
+async function renderMap() {
+  if (!currentUser) { $('panel-map').innerHTML = '<div class="card"><p>请先登录</p></div>'; return; }
   const buildings = currentUser.buildings || { farm: 0, house: 0, land: 0 };
   const gold = currentUser.gold || 0;
-
-  panelMap.innerHTML = `
+  $('panel-map').innerHTML = `
     <div class="card">
       <div class="card-header">🏗️ 基建中心</div>
-      <p>🪙 金币：${gold}</p>
+      <p>🪙 金币：<strong>${gold}</strong></p>
+      <div style="display:flex;gap:20px;flex-wrap:wrap;margin:12px 0;font-size:0.9rem;background:#f8f6ee;padding:12px;border-radius:12px;">
+        <span>🌾 农场：${buildings.farm || 0} 块</span>
+        <span>🏡 小屋：${buildings.house || 0} 间</span>
+        <span>🏔️ 领地：${buildings.land || 0} 处</span>
+      </div>
       <div class="map-grid">
-        <div class="build-card" data-type="farm">
-          <div class="icon">🌾</div>
-          <div>农场</div>
-          <div>${buildings.farm || 0} 块</div>
-          <div style="font-size:0.7rem;color:#888;">💰50 金币</div>
-        </div>
-        <div class="build-card" data-type="house">
-          <div class="icon">🏡</div>
-          <div>小屋</div>
-          <div>${buildings.house || 0} 间</div>
-          <div style="font-size:0.7rem;color:#888;">💰200 金币</div>
-        </div>
-        <div class="build-card" data-type="land">
-          <div class="icon">🏔️</div>
-          <div>领地</div>
-          <div>${buildings.land || 0} 处</div>
-          <div style="font-size:0.7rem;color:#888;">💰500 金币</div>
-        </div>
+        <div class="build-card" data-type="farm"><div class="icon">🌾</div><div>农场</div><div>💰50 金币</div><div style="font-size:0.7rem;color:#888;">拥有：${buildings.farm||0}</div></div>
+        <div class="build-card" data-type="house"><div class="icon">🏡</div><div>小屋</div><div>💰200 金币</div><div style="font-size:0.7rem;color:#888;">拥有：${buildings.house||0}</div></div>
+        <div class="build-card" data-type="land"><div class="icon">🏔️</div><div>领地</div><div>💰500 金币</div><div style="font-size:0.7rem;color:#888;">拥有：${buildings.land||0}</div></div>
       </div>
     </div>
   `;
@@ -895,44 +1259,28 @@ async function renderMap() {
       const type = card.dataset.type;
       const costs = { farm: 50, house: 200, land: 500 };
       const cost = costs[type];
-      if (!currentUser) return;
-      if ((currentUser.gold || 0) < cost) {
-        toast('金币不足', 'error');
-        return;
-      }
+      if ((currentUser.gold || 0) < cost) { toast('金币不足', 'error'); return; }
       const newBuildings = { ...(currentUser.buildings || {}) };
       newBuildings[type] = (newBuildings[type] || 0) + 1;
       const newGold = (currentUser.gold || 0) - cost;
-      const { error } = await supabase
-        .from('users')
-        .update({ gold: newGold, buildings: newBuildings })
-        .eq('id', currentUser.id)
-        .select()
-        .single();
-      if (error) { toast('建设失败: ' + error.message, 'error'); return; }
-      // 更新当前用户对象
+      await supabase.from('users').update({ gold: newGold, buildings: newBuildings }).eq('id', currentUser.id);
       currentUser.gold = newGold;
       currentUser.buildings = newBuildings;
-      toast('建设成功！', 'success');
-      renderMap(); // 刷新
+      toast('🎉 建设成功！', 'success');
+      await checkTask('built');
+      updateLeftPanel();
+      renderMap();
     });
   });
 }
 
 // ================================================================
-// 12. 初始化
+// 14. 初始化
 // ================================================================
-function init() {
-  // 默认显示登录界面（无持久化 session）
-  loginOverlay.classList.remove('hidden');
-}
+modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+loginOverlay.classList.remove('hidden');
 
-// 点击模态框外部关闭
-modalOverlay.addEventListener('click', (e) => {
-  if (e.target === modalOverlay) closeModal();
-});
-
-init();
+console.log('🌲 雾凇会馆已加载！');
 </script>
 </body>
 </html>
