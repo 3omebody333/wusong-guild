@@ -208,7 +208,6 @@
       font-weight: bold;
     }
     .nav-tab:hover { background: #f0ede0; }
-    /* 未读消息小红点 */
     .nav-tab .badge {
       position: absolute;
       top: 6px;
@@ -549,6 +548,7 @@
   }
 }
 </script>
+
 <script type="module">
 // ================================================================
 // 1. 配置 Supabase（请替换为你的真实值）
@@ -556,18 +556,19 @@
 import { createClient } from '@supabase/supabase-js';
 
 // ★★★ 下面两行务必替换成你自己的 URL 和 anon key ★★★
-const SUPABASE_URL = 'https://buoecihowzgqjwfhexsw.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_h7VgZB8CXLGZOXJbEecxBw_tY-RE7ii';
+const SUPABASE_URL = 'https://你的项目ID.supabase.co';
+const SUPABASE_ANON_KEY = '你的anon密钥';
+
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ================================================================
 // 2. 全局状态
 // ================================================================
-let currentUser = null;          // 当前登录用户完整对象
-let currentTab = 'forum';        // 当前激活的标签
-let viewingPostId = null;        // 正在查看的帖子ID（详情模式）
-let chatWithFriendId = null;     // 当前聊天对象的好友ID
-let chatSubscription = null;     // 消息订阅对象
+let currentUser = null;
+let currentTab = 'forum';
+let viewingPostId = null;
+let chatWithFriendId = null;
+let chatSubscription = null;
 
 // DOM 引用
 const $ = id => document.getElementById(id);
@@ -589,7 +590,6 @@ const modalOverlay = $('modalOverlay');
 const modalContent = $('modalContent');
 const chatBadge = $('chatBadge');
 
-// 左侧面板元素
 const avatarWrapper = $('avatarWrapper');
 const avatarImg = $('avatarImg');
 const avatarEmoji = $('avatarEmoji');
@@ -636,7 +636,6 @@ function closeModal() {
   modalContent.innerHTML = '';
 }
 
-// SHA-256 哈希（用于密码）
 async function hashPassword(password) {
   const encoder = new TextEncoder();
   const data = encoder.encode(password + 'fog-salt-2026');
@@ -645,7 +644,6 @@ async function hashPassword(password) {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// 检查今日是否已重置任务
 function isNewDay(lastDate) {
   if (!lastDate) return true;
   const today = new Date().toDateString();
@@ -677,7 +675,6 @@ loginBtn.addEventListener('click', async () => {
 
   try {
     if (loginMode === 'register') {
-      // 注册：检查用户名是否已存在
       const { data: existing } = await supabase
         .from('users')
         .select('id')
@@ -693,14 +690,12 @@ loginBtn.addEventListener('click', async () => {
         .insert([{ username, password_hash: passwordHash }]);
       if (insertError) throw insertError;
       toast('注册成功！请登录', 'success');
-      // 切换到登录标签
       loginTabs.forEach(t => t.classList.remove('active'));
       document.querySelector('.login-tab[data-mode="login"]').classList.add('active');
       loginMode = 'login';
       loginPassword.value = '';
       loginUsername.value = '';
     } else {
-      // 登录
       const { data: user, error: userError } = await supabase
         .from('users')
         .select('*')
@@ -715,19 +710,13 @@ loginBtn.addEventListener('click', async () => {
         loginError.textContent = '密码错误';
         return;
       }
-      // 登录成功
       currentUser = user;
       loginOverlay.classList.add('hidden');
       appContainer.style.display = 'flex';
-      // 重置每日任务（如果需要）
       await resetDailyTasksIfNeeded();
-      // 更新左侧面板
       updateLeftPanel();
-      // 渲染当前标签
       renderCurrentTab();
-      // 启动聊天订阅
       startChatSubscription();
-      // 更新未读消息数
       updateUnreadCount();
       toast(`🌲 欢迎 ${user.username}`);
     }
@@ -756,14 +745,12 @@ async function resetDailyTasksIfNeeded() {
       .from('users')
       .update({ daily_tasks: newTasks })
       .eq('id', currentUser.id);
-    if (!error) {
-      currentUser.daily_tasks = newTasks;
-    }
+    if (!error) currentUser.daily_tasks = newTasks;
   }
 }
 
 // ================================================================
-// 6. 更新左侧面板（头像、用户名、等级、金币、经验、简介、统计）
+// 6. 更新左侧面板
 // ================================================================
 function updateLeftPanel() {
   if (!currentUser) return;
@@ -772,7 +759,6 @@ function updateLeftPanel() {
   panelGold.textContent = currentUser.gold || 0;
   panelExp.textContent = currentUser.exp || 0;
   panelBio.textContent = currentUser.bio || '这个人很懒，什么都没写~';
-  // 头像
   if (currentUser.avatar_url) {
     avatarImg.src = currentUser.avatar_url;
     avatarImg.style.display = 'block';
@@ -782,7 +768,6 @@ function updateLeftPanel() {
     avatarEmoji.style.display = 'block';
     avatarEmoji.textContent = currentUser.avatar || '🐱';
   }
-  // 好友数和帖子数
   updateFriendCount();
   updatePostCount();
 }
@@ -809,34 +794,17 @@ async function updatePostCount() {
 // ================================================================
 // 7. 头像上传
 // ================================================================
-avatarWrapper.addEventListener('click', () => {
-  avatarInput.click();
-});
-
+avatarWrapper.addEventListener('click', () => avatarInput.click());
 avatarInput.addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
   const fileExt = file.name.split('.').pop();
   const fileName = `${currentUser.id}_${Date.now()}.${fileExt}`;
-  const { data, error } = await supabase.storage
-    .from('avatars')
-    .upload(fileName, file);
-  if (error) {
-    toast('上传失败: ' + error.message, 'error');
-    return;
-  }
-  const { data: urlData } = supabase.storage
-    .from('avatars')
-    .getPublicUrl(fileName);
+  const { error } = await supabase.storage.from('avatars').upload(fileName, file);
+  if (error) { toast('上传失败: ' + error.message, 'error'); return; }
+  const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(fileName);
   const avatarUrl = urlData.publicUrl;
-  const { error: updateError } = await supabase
-    .from('users')
-    .update({ avatar_url: avatarUrl })
-    .eq('id', currentUser.id);
-  if (updateError) {
-    toast('更新头像失败', 'error');
-    return;
-  }
+  await supabase.from('users').update({ avatar_url: avatarUrl }).eq('id', currentUser.id);
   currentUser.avatar_url = avatarUrl;
   updateLeftPanel();
   toast('头像更新成功', 'success');
@@ -860,11 +828,7 @@ panelBio.addEventListener('click', () => {
   document.getElementById('modalCancel').addEventListener('click', closeModal);
   document.getElementById('modalSaveBio').addEventListener('click', async () => {
     const bio = document.getElementById('editBio').value.trim();
-    const { error } = await supabase
-      .from('users')
-      .update({ bio })
-      .eq('id', currentUser.id);
-    if (error) { toast('更新失败', 'error'); return; }
+    await supabase.from('users').update({ bio }).eq('id', currentUser.id);
     currentUser.bio = bio;
     updateLeftPanel();
     toast('简介已更新', 'success');
@@ -876,16 +840,10 @@ panelBio.addEventListener('click', () => {
 // 9. 导航切换
 // ================================================================
 function renderCurrentTab() {
-  // 隐藏所有面板
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  // 显示当前面板
   const target = document.getElementById(`panel-${currentTab}`);
   if (target) target.classList.add('active');
-  // 高亮导航标签
-  navTabs.forEach(tab => {
-    tab.classList.toggle('active', tab.dataset.tab === currentTab);
-  });
-  // 根据标签渲染内容
+  navTabs.forEach(tab => tab.classList.toggle('active', tab.dataset.tab === currentTab));
   switch (currentTab) {
     case 'forum': renderForum(); break;
     case 'friends': renderFriends(); break;
@@ -898,7 +856,7 @@ function renderCurrentTab() {
 navTabs.forEach(tab => {
   tab.addEventListener('click', () => {
     currentTab = tab.dataset.tab;
-    viewingPostId = null; // 退出帖子详情
+    viewingPostId = null;
     renderCurrentTab();
   });
 });
@@ -907,13 +865,10 @@ navTabs.forEach(tab => {
 // 10. 论坛 - 帖子列表
 // ================================================================
 async function renderForum() {
-  // 如果正在查看帖子详情，则渲染详情
   if (viewingPostId) {
     await renderPostDetail(viewingPostId);
     return;
   }
-
-  // 列表视图
   panelForum.innerHTML = `
     <div class="card">
       <div class="card-header">
@@ -923,14 +878,8 @@ async function renderForum() {
     </div>
     <div class="card" id="postsList"><div style="text-align:center;padding:20px;color:#888;">加载中...</div></div>
   `;
+  document.getElementById('newPostBtn').addEventListener('click', openNewPost);
 
-  // 发帖按钮事件
-  const newPostBtn = document.getElementById('newPostBtn');
-  if (newPostBtn) {
-    newPostBtn.addEventListener('click', openNewPost);
-  }
-
-  // 查询帖子（带作者信息）
   const { data: posts, error } = await supabase
     .from('posts_with_authors')
     .select('*')
@@ -945,12 +894,8 @@ async function renderForum() {
     return;
   }
 
-  // 获取每个帖子的统计（回复数、点赞数）
   const postIds = posts.map(p => p.id);
-  const { data: stats } = await supabase
-    .from('posts_stats')
-    .select('*')
-    .in('id', postIds);
+  const { data: stats } = await supabase.from('posts_stats').select('*').in('id', postIds);
   const statMap = {};
   if (stats) stats.forEach(s => { statMap[s.id] = s; });
 
@@ -975,8 +920,6 @@ async function renderForum() {
     `;
   }
   document.getElementById('postsList').innerHTML = html;
-
-  // 点击帖子进入详情
   document.querySelectorAll('.post-item').forEach(el => {
     el.addEventListener('click', () => {
       viewingPostId = parseInt(el.dataset.postid);
@@ -986,7 +929,7 @@ async function renderForum() {
 }
 
 // ================================================================
-// 11. 帖子详情（包含编辑功能）
+// 11. 帖子详情（含编辑）
 // ================================================================
 async function renderPostDetail(postId) {
   const { data: post, error } = await supabase
@@ -1001,23 +944,17 @@ async function renderPostDetail(postId) {
     return;
   }
 
-  // 获取回复
   const { data: replies } = await supabase
     .from('replies')
-    .select(`
-      *,
-      users!author_id (username, avatar, avatar_url)
-    `)
+    .select('*, users!author_id (username, avatar, avatar_url)')
     .eq('post_id', postId)
     .order('created_at', { ascending: true });
 
-  // 获取点赞数
   const { count: likeCount } = await supabase
     .from('likes')
     .select('*', { count: 'exact', head: true })
     .eq('post_id', postId);
 
-  // 当前用户是否点赞
   let userLiked = false;
   if (currentUser) {
     const { data: likeData } = await supabase
@@ -1076,73 +1013,47 @@ async function renderPostDetail(postId) {
   `;
   panelForum.innerHTML = html;
 
-  // ---- 事件绑定 ----
-  // 返回列表
   document.getElementById('backToList').addEventListener('click', () => {
     viewingPostId = null;
     renderForum();
   });
 
-  // 点赞
-  const likeBtn = document.getElementById('likeBtn');
-  if (likeBtn) {
-    likeBtn.addEventListener('click', async () => {
-      if (!currentUser) { toast('请先登录', 'error'); return; }
-      const { data: existing } = await supabase
-        .from('likes')
-        .select('*')
-        .eq('post_id', postId)
-        .eq('user_id', currentUser.id)
-        .maybeSingle();
-      if (existing) {
-        await supabase
-          .from('likes')
-          .delete()
-          .eq('post_id', postId)
-          .eq('user_id', currentUser.id);
-        toast('已取消点赞');
-      } else {
-        await supabase
-          .from('likes')
-          .insert([{ post_id: postId, user_id: currentUser.id }]);
-        toast('❤️ 点赞成功', 'success');
-      }
-      renderPostDetail(postId);
-    });
-  }
+  document.getElementById('likeBtn')?.addEventListener('click', async () => {
+    if (!currentUser) { toast('请先登录', 'error'); return; }
+    const { data: existing } = await supabase
+      .from('likes')
+      .select('*')
+      .eq('post_id', postId)
+      .eq('user_id', currentUser.id)
+      .maybeSingle();
+    if (existing) {
+      await supabase.from('likes').delete().eq('post_id', postId).eq('user_id', currentUser.id);
+      toast('已取消点赞');
+    } else {
+      await supabase.from('likes').insert([{ post_id: postId, user_id: currentUser.id }]);
+      toast('❤️ 点赞成功', 'success');
+    }
+    renderPostDetail(postId);
+  });
 
-  // 回复
   document.getElementById('replyBtn').addEventListener('click', () => openReply(postId));
 
-  // 编辑帖子
-  const editBtn = document.getElementById('editPostBtn');
-  if (editBtn) {
-    editBtn.addEventListener('click', () => openEditPost(postId));
-  }
-
-  // 删除帖子
-  const deleteBtn = document.getElementById('deletePostBtn');
-  if (deleteBtn) {
-    deleteBtn.addEventListener('click', async () => {
-      if (!confirm('确定删除此帖吗？')) return;
-      await supabase.from('posts').delete().eq('id', postId);
-      toast('帖子已删除', 'success');
-      viewingPostId = null;
-      renderForum();
-      updateLeftPanel();
-    });
-  }
+  document.getElementById('editPostBtn')?.addEventListener('click', () => openEditPost(postId));
+  document.getElementById('deletePostBtn')?.addEventListener('click', async () => {
+    if (!confirm('确定删除此帖吗？')) return;
+    await supabase.from('posts').delete().eq('id', postId);
+    toast('帖子已删除', 'success');
+    viewingPostId = null;
+    renderForum();
+    updateLeftPanel();
+  });
 }
 
 // ================================================================
-// 12. 发帖、编辑帖子、回复
+// 12. 发帖、编辑、回复
 // ================================================================
-// 发帖
 function openNewPost() {
-  if (!currentUser) {
-    toast('请先登录', 'error');
-    return;
-  }
+  if (!currentUser) { toast('请先登录', 'error'); return; }
   modalContent.innerHTML = `
     <h3>✏️ 发新帖</h3>
     <input type="text" id="newPostTitle" placeholder="标题" maxlength="100">
@@ -1157,19 +1068,11 @@ function openNewPost() {
   document.getElementById('modalConfirm').addEventListener('click', async () => {
     const title = document.getElementById('newPostTitle').value.trim();
     const content = document.getElementById('newPostContent').value.trim();
-    if (!title || !content) {
-      toast('请填写完整', 'error');
-      return;
-    }
+    if (!title || !content) { toast('请填写完整', 'error'); return; }
     const { error } = await supabase
       .from('posts')
       .insert([{ title, content, author_id: currentUser.id }]);
-    if (error) {
-      console.error('发帖错误:', error);
-      toast('发布失败: ' + error.message, 'error');
-      return;
-    }
-    // 触发任务
+    if (error) { toast('发布失败: ' + error.message, 'error'); return; }
     await completeTask('posted');
     toast('发布成功', 'success');
     closeModal();
@@ -1179,56 +1082,36 @@ function openNewPost() {
   });
 }
 
-// 编辑帖子
 function openEditPost(postId) {
-  if (!currentUser) return;
-  // 先获取当前内容
-  supabase
-    .from('posts')
-    .select('title, content')
-    .eq('id', postId)
-    .single()
-    .then(({ data, error }) => {
-      if (error) { toast('获取帖子失败', 'error'); return; }
-      modalContent.innerHTML = `
-        <h3>✏️ 编辑帖子</h3>
-        <input type="text" id="editPostTitle" value="${escHtml(data.title)}" maxlength="100">
-        <textarea id="editPostContent" rows="5">${escHtml(data.content)}</textarea>
-        <div class="modal-actions">
-          <button class="btn btn-outline btn-sm" id="modalCancel">取消</button>
-          <button class="btn btn-primary btn-sm" id="modalSaveEdit">保存</button>
-        </div>
-      `;
-      modalOverlay.classList.add('show');
-      document.getElementById('modalCancel').addEventListener('click', closeModal);
-      document.getElementById('modalSaveEdit').addEventListener('click', async () => {
-        const title = document.getElementById('editPostTitle').value.trim();
-        const content = document.getElementById('editPostContent').value.trim();
-        if (!title || !content) {
-          toast('请填写完整', 'error');
-          return;
-        }
-        const { error } = await supabase
-          .from('posts')
-          .update({ title, content, updated_at: new Date().toISOString() })
-          .eq('id', postId);
-        if (error) {
-          toast('更新失败: ' + error.message, 'error');
-          return;
-        }
-        toast('帖子已更新', 'success');
-        closeModal();
-        renderPostDetail(postId);
-      });
+  supabase.from('posts').select('title, content').eq('id', postId).single().then(({ data }) => {
+    modalContent.innerHTML = `
+      <h3>✏️ 编辑帖子</h3>
+      <input type="text" id="editPostTitle" value="${escHtml(data.title)}" maxlength="100">
+      <textarea id="editPostContent" rows="5">${escHtml(data.content)}</textarea>
+      <div class="modal-actions">
+        <button class="btn btn-outline btn-sm" id="modalCancel">取消</button>
+        <button class="btn btn-primary btn-sm" id="modalSaveEdit">保存</button>
+      </div>
+    `;
+    modalOverlay.classList.add('show');
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    document.getElementById('modalSaveEdit').addEventListener('click', async () => {
+      const title = document.getElementById('editPostTitle').value.trim();
+      const content = document.getElementById('editPostContent').value.trim();
+      if (!title || !content) { toast('请填写完整', 'error'); return; }
+      await supabase
+        .from('posts')
+        .update({ title, content, updated_at: new Date().toISOString() })
+        .eq('id', postId);
+      toast('帖子已更新', 'success');
+      closeModal();
+      renderPostDetail(postId);
     });
+  });
 }
 
-// 回复
 function openReply(postId) {
-  if (!currentUser) {
-    toast('请先登录', 'error');
-    return;
-  }
+  if (!currentUser) { toast('请先登录', 'error'); return; }
   modalContent.innerHTML = `
     <h3>💬 回复</h3>
     <textarea id="replyContent" rows="4" placeholder="写回复..."></textarea>
@@ -1241,17 +1124,11 @@ function openReply(postId) {
   document.getElementById('modalCancel').addEventListener('click', closeModal);
   document.getElementById('modalConfirm').addEventListener('click', async () => {
     const content = document.getElementById('replyContent').value.trim();
-    if (!content) {
-      toast('请填写内容', 'error');
-      return;
-    }
+    if (!content) { toast('请填写内容', 'error'); return; }
     const { error } = await supabase
       .from('replies')
       .insert([{ post_id: postId, author_id: currentUser.id, content }]);
-    if (error) {
-      toast('回复失败: ' + error.message, 'error');
-      return;
-    }
+    if (error) { toast('回复失败: ' + error.message, 'error'); return; }
     await completeTask('replied');
     toast('回复成功', 'success');
     closeModal();
@@ -1264,12 +1141,8 @@ function openReply(postId) {
 // 13. 好友系统
 // ================================================================
 async function renderFriends() {
-  if (!currentUser) {
-    panelFriends.innerHTML = `<div class="card">请先登录</div>`;
-    return;
-  }
+  if (!currentUser) { panelFriends.innerHTML = `<div class="card">请先登录</div>`; return; }
 
-  // 获取所有已接受的好友
   const { data: friendRows } = await supabase
     .from('friends')
     .select(`
@@ -1280,7 +1153,6 @@ async function renderFriends() {
     .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
     .eq('status', 'accepted');
 
-  // 获取待处理请求（别人发给我的）
   const { data: pendingRows } = await supabase
     .from('friends')
     .select(`
@@ -1331,7 +1203,6 @@ async function renderFriends() {
   `;
   panelFriends.innerHTML = html;
 
-  // ---- 搜索好友 ----
   document.getElementById('searchFriendBtn').addEventListener('click', async () => {
     const keyword = document.getElementById('searchFriendInput').value.trim();
     if (!keyword) { document.getElementById('searchResult').innerHTML = ''; return; }
@@ -1341,11 +1212,7 @@ async function renderFriends() {
       .ilike('username', `%${keyword}%`)
       .neq('id', currentUser.id);
     const resultDiv = document.getElementById('searchResult');
-    if (!users || users.length === 0) {
-      resultDiv.innerHTML = '<p style="color:#999;">未找到</p>';
-      return;
-    }
-    // 获取已是好友的id列表
+    if (!users || users.length === 0) { resultDiv.innerHTML = '<p style="color:#999;">未找到</p>'; return; }
     const friendIds = friendRows ? friendRows.map(r => r.sender_id === currentUser.id ? r.receiver_id : r.sender_id) : [];
     resultDiv.innerHTML = users.map(u => {
       const isFriend = friendIds.includes(u.id);
@@ -1356,61 +1223,46 @@ async function renderFriends() {
         </div>
       `;
     }).join('');
-    // 加好友事件
     document.querySelectorAll('.add-friend-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
         const receiverId = parseInt(btn.dataset.userId);
-        const { error } = await supabase
-          .from('friends')
-          .insert([{ sender_id: currentUser.id, receiver_id: receiverId, status: 'pending' }]);
-        if (error) { toast('请求失败: ' + error.message, 'error'); return; }
+        await supabase.from('friends').insert([{ sender_id: currentUser.id, receiver_id: receiverId, status: 'pending' }]);
         toast('好友请求已发送', 'success');
         renderFriends();
       });
     });
   });
 
-  // ---- 处理好友请求（接受/拒绝） ----
   document.querySelectorAll('[data-request-id]').forEach(btn => {
     btn.addEventListener('click', async () => {
       const id = parseInt(btn.dataset.requestId);
-      const action = btn.dataset.action;
-      const status = action === 'accept' ? 'accepted' : 'rejected';
-      const { error } = await supabase
-        .from('friends')
-        .update({ status })
-        .eq('id', id);
-      if (error) { toast('操作失败', 'error'); return; }
-      toast(action === 'accept' ? '已接受' : '已拒绝', 'success');
+      const status = btn.dataset.action === 'accept' ? 'accepted' : 'rejected';
+      await supabase.from('friends').update({ status }).eq('id', id);
+      toast(btn.dataset.action === 'accept' ? '已接受' : '已拒绝', 'success');
       renderFriends();
       updateLeftPanel();
     });
   });
 
-  // ---- 移除好友 ----
   document.querySelectorAll('.remove-friend-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       const friendId = parseInt(btn.dataset.friendId);
       if (!confirm('确定移除该好友吗？')) return;
-      const { error } = await supabase
+      await supabase
         .from('friends')
         .delete()
         .or(`(sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id})`)
         .or(`(sender_id.eq.${friendId},receiver_id.eq.${friendId})`)
         .eq('status', 'accepted');
-      if (error) { toast('移除失败', 'error'); return; }
       toast('已移除', 'success');
       renderFriends();
       updateLeftPanel();
     });
   });
 
-  // ---- 聊天按钮（跳转到聊天标签并打开该好友） ----
   document.querySelectorAll('.chat-friend-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const friendId = parseInt(btn.dataset.friendId);
-      chatWithFriendId = friendId;
-      // 切换到聊天标签
+      chatWithFriendId = parseInt(btn.dataset.friendId);
       currentTab = 'chat';
       renderCurrentTab();
     });
@@ -1418,15 +1270,11 @@ async function renderFriends() {
 }
 
 // ================================================================
-// 14. 聊天系统（实时）
+// 14. 聊天系统
 // ================================================================
 async function renderChat() {
-  if (!currentUser) {
-    panelChat.innerHTML = `<div class="card">请先登录</div>`;
-    return;
-  }
+  if (!currentUser) { panelChat.innerHTML = `<div class="card">请先登录</div>`; return; }
 
-  // 获取所有好友列表（用于左侧选择）
   const { data: friendRows } = await supabase
     .from('friends')
     .select(`
@@ -1437,15 +1285,11 @@ async function renderChat() {
     .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
     .eq('status', 'accepted');
 
-  const friends = friendRows ? friendRows.map(row => {
-    return row.sender_id === currentUser.id ? row.receiver : row.sender;
-  }) : [];
+  const friends = friendRows ? friendRows.map(row => row.sender_id === currentUser.id ? row.receiver : row.sender) : [];
 
-  // 构建聊天界面：左侧好友列表 + 右侧聊天窗口
   let html = `
     <div class="card" style="padding:0; overflow:hidden;">
       <div style="display:flex; flex-wrap:wrap; height:580px;">
-        <!-- 好友列表（左侧） -->
         <div style="width:200px; border-right:1px solid #e4decf; overflow-y:auto; padding:10px; flex-shrink:0;">
           <h4 style="margin-bottom:10px;">我的好友</h4>
           ${friends.length === 0 ? '<p style="color:#999;font-size:0.8rem;">暂无好友</p>' : ''}
@@ -1459,7 +1303,6 @@ async function renderChat() {
             </div>
           `).join('')}
         </div>
-        <!-- 聊天区域（右侧） -->
         <div style="flex:1; display:flex; flex-direction:column; min-width:260px;">
           ${chatWithFriendId ? `
             <div style="padding:8px 16px; border-bottom:1px solid #e4decf; font-weight:bold;">
@@ -1483,12 +1326,10 @@ async function renderChat() {
   `;
   panelChat.innerHTML = html;
 
-  // ---- 好友点击事件（切换聊天对象） ----
   document.querySelectorAll('.friend-item[data-friend-id]').forEach(el => {
     el.addEventListener('click', () => {
       chatWithFriendId = parseInt(el.dataset.friendId);
-      renderChat(); // 刷新聊天界面
-      // 切换后滚动到底部
+      renderChat();
       setTimeout(() => {
         const container = document.getElementById('chatMessages');
         if (container) container.scrollTop = container.scrollHeight;
@@ -1496,50 +1337,32 @@ async function renderChat() {
     });
   });
 
-  // ---- 加载消息 & 发送 ----
   if (chatWithFriendId) {
-    // 加载历史消息
     await loadMessages(chatWithFriendId);
-    // 滚动到底部
     const container = document.getElementById('chatMessages');
     if (container) container.scrollTop = container.scrollHeight;
 
-    // 发送按钮
-    document.getElementById('sendChatBtn').addEventListener('click', () => {
-      sendMessage(chatWithFriendId);
-    });
+    document.getElementById('sendChatBtn').addEventListener('click', () => sendMessage(chatWithFriendId));
     document.getElementById('chatInput').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') sendMessage(chatWithFriendId);
     });
   }
-
-  // 更新未读消息数
   updateUnreadCount();
 }
 
-// 加载消息
 async function loadMessages(friendId) {
   const container = document.getElementById('chatMessages');
   if (!container) return;
-  container.innerHTML = '<div style="text-align:center;color:#999;">加载中...</div>';
-
   const { data: messages, error } = await supabase
     .from('messages')
     .select('*')
     .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${friendId}),and(sender_id.eq.${friendId},receiver_id.eq.${currentUser.id})`)
     .order('created_at', { ascending: true });
-
-  if (error) {
-    container.innerHTML = '<p style="color:#c62828;">加载失败</p>';
-    return;
-  }
-
+  if (error) { container.innerHTML = '<p style="color:#c62828;">加载失败</p>'; return; }
   if (!messages || messages.length === 0) {
     container.innerHTML = '<div style="text-align:center;color:#999;font-size:0.8rem;">还没有消息，打个招呼吧 👋</div>';
     return;
   }
-
-  // 显示消息
   container.innerHTML = messages.map(msg => {
     const isSent = msg.sender_id === currentUser.id;
     return `
@@ -1549,36 +1372,25 @@ async function loadMessages(friendId) {
       </div>
     `;
   }).join('');
-
-  // 将对方发来的未读消息标记为已读
   await supabase
     .from('messages')
     .update({ is_read: true })
     .eq('sender_id', friendId)
     .eq('receiver_id', currentUser.id)
     .eq('is_read', false);
-
-  // 更新未读小红点
   updateUnreadCount();
 }
 
-// 发送消息
 async function sendMessage(friendId) {
   const input = document.getElementById('chatInput');
   if (!input) return;
   const content = input.value.trim();
   if (!content) return;
   input.value = '';
-
   const { error } = await supabase
     .from('messages')
     .insert([{ sender_id: currentUser.id, receiver_id: friendId, content }]);
-  if (error) {
-    toast('发送失败: ' + error.message, 'error');
-    return;
-  }
-  // 重新加载消息（会通过订阅自动刷新，但为立即显示，可以手动追加）
-  // 但为了实时性，订阅会处理，但可能延迟，我们立即追加一条本地消息
+  if (error) { toast('发送失败: ' + error.message, 'error'); return; }
   const container = document.getElementById('chatMessages');
   if (container) {
     const msgDiv = document.createElement('div');
@@ -1592,51 +1404,21 @@ async function sendMessage(friendId) {
   }
 }
 
-// 更新未读消息数（显示小红点）
-async function updateUnreadCount() {
-  if (!currentUser) {
-    chatBadge.style.display = 'none';
-    return;
-  }
-  const { count, error } = await supabase
-    .from('messages')
-    .select('*', { count: 'exact', head: true })
-    .eq('receiver_id', currentUser.id)
-    .eq('is_read', false);
-  if (error) {
-    chatBadge.style.display = 'none';
-    return;
-  }
-  if (count && count > 0) {
-    chatBadge.textContent = count > 99 ? '99+' : count;
-    chatBadge.style.display = 'inline';
-  } else {
-    chatBadge.style.display = 'none';
-  }
-}
-
-// 启动实时订阅（监听新消息）
 function startChatSubscription() {
-  if (chatSubscription) {
-    supabase.removeChannel(chatSubscription);
-    chatSubscription = null;
-  }
+  if (chatSubscription) supabase.removeChannel(chatSubscription);
   if (!currentUser) return;
-  // 订阅 messages 表的变化
   chatSubscription = supabase
     .channel('messages-channel')
     .on('postgres_changes', {
       event: 'INSERT',
       schema: 'public',
       table: 'messages',
-      filter: `receiver_id=eq.${currentUser.id}` // 只接收发给自己的消息
+      filter: `receiver_id=eq.${currentUser.id}`
     }, (payload) => {
       const newMsg = payload.new;
-      // 如果当前正在与该发送者聊天，追加消息
       if (chatWithFriendId === newMsg.sender_id) {
         const container = document.getElementById('chatMessages');
         if (container) {
-          // 如果容器内只有“暂无消息”占位，清空
           if (container.children.length === 1 && container.children[0].tagName === 'DIV' && container.children[0].style?.textAlign === 'center') {
             container.innerHTML = '';
           }
@@ -1649,26 +1431,33 @@ function startChatSubscription() {
           container.appendChild(msgDiv);
           container.scrollTop = container.scrollHeight;
         }
-        // 自动标记为已读
-        supabase
-          .from('messages')
-          .update({ is_read: true })
-          .eq('id', newMsg.id);
+        supabase.from('messages').update({ is_read: true }).eq('id', newMsg.id);
       }
-      // 更新未读小红点
       updateUnreadCount();
     })
     .subscribe();
+}
+
+async function updateUnreadCount() {
+  if (!currentUser) { chatBadge.style.display = 'none'; return; }
+  const { count } = await supabase
+    .from('messages')
+    .select('*', { count: 'exact', head: true })
+    .eq('receiver_id', currentUser.id)
+    .eq('is_read', false);
+  if (count && count > 0) {
+    chatBadge.textContent = count > 99 ? '99+' : count;
+    chatBadge.style.display = 'inline';
+  } else {
+    chatBadge.style.display = 'none';
+  }
 }
 
 // ================================================================
 // 15. 基建中心
 // ================================================================
 async function renderBuild() {
-  if (!currentUser) {
-    panelBuild.innerHTML = `<div class="card">请先登录</div>`;
-    return;
-  }
+  if (!currentUser) { panelBuild.innerHTML = `<div class="card">请先登录</div>`; return; }
   const buildings = currentUser.buildings || { farm: 0, house: 0, land: 0 };
   const gold = currentUser.gold || 0;
 
@@ -1702,26 +1491,19 @@ async function renderBuild() {
     </div>
   `;
 
-  // 购买事件
   document.querySelectorAll('.build-card').forEach(card => {
     card.querySelector('button').addEventListener('click', async () => {
       const type = card.dataset.type;
       const costs = { farm: 50, house: 200, land: 500 };
       const cost = costs[type];
-      if ((currentUser.gold || 0) < cost) {
-        toast('金币不足', 'error');
-        return;
-      }
+      if ((currentUser.gold || 0) < cost) { toast('金币不足', 'error'); return; }
       const newBuildings = { ...(currentUser.buildings || {}) };
       newBuildings[type] = (newBuildings[type] || 0) + 1;
       const newGold = (currentUser.gold || 0) - cost;
-      const { error } = await supabase
+      await supabase
         .from('users')
         .update({ gold: newGold, buildings: newBuildings })
-        .eq('id', currentUser.id)
-        .select()
-        .single();
-      if (error) { toast('购买失败', 'error'); return; }
+        .eq('id', currentUser.id);
       currentUser.gold = newGold;
       currentUser.buildings = newBuildings;
       await completeTask('built');
@@ -1736,10 +1518,7 @@ async function renderBuild() {
 // 16. 任务系统
 // ================================================================
 async function renderTasks() {
-  if (!currentUser) {
-    panelTasks.innerHTML = `<div class="card">请先登录</div>`;
-    return;
-  }
+  if (!currentUser) { panelTasks.innerHTML = `<div class="card">请先登录</div>`; return; }
   const tasks = currentUser.daily_tasks || {};
   const signed = tasks.signed || false;
   const posted = tasks.posted || false;
@@ -1781,35 +1560,22 @@ async function renderTasks() {
     </div>
   `;
 
-  // 签到
-  const signBtn = document.getElementById('taskSign');
-  if (signBtn) {
-    signBtn.addEventListener('click', async () => {
-      if (signed) { toast('今日已签到', 'error'); return; }
-      await completeTask('signed');
-      toast('签到成功！获得20金币', 'success');
-      renderTasks();
-      updateLeftPanel();
-    });
-  }
+  document.getElementById('taskSign')?.addEventListener('click', async () => {
+    if (signed) { toast('今日已签到', 'error'); return; }
+    await completeTask('signed');
+    toast('签到成功！获得20金币', 'success');
+    renderTasks();
+    updateLeftPanel();
+  });
 
-  // 领取奖励
   document.getElementById('claimRewardBtn').addEventListener('click', async () => {
-    if (done !== 4) {
-      toast('请先完成所有任务', 'error');
-      return;
-    }
+    if (done !== 4) { toast('请先完成所有任务', 'error'); return; }
     const newGold = (currentUser.gold || 0) + 50;
     const newExp = (currentUser.exp || 0) + 30;
-    const { error } = await supabase
-      .from('users')
-      .update({ gold: newGold, exp: newExp })
-      .eq('id', currentUser.id);
-    if (error) { toast('领取失败', 'error'); return; }
+    await supabase.from('users').update({ gold: newGold, exp: newExp }).eq('id', currentUser.id);
     currentUser.gold = newGold;
     currentUser.exp = newExp;
     toast('🎉 获得50金币和30经验！', 'success');
-    // 重置任务（以便明天再做）
     const resetTasks = { signed: false, posted: false, replied: false, built: false, last_reset: new Date().toISOString() };
     await supabase.from('users').update({ daily_tasks: resetTasks }).eq('id', currentUser.id);
     currentUser.daily_tasks = resetTasks;
@@ -1819,45 +1585,32 @@ async function renderTasks() {
 }
 
 // ================================================================
-// 17. 通用任务完成函数（由发帖、回复、基建、签到调用）
+// 17. 通用任务完成函数
 // ================================================================
 async function completeTask(taskKey) {
   if (!currentUser) return;
   const tasks = currentUser.daily_tasks || {};
-  if (tasks[taskKey]) return; // 已完成
+  if (tasks[taskKey]) return;
   tasks[taskKey] = true;
-  const { error } = await supabase
-    .from('users')
-    .update({ daily_tasks: tasks })
-    .eq('id', currentUser.id);
-  if (!error) {
-    currentUser.daily_tasks = tasks;
-    if (taskKey !== 'signed') {
-      const bonusGold = 10;
-      const bonusExp = 5;
-      const newGold = (currentUser.gold || 0) + bonusGold;
-      const newExp = (currentUser.exp || 0) + bonusExp;
-      await supabase
-        .from('users')
-        .update({ gold: newGold, exp: newExp })
-        .eq('id', currentUser.id);
-      currentUser.gold = newGold;
-      currentUser.exp = newExp;
-      toast(`任务完成！+${bonusGold}金币 +${bonusExp}经验`, 'success');
-    }
-    updateLeftPanel();
+  await supabase.from('users').update({ daily_tasks: tasks }).eq('id', currentUser.id);
+  currentUser.daily_tasks = tasks;
+  if (taskKey !== 'signed') {
+    const bonusGold = 10, bonusExp = 5;
+    const newGold = (currentUser.gold || 0) + bonusGold;
+    const newExp = (currentUser.exp || 0) + bonusExp;
+    await supabase.from('users').update({ gold: newGold, exp: newExp }).eq('id', currentUser.id);
+    currentUser.gold = newGold;
+    currentUser.exp = newExp;
+    toast(`任务完成！+${bonusGold}金币 +${bonusExp}经验`, 'success');
   }
+  updateLeftPanel();
 }
 
 // ================================================================
 // 18. 登出
 // ================================================================
 logoutBtn.addEventListener('click', () => {
-  // 取消订阅
-  if (chatSubscription) {
-    supabase.removeChannel(chatSubscription);
-    chatSubscription = null;
-  }
+  if (chatSubscription) supabase.removeChannel(chatSubscription);
   currentUser = null;
   loginOverlay.classList.remove('hidden');
   appContainer.style.display = 'none';
@@ -1885,6 +1638,8 @@ modalOverlay.addEventListener('click', (e) => {
 init();
 
 // 暴露全局（方便调试）
+window.supabase = supabase;
+window.currentUser = currentUser;
 window.openNewPost = openNewPost;
 window.openReply = openReply;
 window.renderForum = renderForum;
@@ -1896,9 +1651,7 @@ window.renderCurrentTab = renderCurrentTab;
 window.updateLeftPanel = updateLeftPanel;
 window.updateUnreadCount = updateUnreadCount;
 
-window.supabase = supabase;
-window.currentUser = currentUser;
-console.log('🌲 雾凇会馆已加载完毕！');
+console.log('🌲 雾凇会馆（基础版）已加载完毕！');
 </script>
 </body>
 </html>
