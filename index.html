@@ -869,63 +869,92 @@ async function renderForum() {
     await renderPostDetail(viewingPostId);
     return;
   }
+  const { data: boards } = await supabase.from('boards').select('*').order('sort_order');
+  
+  let boardNav = `<div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">`;
+  boardNav += `<span class="board-tab active" data-board="all" style="cursor:pointer; padding:6px 14px; border-radius:20px; background:#556b4b; color:#fff;">全部</span>`;
+  if (boards) {
+    boards.forEach(b => {
+      boardNav += `<span class="board-tab" data-board="${b.id}" style="cursor:pointer; padding:6px 14px; border-radius:20px; background:#e4decf; color:#3b392f;">${escHtml(b.name)}</span>`;
+    });
+  }
+  boardNav += `</div>`;
+
   panelForum.innerHTML = `
     <div class="card">
       <div class="card-header">
         <span>📢 最新帖子</span>
         <button class="btn btn-primary btn-sm" id="newPostBtn">✏️ 发帖</button>
       </div>
+      ${boardNav}
     </div>
     <div class="card" id="postsList"><div style="text-align:center;padding:20px;color:#888;">加载中...</div></div>
   `;
   document.getElementById('newPostBtn').addEventListener('click', openNewPost);
 
-  const { data: posts, error } = await supabase
-    .from('posts_with_authors')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    document.getElementById('postsList').innerHTML = `<p style="color:#c62828;">加载失败: ${error.message}</p>`;
-    return;
-  }
-  if (!posts || posts.length === 0) {
-    document.getElementById('postsList').innerHTML = `<p style="color:#999;text-align:center;">还没有帖子，快来发第一篇吧！</p>`;
-    return;
-  }
-
-  const postIds = posts.map(p => p.id);
-  const { data: stats } = await supabase.from('posts_stats').select('*').in('id', postIds);
-  const statMap = {};
-  if (stats) stats.forEach(s => { statMap[s.id] = s; });
-
-  let html = '';
-  for (const post of posts) {
-    const replyCount = statMap[post.id]?.reply_count || 0;
-    const likeCount = statMap[post.id]?.like_count || 0;
-    const isHot = replyCount >= 5;
-    html += `
-      <div class="post-item" data-postid="${post.id}">
-        <div class="post-avatar">${escHtml(post.avatar || '🐱')}</div>
-        <div style="flex:1;">
-          <div class="post-title">${escHtml(post.title)} ${isHot ? '🔥' : ''}</div>
-          <div style="font-size:0.85rem;color:#555;margin:4px 0;">${escHtml(post.content.substring(0, 60))}${post.content.length>60?'...':''}</div>
-          <div class="post-meta">
-            ${escHtml(post.username || '已注销')} · ${timeAgo(post.created_at)} · 
-            ❤️ ${likeCount} · 💬 ${replyCount}
-            ${post.updated_at && post.updated_at !== post.created_at ? ' ✏️已编辑' : ''}
-          </div>
-        </div>
-      </div>
-    `;
-  }
-  document.getElementById('postsList').innerHTML = html;
-  document.querySelectorAll('.post-item').forEach(el => {
-    el.addEventListener('click', () => {
-      viewingPostId = parseInt(el.dataset.postid);
-      renderForum();
+  document.querySelectorAll('.board-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.board-tab').forEach(t => {
+        t.style.background = '#e4decf';
+        t.style.color = '#3b392f';
+      });
+      tab.style.background = '#556b4b';
+      tab.style.color = '#fff';
+      const boardId = tab.dataset.board === 'all' ? null : parseInt(tab.dataset.board);
+      loadPosts(boardId);
     });
   });
+
+  loadPosts(null);
+
+  async function loadPosts(boardId) {
+    let query = supabase.from('posts_with_authors').select('*');
+    if (boardId) query = query.eq('board_id', boardId);
+    query = query.order('created_at', { ascending: false });
+    const { data: posts, error } = await query;
+    if (error) {
+      document.getElementById('postsList').innerHTML = `<p style="color:#c62828;">加载失败: ${error.message}</p>`;
+      return;
+    }
+    if (!posts || posts.length === 0) {
+      document.getElementById('postsList').innerHTML = `<p style="color:#999;text-align:center;">该板块暂无帖子</p>`;
+      return;
+    }
+    const postIds = posts.map(p => p.id);
+    const { data: stats } = await supabase.from('posts_stats').select('*').in('id', postIds);
+    const statMap = {};
+    if (stats) stats.forEach(s => { statMap[s.id] = s; });
+    let html = '';
+    for (const post of posts) {
+      const replyCount = statMap[post.id]?.reply_count || 0;
+      const likeCount = statMap[post.id]?.like_count || 0;
+      const isHot = replyCount >= 5;
+      html += `
+        <div class="post-item" data-postid="${post.id}">
+          <div class="post-avatar">${escHtml(post.avatar || '🐱')}</div>
+          <div style="flex:1;">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span class="post-title">${escHtml(post.title)} ${isHot ? '🔥' : ''}</span>
+              ${post.board_name ? `<span style="font-size:0.6rem; background:#cdc6b4; padding:2px 8px; border-radius:10px;">${escHtml(post.board_name)}</span>` : ''}
+            </div>
+            <div style="font-size:0.85rem;color:#555;margin:4px 0;">${escHtml(post.content.substring(0, 60))}${post.content.length>60?'...':''}</div>
+            <div class="post-meta">
+              ${escHtml(post.username || '已注销')} · ${timeAgo(post.created_at)} · 
+              ❤️ ${likeCount} · 💬 ${replyCount}
+              ${post.updated_at && post.updated_at !== post.created_at ? ' ✏️已编辑' : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    document.getElementById('postsList').innerHTML = html;
+    document.querySelectorAll('.post-item').forEach(el => {
+      el.addEventListener('click', () => {
+        viewingPostId = parseInt(el.dataset.postid);
+        renderForum();
+      });
+    });
+  }
 }
 
 // ================================================================
@@ -1054,32 +1083,42 @@ async function renderPostDetail(postId) {
 // ================================================================
 function openNewPost() {
   if (!currentUser) { toast('请先登录', 'error'); return; }
-  modalContent.innerHTML = `
-    <h3>✏️ 发新帖</h3>
-    <input type="text" id="newPostTitle" placeholder="标题" maxlength="100">
-    <textarea id="newPostContent" rows="5" placeholder="内容"></textarea>
-    <div class="modal-actions">
-      <button class="btn btn-outline btn-sm" id="modalCancel">取消</button>
-      <button class="btn btn-primary btn-sm" id="modalConfirm">发布</button>
-    </div>
-  `;
-  modalOverlay.classList.add('show');
-  document.getElementById('modalCancel').addEventListener('click', closeModal);
-  document.getElementById('modalConfirm').addEventListener('click', async () => {
-    const title = document.getElementById('newPostTitle').value.trim();
-    const content = document.getElementById('newPostContent').value.trim();
-    if (!title || !content) { toast('请填写完整', 'error'); return; }
-    const { error } = await supabase
-      .from('posts')
-      .insert([{ title, content, author_id: currentUser.id }]);
-    if (error) { toast('发布失败: ' + error.message, 'error'); return; }
-    await completeTask('posted');
-    toast('发布成功', 'success');
-    closeModal();
-    viewingPostId = null;
-    renderForum();
-    updateLeftPanel();
-  });
+  supabase.from('boards').select('*').order('sort_order').then(({ data: boards }) => {
+    const boardOptions = boards.map(b => `<option value="${b.id}">${escHtml(b.name)}</option>`).join('');
+    modalContent.innerHTML = `
+      <h3>✏️ 发新帖</h3>
+      <div style="margin-bottom:10px;">
+        <label style="font-size:0.85rem;">选择板块：</label>
+        <select id="newPostBoard" style="width:100%; padding:10px; border:2px solid #cdc6b4; border-radius:12px;">
+          ${boardOptions}
+        </select>
+      </div>
+      <input type="text" id="newPostTitle" placeholder="标题" maxlength="100">
+      <textarea id="newPostContent" rows="5" placeholder="内容"></textarea>
+      <div class="modal-actions">
+        <button class="btn btn-outline btn-sm" id="modalCancel">取消</button>
+        <button class="btn btn-primary btn-sm" id="modalConfirm">发布</button>
+      </div>
+    `;
+    modalOverlay.classList.add('show');
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    document.getElementById('modalConfirm').addEventListener('click', async () => {
+      const boardId = parseInt(document.getElementById('newPostBoard').value);
+      const title = document.getElementById('newPostTitle').value.trim();
+      const content = document.getElementById('newPostContent').value.trim();
+      if (!title || !content) { toast('请填写完整', 'error'); return; }
+      const { error } = await supabase
+        .from('posts')
+        .insert([{ title, content, author_id: currentUser.id, board_id: boardId }]);
+      if (error) { toast('发布失败: ' + error.message, 'error'); return; }
+      await completeTask('posted');
+      toast('发布成功', 'success');
+      closeModal();
+      viewingPostId = null;
+      renderForum();
+      updateLeftPanel();
+    });
+  }).catch(err => toast('加载板块失败', 'error'));
 }
 
 function openEditPost(postId) {
