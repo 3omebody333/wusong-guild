@@ -3,994 +3,419 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>🌲 雾凇会馆 · 妖精公会</title>
+  <title>🌲 雾凇会馆</title>
   <style>
-    /* ================================================================
-       仿微博手机版 · 删除基建/每日任务
-       ================================================================ */
-    :root {
-      --primary: #ff8200;
-      --primary-dark: #e67500;
-      --primary-text: #ff8200;
-      --bg-page: #f7f8fa;
-      --bg-card: #ffffff;
-      --bg-light: #f2f3f5;
-      --border: #e5e6eb;
-      --text-main: #1d2129;
-      --text-sub: #86909c;
-      --text-light: #c9cdd4;
-      --radius-sm: 8px;
-      --radius-md: 14px;
-      --radius-lg: 22px;
-      --radius-full: 9999px;
-      --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 3px 12px rgba(0, 0, 0, 0.08);
-      --transition: all 0.24s ease;
-      --cover-height: 300px;
-    }
-
-    /* ===== 公用重置 ===== */
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
+    /* ===== 全局重置 & 基础 ===== */
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
-    html,
     body {
-      height: 100%;
-      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #f7f8fa;
+      color: #1d2129;
       font-size: 14px;
-      color: var(--text-main);
-      background: var(--bg-page);
+      padding-top: 100px;
+      padding-bottom: 60px;
       -webkit-font-smoothing: antialiased;
-    }
-    ul {
-      list-style: none;
     }
     a {
       text-decoration: none;
       color: inherit;
     }
-    a:hover {
-      text-decoration: underline;
-      cursor: pointer;
+    ul {
+      list-style: none;
     }
-    .clear {
-      -ms-zoom: 1;
-    }
-    .clear:after {
-      content: '';
-      display: block;
-      clear: both;
-    }
-
-    /* ===== 微博顶部导航栏 ===== */
-    .wb-top-nav {
-      width: 100%;
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-      padding: 10px 16px;
-      position: sticky;
-      top: 41px;
-      z-index: 999;
-    }
-    .wb-nav-inner {
-      max-width: 920px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      gap: 24px;
-    }
-    .wb-nav-item {
-      font-size: 15px;
-      color: var(--text-sub);
-      padding: 4px 0;
-      position: relative;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .wb-nav-item:hover {
-      text-decoration: none;
-    }
-    .wb-nav-item.active {
-      color: var(--text-main);
-      font-weight: 600;
-    }
-    .wb-nav-item.active::after {
-      content: '';
-      width: 22px;
-      height: 3px;
-      background: var(--primary);
-      position: absolute;
-      bottom: -4px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-radius: 3px;
-    }
-    .wb-search-box {
-      flex: 1;
-      max-width: 320px;
-      position: relative;
-      margin-left: auto;
-    }
-    .wb-search-box input {
-      width: 100%;
-      padding: 7px 14px 7px 34px;
-      background: var(--bg-light);
-      border: none;
-      border-radius: var(--radius-full);
-      font-size: 13px;
-      outline: none;
-      color: var(--text-main);
-    }
-    .wb-search-box input::placeholder {
-      color: var(--text-light);
-    }
-    .search-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 14px;
-      color: var(--text-light);
-    }
-
-    /* ===== 原有顶部黑色导航（保留） ===== */
-    .header {
-      width: 100%;
-      background: rgba(31, 31, 31, 0.92);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+    /* ===== 顶部导航（固定） ===== */
+    .top-nav {
       position: fixed;
       top: 0;
       left: 0;
+      right: 0;
       z-index: 1000;
-      height: 41px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    }
-    .header-box {
-      width: 100%;
-      max-width: 1050px;
-      height: 41px;
-      margin: 0 auto;
-      overflow: hidden;
-      padding: 0 10px;
-    }
-    .header a {
-      color: #FFF;
-    }
-    .header a:hover {
-      text-decoration: none;
-    }
-    .header-left {
-      float: left;
-    }
-    .header-left .img-qzone {
-      float: left;
-      width: 90px;
-      height: 41px;
-      line-height: 41px;
-      color: #fff;
-      font-size: 18px;
-      font-weight: 700;
-      text-align: center;
-      letter-spacing: 1px;
-      background: transparent;
-    }
-    .header-left a {
-      display: inline-block;
-      height: 29px;
-      padding: 12px 5px 0;
-      line-height: 0;
-      vertical-align: middle;
-      border-radius: var(--radius-sm);
-      transition: var(--transition);
-    }
-    .header-left a:hover {
-      background-color: rgba(255, 255, 255, 0.12);
-    }
-    .header-left a i,
-    .header-right a i {
-      display: inline-block;
-      vertical-align: middle;
-    }
-    .header-left a span {
-      margin: auto 5px;
-      vertical-align: middle;
-    }
-    [class^="icon-"] {
-      width: 16px;
-      height: 16px;
-      display: inline-flex;
+      background: #fff;
+      border-bottom: 1px solid #e5e6eb;
+      padding: 10px 16px;
+      display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 16px;
+      justify-content: space-between;
+      height: 54px;
     }
-    .icon-personel::before {
-      content: "👤";
+    .top-nav .logo {
+      font-weight: 700;
+      font-size: 18px;
+      color: #ff8200;
     }
-    .icon-myhomepage::before {
-      content: "🏠";
+    .top-nav .search-box {
+      flex: 1;
+      margin: 0 12px;
+      position: relative;
     }
-    .icon-myfriend::before {
-      content: "👥";
-    }
-    .icon-game::before {
-      content: "🎮";
-    }
-    .icon-dress::before {
-      content: "👗";
-    }
-    .icon-down {
-      width: 0;
-      height: 0;
-      border-top: 3px solid #fff;
-      border-left: 3px solid transparent;
-      border-right: 3px solid transparent;
-      display: inline-block;
-      vertical-align: middle;
-      margin-left: 3px;
-    }
-
-    .header-right {
-      float: right;
-      height: 41px;
-    }
-    .header-right a {
-      display: inline-block;
-      height: 29px;
-      padding: 12px 5px 0;
-      line-height: 0;
-      border-radius: var(--radius-sm);
-      transition: var(--transition);
-    }
-    .header-right a:hover {
-      background-color: rgba(255, 255, 255, 0.12);
-    }
-    .header-right a:last-child {
-      padding-right: 0;
-    }
-    .header-right i {
-      vertical-align: middle;
-    }
-    .header-right span {
-      height: 20px;
-      margin-left: 5px;
-      color: #FFF;
-      vertical-align: middle;
-    }
-    .icon-pause::before {
-      content: "⏸️";
-    }
-    .icon-music::before {
-      content: "🎵";
-    }
-    .icon-search::before {
-      content: "🔍";
-    }
-    .icon-logout::before {
-      content: "🚪";
-    }
-    .icon-set::before {
-      content: "⚙️";
-    }
-    .header-right-input {
-      height: 20px;
-      width: 95px;
-      padding: 0 20px 0 5px;
-      margin-left: 10px;
-      margin-right: 10px;
+    .top-nav .search-box input {
+      width: 100%;
+      padding: 6px 12px 6px 32px;
       border: none;
-      border-radius: var(--radius-sm);
-      background: #575757;
-      color: #CCC;
-      vertical-align: middle;
+      border-radius: 20px;
+      background: #f2f3f5;
+      font-size: 13px;
+      outline: none;
+      color: #1d2129;
     }
-    .header-right-input::placeholder {
-      color: #CCC;
+    .top-nav .search-box input::placeholder {
+      color: #c9cdd4;
     }
-    .header-right-img {
-      width: 30px;
-      height: 30px;
-      border-radius: var(--radius-full);
-      display: inline-block;
-      vertical-align: middle;
+    .top-nav .search-box .icon-search {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: #c9cdd4;
+    }
+    .top-nav .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
       background-size: cover;
       background-position: center;
-      background-color: #575757;
-    }
-    .search {
-      margin-left: -30px;
+      background-color: #ddd;
+      cursor: pointer;
+      flex-shrink: 0;
     }
 
-    .top-hold {
-      height: 41px;
+    /* ===== 封面区域（仅主页显示） ===== */
+    .cover-section {
       width: 100%;
-      background: #1F1F1F;
-    }
-
-    /* ===== 中间主容器 ===== */
-    .midbox {
-      min-width: 0;
-      background: var(--bg-page);
-      padding-top: 0;
-    }
-
-    /* ===== 封面容器 ===== */
-    .cover-container {
-      width: 100%;
-      max-width: 100%;
-      margin: 0;
-      padding: 0;
       position: relative;
     }
     .cover-wrapper {
       width: 100%;
-      height: var(--cover-height);
-      border-radius: 0;
+      height: 220px;
       background-size: cover;
       background-position: center;
-      overflow: hidden;
+      background-color: #dde3ec;
       position: relative;
     }
     .cover-wrapper .cover-btn {
       position: absolute;
-      bottom: 16px;
-      right: 16px;
+      bottom: 12px;
+      right: 12px;
       background: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
       color: #fff;
       border: none;
-      border-radius: var(--radius-full);
-      padding: 6px 14px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
+      border-radius: 20px;
+      padding: 4px 12px;
       font-size: 12px;
-      z-index: 2;
       cursor: pointer;
-      transition: var(--transition);
-    }
-    .cover-wrapper .cover-btn:hover {
-      background: rgba(0, 0, 0, 0.6);
     }
     .cover-wrapper .cover-btn::before {
       content: "🖼️";
-      font-size: 14px;
+      margin-right: 4px;
     }
-
-    .cover-top-text {
+    .cover-text {
       position: absolute;
       left: 0;
       bottom: 0;
       width: 100%;
-      padding: 40px 20px 24px;
-      background: linear-gradient(transparent, rgba(0, 0, 0, 0.45) 90%);
+      padding: 30px 16px 16px;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.45));
       color: #fff;
     }
-    .cover-top-text h1 {
-      font-size: 28px;
+    .cover-text h1 {
+      font-size: 22px;
       font-weight: 600;
-      color: #fff;
-      margin: 0;
-      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
     }
-    .cover-top-text .main-small {
-      font-size: 15px;
-      color: rgba(255, 255, 255, 0.85);
+    .cover-text .sub {
+      font-size: 14px;
+      opacity: 0.85;
       display: block;
-      margin: 4px 0;
+      margin-top: 2px;
     }
-    .cover-top-text .weather {
+    .cover-text .weather {
       position: absolute;
-      right: 20px;
-      bottom: 24px;
+      right: 16px;
+      bottom: 16px;
       text-align: right;
-    }
-    .cover-top-text .city,
-    .cover-top-text #currentDate {
-      display: block;
-      color: rgba(255, 255, 255, 0.8);
       font-size: 13px;
-    }
-
-    /* ===== 错位头像 ===== */
-    .user-img-lg {
-      position: absolute;
-      left: 20px;
-      bottom: -60px;
-      width: 120px;
-      height: 120px;
-      border: 5px solid var(--bg-card);
-      border-radius: var(--radius-full);
-      background-size: cover;
-      background-position: center;
-      background-color: #ccc;
-      box-shadow: var(--shadow-md);
-      z-index: 3;
-      text-align: center;
-      line-height: 120px;
-      font-size: 60px;
-      color: #fff;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    .user-img-lg:hover {
-      transform: scale(1.03);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-    }
-
-    /* ===== 预设封面网格 ===== */
-    .cover-preset-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 12px;
-      margin: 12px 0;
-    }
-    .cover-preset-item {
-      height: 80px;
-      border-radius: var(--radius-sm);
-      background-size: cover;
-      background-position: center;
-      cursor: pointer;
-      border: 3px solid transparent;
-      transition: var(--transition);
-    }
-    .cover-preset-item:hover {
-      border-color: var(--primary);
-      transform: scale(1.02);
-    }
-
-    /* ===== 信息+Tab区域 ===== */
-    .info-tab-wrap {
-      width: 92%;
-      max-width: 920px;
-      margin: 70px auto 0;
-      padding: 0 10px;
-    }
-    .main-header-bottom-top h1 {
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--text-main);
-      margin: 0;
-    }
-    .level-exp-row {
-      margin-top: 6px;
-      font-size: 14px;
-      color: var(--text-sub);
-    }
-    .level-exp-row span {
-      font-weight: 500;
-      color: var(--text-main);
-    }
-
-    /* ===== 底部导航Tab（删除了基建和每日） ===== */
-    #mainNavTabs {
-      display: flex;
-      gap: 28px;
-      padding: 16px 0;
-      border-bottom: 1px solid var(--border);
-      margin: 12px 0 20px;
-      flex-wrap: wrap;
-    }
-    #mainNavTabs li {
-      margin-left: 0;
-      display: inline-block;
-    }
-    #mainNavTabs li a {
-      font-size: 16px;
-      color: var(--text-sub);
-      padding: 6px 0;
-      position: relative;
-      cursor: pointer;
-      font-weight: 400;
-    }
-    #mainNavTabs li a:hover {
-      text-decoration: none;
-    }
-    #mainNavTabs li a.active {
-      color: var(--text-main);
-      font-weight: 600;
-    }
-    #mainNavTabs li a.active::after {
-      content: '';
-      width: 100%;
-      height: 3px;
-      background: var(--primary);
-      position: absolute;
-      bottom: -1px;
-      left: 0;
-      border-radius: 3px;
-    }
-
-    /* ===== 三栏统计卡片 ===== */
-    .stats-card {
-      width: 92%;
-      max-width: 920px;
-      margin: 0 auto 20px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0;
-      background: var(--bg-card);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-    }
-    .stat-item {
-      text-align: center;
-      padding: 18px 0;
-      border-right: 1px solid var(--bg-light);
-    }
-    .stat-item:last-child {
-      border-right: none;
-    }
-    .stat-item strong {
-      display: block;
-      font-size: 32px;
-      color: var(--primary-text);
-      font-weight: 600;
-    }
-    .stat-item span {
-      font-size: 14px;
-      color: var(--text-sub);
-      margin-top: 4px;
-      display: block;
-    }
-
-    /* ===== 主体左右两栏 ===== */
-    .main-body {
-      width: 92%;
-      max-width: 920px;
-      margin: 0 auto 60px;
-      padding: 0;
-      overflow: hidden;
-    }
-    .main-body-left {
-      float: left;
-      width: 280px;
-    }
-    .main-body-left>div {
-      margin-bottom: 16px;
-    }
-    .main-body-right {
-      float: right;
-      width: calc(100% - 300px);
-      max-width: 590px;
-    }
-    .main-body-right>div {
-      margin-bottom: 16px;
-    }
-
-    /* ===== 面板卡片 ===== */
-    .panel {
-      background: var(--bg-card);
-      border: none;
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-      transition: var(--transition);
-    }
-    .panel:hover {
-      box-shadow: var(--shadow-md);
-    }
-    .panel .panel-heading {
-      padding: 14px 18px;
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-main);
-      background: transparent;
-      border-bottom: 1px solid var(--border);
-    }
-    .panel .panel-heading strong {
-      font-weight: 600;
-    }
-    .panel .list-group {
-      margin: 0;
-      padding: 6px 18px;
-    }
-    .panel .list-group li {
-      padding: 12px 0;
-      border-bottom: 1px solid var(--bg-light);
-      font-size: 14px;
-      color: var(--text-main);
-    }
-    .panel .list-group li:last-child {
-      border-bottom: none;
-    }
-    .panel .list-group li i {
-      margin-right: 8px;
-    }
-    .panel .panel-bottom {
-      padding: 10px 18px;
-      border-top: 1px solid var(--bg-light);
-      background: transparent;
-      line-height: 30px;
-    }
-    .panel .panel-bottom a {
-      color: var(--primary);
-      font-size: 13px;
-      font-weight: 500;
-    }
-    .panel .panel-bottom a:hover {
-      text-decoration: underline;
-    }
-
-    /* 左侧好友列表 */
-    .main-body-left-bottom .panel .list-group {
-      padding: 10px 12px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-    .main-body-left-bottom .panel .list-group li {
-      display: inline-block;
-      width: 76px;
-      height: 76px;
-      padding: 0;
-      border: 0;
-      margin: 0;
-    }
-    .main-body-left-bottom .panel .list-group li a {
-      display: table-cell;
-      width: 76px;
-      height: 76px;
-      text-align: center;
-      vertical-align: bottom;
-      color: #fff;
-      font-weight: 500;
-      background-size: cover;
-      background-position: center;
-      background-color: #ccc;
-      border-radius: var(--radius-full);
-      box-shadow: var(--shadow-sm);
-      transition: var(--transition);
-      font-size: 12px;
-    }
-    .main-body-left-bottom .panel .list-group li a:hover {
-      transform: scale(1.04);
-      box-shadow: var(--shadow-md);
-    }
-    .main-body-left-bottom .panel .list-group li a span {
-      display: block;
-      background: rgba(0, 0, 0, 0.5);
-      width: 100%;
-      line-height: 20px;
-      border-radius: 0 0 38px 38px;
-      font-size: 11px;
-      font-weight: 500;
-    }
-
-    /* ===== 右侧内容 ===== */
-    .main-body-right-top {
-      background: var(--bg-card);
-      border: none;
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
-      padding: 0;
-      transition: var(--transition);
-    }
-    .main-body-right-top:hover {
-      box-shadow: var(--shadow-md);
-    }
-    .main-body-panel {
-      padding: 14px 18px 18px;
-    }
-    .main-body-userinfo {
-      display: block;
-      margin: 6px 0 14px;
-    }
-    .user-img-md {
-      float: left;
-      margin-right: 15px;
-    }
-    .user-img-md img {
-      border-radius: var(--radius-full);
-      width: 46px;
-      height: 46px;
-      background: #ccc;
-      object-fit: cover;
-    }
-    .main-body-userinfo div {
-      float: left;
-      padding-top: 2px;
-    }
-    .main-body-userinfo div a {
-      font-weight: 500;
-      color: var(--text-main);
-      font-size: 15px;
-    }
-    .main-body-userinfo div p {
-      margin: 0;
-      font-size: 12px;
-      color: var(--text-sub);
-    }
-    .main-body-userinfo div p span {
-      margin-right: 8px;
-    }
-    .main-body-userinfo a:last-child {
-      float: right;
-      width: 24px;
-      height: 24px;
-      opacity: 0.4;
-      transition: var(--transition);
-    }
-    .main-body-userinfo a:last-child:hover {
       opacity: 0.8;
     }
-    .icon-panel-set::before {
-      content: "⚙️";
-      font-size: 18px;
-    }
-
-    .main-body-imgwall {
-      border: 1px solid rgba(255, 130, 0, 0.15);
-      padding: 12px 16px;
-      background: rgba(255, 130, 0, 0.04);
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-      margin-top: 6px;
-    }
-    .main-body-imgwall img {
-      float: left;
-      margin-right: 16px;
-      width: 100px;
-      height: 75px;
-      border-radius: var(--radius-sm);
-      object-fit: cover;
-    }
-    .main-body-imgwall span {
+    .cover-text .weather span {
       display: block;
-      margin: 18px 0;
-      font-size: 14px;
-      color: var(--text-sub);
     }
-    .main-body-imgwall span strong {
-      color: var(--text-main);
-    }
-    .main-body-panel button {
-      width: 94px;
-      height: 32px;
-      color: #FFF;
-      background: var(--primary);
-      border: none;
-      border-radius: var(--radius-full);
+
+    /* 错位头像 */
+    .avatar-large {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 4px solid #fff;
+      background-size: cover;
+      background-position: center;
+      background-color: #ccc;
+      position: absolute;
+      left: 16px;
+      bottom: -40px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      z-index: 2;
       cursor: pointer;
-      font-size: 13px;
-      transition: var(--transition);
-      font-weight: 500;
-    }
-    .main-body-panel button:hover {
-      background: var(--primary-hover);
-      transform: translateY(-1px);
-    }
-
-    /* ===== 动态面板容器 ===== */
-    #panelContainer {
-      background: var(--bg-card);
-      border: none;
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
-      padding: 18px 20px;
-      min-height: 200px;
-      transition: var(--transition);
-    }
-    #panelContainer:hover {
-      box-shadow: var(--shadow-md);
-    }
-
-    /* ===== 更多动态 ===== */
-    .main-body-right-bottom {
-      background: var(--bg-card);
-      border: none;
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
-      height: 44px;
-      font-size: 14px;
       text-align: center;
-      line-height: 44px;
-      transition: var(--transition);
-    }
-    .main-body-right-bottom a {
-      display: block;
-      color: var(--text-sub);
-      transition: var(--transition);
-      font-weight: 500;
-    }
-    .main-body-right-bottom a:hover {
-      background: var(--bg-light);
-      border-radius: var(--radius-lg);
-      text-decoration: none;
-      color: var(--primary);
+      line-height: 80px;
+      font-size: 36px;
+      color: #fff;
     }
 
-    /* ===== 底部 ===== */
-    .footer {
-      width: 100%;
-      background: var(--bg-page);
-      text-align: center;
-      padding: 20px 0;
-      border-top: 1px solid var(--border);
-    }
-    .footer-main {
-      width: 92%;
-      max-width: 920px;
-      margin: 0 auto;
-      padding: 0 10px;
-    }
-    .footer p {
-      margin: 4px 0;
-      color: var(--text-light);
-      font-size: 13px;
-    }
-    .footer a {
-      color: var(--text-sub);
-      transition: var(--transition);
-    }
-    .footer a:hover {
-      color: var(--primary);
-      text-decoration: none;
-    }
-
-    /* ===== 论坛功能附加样式 ===== */
-    .post-item {
-      padding: 14px 8px;
-      border-bottom: 1px solid var(--border);
-      cursor: pointer;
+    /* ===== 用户信息卡片（统计） ===== */
+    .user-stats {
+      background: #fff;
+      border-radius: 16px;
+      margin: 50px 16px 12px;
+      padding: 12px 0;
       display: flex;
-      gap: 12px;
-      transition: var(--transition);
-      border-radius: var(--radius-sm);
-      margin: 0 -4px;
+      justify-content: space-around;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    }
+    .user-stats .stat-item {
+      text-align: center;
+      flex: 1;
+    }
+    .user-stats .stat-item strong {
+      display: block;
+      font-size: 22px;
+      color: #ff8200;
+      font-weight: 600;
+    }
+    .user-stats .stat-item span {
+      font-size: 13px;
+      color: #86909c;
+    }
+
+    /* ===== 内容面板（主体） ===== */
+    .main-content {
+      padding: 0 16px 16px;
+    }
+    .panel {
+      display: none;
+    }
+    .panel.active {
+      display: block;
+    }
+
+    /* ===== 帖子列表 ===== */
+    .post-item {
+      background: #fff;
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      cursor: pointer;
+      transition: all 0.2s;
     }
     .post-item:hover {
-      background-color: var(--bg-light);
-      transform: translateX(3px);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     }
-    .post-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: var(--radius-full);
-      background: #dde3ec;
+    .post-item .post-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .post-item .post-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #ddd;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.6rem;
+      font-size: 18px;
       flex-shrink: 0;
     }
-    .post-title {
+    .post-item .post-author {
       font-weight: 500;
-      color: var(--text-main);
+      font-size: 15px;
     }
-    .post-meta {
+    .post-item .post-time {
       font-size: 12px;
-      color: var(--text-sub);
-      margin-top: 4px;
+      color: #86909c;
+      margin-left: auto;
     }
-    .post-content-preview {
+    .post-item .post-title {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+    .post-item .post-content-preview {
+      color: #4e5a6b;
       font-size: 14px;
-      color: var(--text-sub);
-      margin-top: 2px;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .post-item .post-footer {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      color: #86909c;
+    }
+    .post-item .post-footer span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    .friend-item {
+    /* ===== 板块筛选 ===== */
+    .board-filter {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .board-filter .board-tab {
+      padding: 4px 16px;
+      border-radius: 20px;
+      background: #f2f3f5;
+      color: #86909c;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .board-filter .board-tab.active {
+      background: #ff8200;
+      color: #fff;
+    }
+
+    /* ===== 发帖按钮 ===== */
+    .post-btn {
+      position: fixed;
+      right: 20px;
+      bottom: 80px;
+      background: #ff8200;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      font-size: 28px;
+      box-shadow: 0 4px 12px rgba(255, 130, 0, 0.3);
+      cursor: pointer;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+    }
+    .post-btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* ===== 底部Tab导航（固定） ===== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-top: 1px solid #e5e6eb;
+      display: flex;
+      justify-content: space-around;
+      padding: 6px 0 10px;
+      z-index: 1000;
+      height: 60px;
+    }
+    .bottom-nav .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 12px;
+      color: #86909c;
+      cursor: pointer;
+      transition: color 0.2s;
+      gap: 2px;
+    }
+    .bottom-nav .tab-item .tab-icon {
+      font-size: 22px;
+      line-height: 1;
+    }
+    .bottom-nav .tab-item.active {
+      color: #ff8200;
+    }
+    .bottom-nav .tab-item.active .tab-icon {
+      color: #ff8200;
+    }
+
+    /* ===== 好友、聊天、委托列表样式 ===== */
+    .friend-item,
+    .task-item,
+    .chat-item {
+      background: #fff;
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 8px;
-      border-radius: var(--radius-sm);
-      transition: var(--transition);
-      border-bottom: 1px solid var(--bg-light);
     }
-    .friend-item:hover {
-      background-color: var(--bg-light);
+    .friend-item .friend-info,
+    .task-item .task-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-
-    .chat-messages {
-      max-height: 300px;
-      overflow-y: auto;
-      background: var(--bg-light);
-      padding: 14px;
-      border-radius: var(--radius-md);
-      margin-bottom: 10px;
-      border: 1px solid var(--border);
+    .friend-item .friend-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ddd;
+      background-size: cover;
+      background-position: center;
     }
-    .chat-message {
-      padding: 8px 16px;
-      border-radius: 18px;
-      margin-bottom: 6px;
-      max-width: 75%;
-      word-wrap: break-word;
+    .friend-item .friend-name {
+      font-weight: 500;
     }
-    .chat-message.sent {
-      background: var(--primary);
-      color: #fff;
-      align-self: flex-end;
-      margin-left: auto;
-      border-bottom-right-radius: 4px;
-    }
-    .chat-message.received {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      align-self: flex-start;
-      border-bottom-left-radius: 4px;
-    }
-    .chat-message .time {
-      font-size: 11px;
-      color: var(--text-light);
-      margin-top: 4px;
-      text-align: right;
-    }
-    .chat-input-area {
+    .friend-item .friend-action,
+    .task-item .task-action {
       display: flex;
       gap: 8px;
-    }
-    .chat-input-area input {
-      flex: 1;
-      padding: 8px 16px;
-      border: 2px solid var(--border);
-      border-radius: var(--radius-full);
-      outline: none;
-      transition: var(--transition);
-      font-size: 14px;
-      background: var(--bg-card);
-    }
-    .chat-input-area input:focus {
-      border-color: var(--primary);
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
     }
 
     /* ===== 按钮 ===== */
     .btn {
-      display: inline-block;
-      padding: 6px 20px;
-      border-radius: var(--radius-full);
+      padding: 6px 16px;
+      border-radius: 20px;
       border: none;
-      font-size: 0.8rem;
+      font-size: 13px;
       font-weight: 500;
       cursor: pointer;
-      transition: var(--transition);
-      background: var(--bg-light);
-      color: var(--text-main);
-    }
-    .btn:hover {
-      transform: translateY(-1px);
+      transition: all 0.2s;
     }
     .btn-primary {
-      background: var(--primary);
+      background: #ff8200;
       color: #fff;
     }
     .btn-primary:hover {
-      background: var(--primary-hover);
+      background: #e67500;
     }
     .btn-outline {
       background: transparent;
-      border: 2px solid var(--primary);
-      color: var(--primary);
-    }
-    .btn-outline:hover {
-      background: var(--primary);
-      color: #fff;
-    }
-    .btn-sm {
-      padding: 4px 14px;
-      font-size: 0.75rem;
+      border: 1px solid #ff8200;
+      color: #ff8200;
     }
     .btn-danger {
       background: #f53f3f;
       color: #fff;
     }
-    .btn-danger:hover {
-      background: #dc2626;
-    }
     .btn-success {
       background: #22c55e;
       color: #fff;
     }
-    .btn-success:hover {
-      background: #16a34a;
+    .btn-sm {
+      padding: 4px 12px;
+      font-size: 12px;
     }
 
     /* ===== 模态框 ===== */
@@ -1002,8 +427,7 @@
       height: 100%;
       background: rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      z-index: 9998;
+      z-index: 2000;
       display: none;
       align-items: center;
       justify-content: center;
@@ -1012,172 +436,60 @@
       display: flex;
     }
     .modal {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px 28px;
+      background: #fff;
+      border-radius: 20px;
+      padding: 24px;
       width: 90%;
-      max-width: 460px;
-      max-height: 90vh;
+      max-width: 400px;
+      max-height: 80vh;
       overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
     }
     .modal h3 {
       font-size: 18px;
-      font-weight: 600;
-      color: var(--text-main);
       margin-bottom: 16px;
     }
     .modal input,
     .modal textarea,
     .modal select {
       width: 100%;
-      padding: 10px 14px;
-      border: 2px solid var(--border);
-      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      border: 1px solid #e5e6eb;
+      border-radius: 10px;
       margin-bottom: 12px;
+      font-size: 14px;
       font-family: inherit;
-      font-size: 0.9rem;
-      transition: var(--transition);
       outline: none;
-      background: var(--bg-card);
-      color: var(--text-main);
     }
     .modal input:focus,
-    .modal textarea:focus,
-    .modal select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.12);
+    .modal textarea:focus {
+      border-color: #ff8200;
     }
     .modal-actions {
       display: flex;
       gap: 10px;
       justify-content: flex-end;
-      margin-top: 16px;
-    }
-
-    /* ===== 登录弹窗 ===== */
-    .login-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(30, 40, 60, 0.55);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .login-overlay.hidden {
-      display: none;
-    }
-    .login-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 32px 28px;
-      width: 360px;
-      max-width: 90%;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
-      text-align: center;
-    }
-    .login-cat {
-      font-size: 3.2rem;
-    }
-    .login-title {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--primary-dark);
-      letter-spacing: 1px;
-    }
-    .login-sub {
-      font-size: 0.85rem;
-      color: var(--text-sub);
-      margin: 6px 0 18px;
-    }
-    .login-tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 18px;
-    }
-    .login-tab {
-      flex: 1;
-      padding: 10px 0;
-      border-radius: var(--radius-full);
-      cursor: pointer;
-      font-size: 0.85rem;
-      background: #f0f2f5;
-      border: none;
-      transition: var(--transition);
-      font-weight: 500;
-      color: var(--text-sub);
-    }
-    .login-tab.active {
-      background: var(--primary);
-      color: #fff;
-    }
-    .login-input {
-      width: 100%;
-      padding: 12px 16px;
-      border: 2px solid var(--border);
-      border-radius: var(--radius-md);
-      font-size: 0.95rem;
-      margin-bottom: 14px;
-      text-align: center;
-      outline: none;
-      transition: var(--transition);
-      background: var(--bg-card);
-    }
-    .login-input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.12);
-    }
-    .login-btn {
-      width: 100%;
-      padding: 12px;
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius-md);
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: var(--transition);
-    }
-    .login-btn:hover {
-      background: var(--primary-hover);
-      transform: translateY(-1px);
-    }
-    .login-error {
-      color: #f53f3f;
-      font-size: 0.8rem;
-      margin-top: 8px;
+      margin-top: 12px;
     }
 
     /* ===== Toast ===== */
     .toast-container {
       position: fixed;
-      top: 60px;
+      top: 70px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 9999;
+      z-index: 3000;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
     .toast {
       background: rgba(0, 0, 0, 0.8);
       color: #fff;
-      padding: 10px 24px;
-      border-radius: var(--radius-full);
-      font-size: 0.85rem;
-      animation: fadeIn 0.3s ease;
-      backdrop-filter: blur(4px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      animation: fadeIn 0.3s;
     }
     .toast.success {
       background: rgba(34, 197, 94, 0.9);
@@ -1196,216 +508,131 @@
       }
     }
 
-    /* ===== 自定义滚动条 ===== */
-    ::-webkit-scrollbar {
-      width: 5px;
-      height: 5px;
+    /* ===== 登录遮罩 ===== */
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(30, 40, 60, 0.6);
+      backdrop-filter: blur(12px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    ::-webkit-scrollbar-track {
-      background: #e5ebf3;
-      border-radius: var(--radius-full);
+    .login-overlay.hidden {
+      display: none;
     }
-    ::-webkit-scrollbar-thumb {
-      background: var(--primary);
-      border-radius: var(--radius-full);
-      transition: var(--transition);
+    .login-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 32px 24px;
+      width: 340px;
+      max-width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
     }
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--primary-dark);
+    .login-card .login-cat {
+      font-size: 3rem;
+    }
+    .login-card .login-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ff8200;
+    }
+    .login-card .login-sub {
+      color: #86909c;
+      margin: 6px 0 20px;
+    }
+    .login-card .login-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .login-card .login-tab {
+      flex: 1;
+      padding: 8px;
+      border-radius: 20px;
+      background: #f2f3f5;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+    .login-card .login-tab.active {
+      background: #ff8200;
+      color: #fff;
+    }
+    .login-card .login-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #e5e6eb;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      text-align: center;
+      font-size: 15px;
+      outline: none;
+    }
+    .login-card .login-input:focus {
+      border-color: #ff8200;
+    }
+    .login-card .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: #ff8200;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .login-card .login-btn:hover {
+      background: #e67500;
+    }
+    .login-card .login-error {
+      color: #f53f3f;
+      font-size: 13px;
+      margin-top: 8px;
     }
 
-    /* ===== 响应式 ===== */
-    @media (max-width: 1050px) {
-      .header-box,
-      .footer-main {
-        width: calc(100% - 20px);
-        min-width: 0;
-        padding: 0 10px;
+    /* ===== 响应式适配 ===== */
+    @media (max-width: 480px) {
+      .top-nav .logo {
+        font-size: 16px;
       }
-      .main-body-left,
-      .main-body-right {
-        float: none;
-        width: 100%;
-      }
-      .main-body-left {
-        margin-bottom: 20px;
-      }
-      .main-body-right {
-        max-width: 100%;
-      }
-      .chat-messages {
-        max-height: 260px;
+      .top-nav .search-box input {
+        font-size: 12px;
+        padding: 4px 8px 4px 28px;
       }
       .cover-wrapper {
-        height: 260px;
+        height: 180px;
       }
-      .user-img-lg {
-        width: 108px;
-        height: 108px;
-        bottom: -54px;
-        line-height: 108px;
-        font-size: 52px;
-      }
-      .info-tab-wrap {
-        margin-top: 60px;
-      }
-      .cover-top-text h1 {
-        font-size: 24px;
-      }
-      .wb-nav-inner {
-        gap: 16px;
-      }
-    }
-    @media (max-width: 768px) {
-      .main-body-left-bottom .panel .list-group li {
+      .avatar-large {
         width: 70px;
         height: 70px;
+        line-height: 70px;
+        font-size: 30px;
+        bottom: -35px;
       }
-      .main-body-left-bottom .panel .list-group li a {
-        width: 70px;
-        height: 70px;
-        font-size: 10px;
-      }
-      .main-body-imgwall img {
-        width: 80px;
-        height: 60px;
-      }
-      .stats-card .stat-item strong {
-        font-size: 26px;
-      }
-      #mainNavTabs {
-        gap: 16px;
-      }
-      #mainNavTabs li a {
-        font-size: 14px;
-      }
-      .wb-nav-item {
-        font-size: 14px;
-      }
-      .wb-nav-inner {
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-      .wb-search-box {
-        max-width: 100%;
-        flex-basis: 100%;
-        margin-left: 0;
-        margin-top: 6px;
-      }
-    }
-    @media (max-width: 600px) {
-      :root {
-        --cover-height: 220px;
-      }
-      .header-left .img-qzone {
-        font-size: 16px;
-        width: 70px;
-      }
-      .header-left a span {
-        display: none;
-      }
-      .header-right-input {
-        width: 60px;
-      }
-      .main-body-left-top div a strong {
-        font-size: 18px;
-      }
-      .main-body-left-bottom .panel .list-group li {
-        width: 60px;
-        height: 60px;
-      }
-      .main-body-left-bottom .panel .list-group li a {
-        width: 60px;
-        height: 60px;
-        font-size: 10px;
-      }
-      .main-body-imgwall img {
-        width: 70px;
-        height: 55px;
-      }
-      .login-card {
-        padding: 24px 16px;
-      }
-      .cover-wrapper .cover-btn {
-        padding: 5px 12px;
-        font-size: 11px;
-        bottom: 12px;
-        right: 12px;
-      }
-      .user-img-lg {
-        width: 90px;
-        height: 90px;
-        bottom: -45px;
-        line-height: 90px;
-        font-size: 44px;
-        border-width: 4px;
-      }
-      .cover-top-text {
-        padding: 24px 16px 16px;
-      }
-      .cover-top-text h1 {
-        font-size: 20px;
-      }
-      .cover-top-text .main-small {
-        font-size: 13px;
-      }
-      .cover-top-text .weather .city,
-      .cover-top-text .weather #currentDate {
-        font-size: 12px;
-      }
-      .info-tab-wrap {
-        margin-top: 52px;
-        width: 96%;
-      }
-      .main-header-bottom-top h1 {
-        font-size: 20px;
-      }
-      .level-exp-row {
-        font-size: 13px;
-      }
-      .main-body {
-        width: 96%;
-        margin: 0 auto 40px;
-      }
-      .stats-card {
-        width: 96%;
-      }
-      .stats-card .stat-item strong {
-        font-size: 22px;
-      }
-      .stats-card .stat-item {
-        padding: 14px 0;
-      }
-      .panel .panel-heading {
-        font-size: 15px;
-        padding: 12px 14px;
-      }
-      .panel .list-group {
-        padding: 4px 14px;
-      }
-      .panel .list-group li {
-        font-size: 13px;
+      .user-stats {
+        margin: 42px 12px 12px;
         padding: 10px 0;
       }
-      #panelContainer {
-        padding: 14px 16px;
+      .user-stats .stat-item strong {
+        font-size: 20px;
       }
       .post-item {
-        padding: 12px 6px;
+        padding: 12px 14px;
       }
-      .wb-top-nav {
-        padding: 8px 12px;
-      }
-      .wb-nav-item {
-        font-size: 13px;
-      }
-      #mainNavTabs {
-        gap: 12px;
-        padding: 12px 0;
-      }
-      #mainNavTabs li a {
-        font-size: 13px;
-        padding: 4px 0;
+      .post-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+        bottom: 72px;
+        right: 16px;
       }
     }
   </style>
@@ -1422,7 +649,7 @@
         <div class="login-tab active" data-mode="login">登录</div>
         <div class="login-tab" data-mode="register">注册</div>
       </div>
-      <input type="text" class="login-input" id="loginUsername" placeholder="妖精名号" maxlength="12">
+      <input type="text" class="login-input" id="loginUsername" placeholder="妖精名号">
       <input type="password" class="login-input" id="loginPassword" placeholder="密码">
       <div class="login-error" id="loginError"></div>
       <button class="login-btn" id="loginBtn">进入会馆</button>
@@ -1432,176 +659,85 @@
   <!-- ===== 主应用 ===== -->
   <div id="appContainer" style="display:none;">
 
-    <!-- ===== 顶部黑色导航 ===== -->
-    <div class="header">
-      <div class="header-box">
-        <div class="header-left">
-          <a href="#" class="img-qzone">雾凇会馆</a>
-          <a href="#"><i class="icon-personel"></i><span>个人中心</span></a>
-          <a href="#" id="navMyHome"><i class="icon-myhomepage"></i><span>我的主页</span><i class="icon-down"></i></a>
-          <a href="#" id="navFriends"><i class="icon-myfriend"></i><span>好友</span><i class="icon-down"></i></a>
-          <a href="#" id="navTasks"><i class="icon-game"></i><span>委托</span><i class="icon-down"></i></a>
-          <a href="#"><i class="icon-dress"></i><span>装扮</span><i class="icon-down"></i></a>
+    <!-- ===== 顶部导航 ===== -->
+    <div class="top-nav">
+      <div class="logo">🌲 雾凇</div>
+      <div class="search-box">
+        <span class="icon-search">🔍</span>
+        <input type="text" placeholder="搜索用户/帖子" id="searchInput">
+      </div>
+      <div class="user-avatar" id="headerAvatar" onclick="location.reload()"></div>
+    </div>
+
+    <!-- ===== 封面+用户信息（仅主页显示） ===== -->
+    <div class="cover-section" id="homeCover">
+      <div class="cover-wrapper" id="coverWrapper">
+        <button class="cover-btn" id="changeCoverBtn">更换封面</button>
+        <div class="cover-text">
+          <h1 id="userTitle">雾凇会馆 · admin</h1>
+          <span class="sub" id="userSignature">这个人很懒，什么都没写~</span>
+          <div class="weather">
+            <span>吉林</span>
+            <span id="currentDate">6月27日</span>
+          </div>
         </div>
-        <div class="header-right">
-          <a href="#"><i class="icon-pause"></i></a>
-          <a href="#"><i class="icon-music"></i></a>
-          <input type="text" class="header-right-input" placeholder="用户/游戏/动态">
-          <a href="#" class="search"><i class="icon-search"></i></a>
-          <span>|</span>
-          <a href="#" id="headerUserInfo">
-            <i class="header-right-img" id="headerAvatar"></i>
-            <span id="headerUsername">未登录</span>
-          </a>
-          <a href="#" id="headerLogout"><i class="icon-logout"></i></a>
-          <a href="#"><i class="icon-set"></i></a>
-        </div>
+        <div class="avatar-large" id="mainAvatar">🐱</div>
       </div>
     </div>
 
-    <div class="top-hold"></div>
+    <!-- ===== 统计卡片 ===== -->
+    <div class="user-stats" id="homeStats">
+      <div class="stat-item"><strong id="countPosts">0</strong><span>帖子</span></div>
+      <div class="stat-item"><strong id="countFriends">0</strong><span>好友</span></div>
+      <div class="stat-item"><strong id="countGold">0</strong><span>金币</span></div>
+    </div>
 
-    <!-- ===== 微博顶部导航 ===== -->
-    <div class="wb-top-nav">
-      <div class="wb-nav-inner">
-        <a href="#" class="wb-nav-item active" data-top="home">首页</a>
-        <a href="#" class="wb-nav-item" data-top="profile">个人</a>
-        <a href="#" class="wb-nav-item" data-top="friends">好友</a>
-        <a href="#" class="wb-nav-item" data-top="hot">热搜</a>
-        <div class="wb-search-box">
-          <input type="text" placeholder="搜索用户/帖子/委托">
-          <span class="search-icon">🔍</span>
+    <!-- ===== 内容面板 ===== -->
+    <div class="main-content" id="mainContent">
+      <!-- 主页面板 -->
+      <div class="panel active" id="panel-forum">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="board-filter" id="boardFilter">
+            <span class="board-tab active" data-board="all">全部</span>
+          </div>
+          <button class="btn btn-primary btn-sm" id="newPostBtn">发帖</button>
         </div>
+        <div id="postsList">加载中...</div>
+      </div>
+
+      <!-- 委托面板 -->
+      <div class="panel" id="panel-tasks"></div>
+
+      <!-- 好友面板 -->
+      <div class="panel" id="panel-friends"></div>
+
+      <!-- 聊天面板 -->
+      <div class="panel" id="panel-chat"></div>
+    </div>
+
+    <!-- ===== 底部Tab导航 ===== -->
+    <div class="bottom-nav" id="bottomNav">
+      <div class="tab-item active" data-tab="forum">
+        <span class="tab-icon">🏠</span>
+        <span>主页</span>
+      </div>
+      <div class="tab-item" data-tab="tasks">
+        <span class="tab-icon">📋</span>
+        <span>委托</span>
+      </div>
+      <div class="tab-item" data-tab="friends">
+        <span class="tab-icon">👥</span>
+        <span>好友</span>
+      </div>
+      <div class="tab-item" data-tab="chat">
+        <span class="tab-icon">💬</span>
+        <span>聊天</span>
       </div>
     </div>
 
-    <div class="midbox">
+    <!-- ===== 悬浮发帖按钮 ===== -->
+    <button class="post-btn" id="floatingPostBtn">✏️</button>
 
-      <!-- ===== 封面容器 ===== -->
-      <div class="cover-container">
-        <div class="cover-wrapper" id="coverWrapper" style="background-image: url('');">
-          <button class="cover-btn" id="changeCoverBtn">更换封面</button>
-          <div class="cover-top-text">
-            <h1 id="userTitle">雾凇会馆 · admin</h1>
-            <small class="main-text main-small" id="userSignature">这个人很懒，什么都没写~</small>
-            <div class="weather">
-              <small class="city main-text">吉林</small>
-              <small id="currentDate">6月27日</small>
-            </div>
-          </div>
-        </div>
-        <a href="#" class="user-img-lg" id="mainAvatar">🐱</a>
-      </div>
-
-      <!-- ===== 昵称 + Tab（删除了基建和每日） ===== -->
-      <div class="info-tab-wrap">
-        <div class="main-header-bottom-top">
-          <h1 id="mainUsername">admin</h1>
-          <div class="level-exp-row">
-            成长值&nbsp;<span id="expDisplay">0</span>&nbsp;&nbsp;|&nbsp; 等级&nbsp;<span id="levelDisplay">Lv.1</span>
-          </div>
-        </div>
-        <ul id="mainNavTabs">
-          <li><a href="#" class="active" data-tab="forum">主页</a></li>
-          <li><a href="#" data-tab="tasks">委托</a></li>
-          <li><a href="#" data-tab="friends">好友</a></li>
-          <li><a href="#" data-tab="chat">聊天</a></li>
-        </ul>
-      </div>
-
-      <!-- ===== 三栏统计卡片 ===== -->
-      <div class="stats-card">
-        <div class="stat-item">
-          <strong id="countPosts">0</strong>
-          <span>帖子</span>
-        </div>
-        <div class="stat-item">
-          <strong id="countFriends">0</strong>
-          <span>好友</span>
-        </div>
-        <div class="stat-item">
-          <strong id="countGold">0</strong>
-          <span>金币</span>
-        </div>
-      </div>
-
-      <!-- ===== 主体 ===== -->
-      <div class="main-body clear">
-
-        <!-- 左侧 -->
-        <div class="main-body-left">
-          <div class="main-body-left-middle">
-            <div class="panel">
-              <div class="panel-heading"><strong>个人档</strong></div>
-              <ul class="list-group" id="profileInfo">
-                <li><i>👤</i> <span id="profileUsername">用户名</span></li>
-                <li><i>🎂</i> <span id="profileLevel">Lv.1</span> · <span id="profileGold">0</span> 金币</li>
-                <li><i>📝</i> <span id="profileBio">这个人很懒，什么都没写~</span></li>
-                <li><i>⭐</i> 经验 <span id="profileExp">0</span></li>
-                <li><i>🏠</i> 来自 雾凇会馆</li>
-              </ul>
-              <div class="panel-bottom"><a href="#" id="editProfileBtn">编辑资料</a></div>
-            </div>
-          </div>
-
-          <div class="main-body-left-board">
-            <div class="panel">
-              <div class="panel-heading"><strong>好友请求</strong></div>
-              <ul class="list-group" id="friendRequestsList">
-                <li style="color:var(--text-sub);text-align:center;padding:16px 0;">暂无请求</li>
-              </ul>
-              <div class="panel-bottom"><a href="#" id="viewAllRequests">查看全部</a></div>
-            </div>
-          </div>
-
-          <div class="main-body-left-bottom">
-            <div class="panel">
-              <div class="panel-heading"><strong>我的好友</strong></div>
-              <ul class="list-group" id="friendsListLeft">
-                <li style="color:var(--text-sub);text-align:center;width:100%;height:auto;padding:20px 0;">暂无好友</li>
-              </ul>
-              <div class="panel-bottom"><a href="#" id="viewAllFriends">查看更多</a></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 右侧 -->
-        <div class="main-body-right">
-          <div class="main-body-right-top">
-            <ul class="main-body-panel clear">
-              <li class="main-body-userinfo clear">
-                <a href="#" class="user-img-md"><img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='50' height='50'><circle cx='25' cy='25' r='23' fill='%23575757'/><text x='25' y='35' font-size='28' text-anchor='middle' fill='%23fff'>🐱</text></svg>" alt="头像"></a>
-                <div>
-                  <a href="#" id="wallUserName">雾凇会馆</a>
-                  <p><span id="wallDate">6月27日</span><span>14:27</span></p>
-                </div>
-                <a href="#"><i class="icon-panel-set"></i></a>
-              </li>
-              <li class="main-body-imgwall clear">
-                <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='90'><rect width='120' height='90' fill='%23C2E8FF' rx='8'/><text x='60' y='50' font-size='20' text-anchor='middle' fill='%23575757'>🌲</text></svg>" alt="礼物照片">
-                <span>欢迎来到 <strong>雾凇会馆</strong> · 妖精公会</span>
-                <button onclick="location.reload()">点击进入</button>
-              </li>
-            </ul>
-          </div>
-
-          <div id="panelContainer"></div>
-
-          <div class="main-body-right-bottom">
-            <a href="#" id="moreDynamic">查看更多动态</a>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ===== 底部 ===== -->
-    <div class="footer">
-      <div class="footer-main">
-        <p>雾凇会馆 · 妖精公会 ｜ 吉林同人交互论坛</p>
-        <p>Copyright © 2026 雾凇公会 All Rights Reserved.</p>
-      </div>
-    </div>
   </div>
 
   <!-- ===== Toast & 模态框 ===== -->
@@ -1632,18 +768,18 @@
     // 预设封面图
     // ============================================================
     const PRESET_COVERS = [
-      'https://picsum.photos/seed/forest/1200/400',
-      'https://picsum.photos/seed/mountain/1200/400',
-      'https://picsum.photos/seed/lake/1200/400',
-      'https://picsum.photos/seed/sunset/1200/400',
-      'https://picsum.photos/seed/aurora/1200/400',
-      'https://picsum.photos/seed/ocean/1200/400',
-      'https://picsum.photos/seed/city/1200/400',
-      'https://picsum.photos/seed/night/1200/400'
+      'https://picsum.photos/seed/forest/800/300',
+      'https://picsum.photos/seed/mountain/800/300',
+      'https://picsum.photos/seed/lake/800/300',
+      'https://picsum.photos/seed/sunset/800/300',
+      'https://picsum.photos/seed/aurora/800/300',
+      'https://picsum.photos/seed/ocean/800/300',
+      'https://picsum.photos/seed/city/800/300',
+      'https://picsum.photos/seed/night/800/300'
     ];
 
     // ============================================================
-    // 状态与 DOM 引用
+    // 状态
     // ============================================================
     let currentUser = null;
     let currentTab = 'forum';
@@ -1659,43 +795,31 @@
     const loginBtn = $('loginBtn');
     const loginTabs = document.querySelectorAll('.login-tab');
     const appContainer = $('appContainer');
-    const panelContainer = $('panelContainer');
+    const panelForum = $('panel-forum');
+    const panelTasks = $('panel-tasks');
+    const panelFriends = $('panel-friends');
+    const panelChat = $('panel-chat');
     const toastContainer = $('toastContainer');
     const modalOverlay = $('modalOverlay');
     const modalContent = $('modalContent');
-
-    const headerUsername = $('headerUsername');
+    const bottomTabs = document.querySelectorAll('.tab-item');
+    const homeCover = $('homeCover');
+    const homeStats = $('homeStats');
+    const coverWrapper = $('coverWrapper');
+    const changeCoverBtn = $('changeCoverBtn');
+    const mainAvatar = $('mainAvatar');
     const headerAvatar = $('headerAvatar');
-    const headerLogout = $('headerLogout');
     const userTitle = $('userTitle');
     const userSignature = $('userSignature');
-    const mainAvatar = $('mainAvatar');
-    const mainUsername = $('mainUsername');
-    const expDisplay = $('expDisplay');
-    const levelDisplay = $('levelDisplay');
     const currentDate = $('currentDate');
     const countPosts = $('countPosts');
     const countFriends = $('countFriends');
     const countGold = $('countGold');
-    const profileUsername = $('profileUsername');
-    const profileLevel = $('profileLevel');
-    const profileGold = $('profileGold');
-    const profileBio = $('profileBio');
-    const profileExp = $('profileExp');
-    const editProfileBtn = $('editProfileBtn');
-    const friendRequestsList = $('friendRequestsList');
-    const friendsListLeft = $('friendsListLeft');
-    const wallUserName = $('wallUserName');
-    const wallDate = $('wallDate');
-    const mainNavTabs = document.querySelectorAll('#mainNavTabs a');
-    const navMyHome = $('navMyHome');
-    const navFriends = $('navFriends');
-    const navTasks = $('navTasks');
-    const moreDynamic = $('moreDynamic');
-    const wbNavItems = document.querySelectorAll('.wb-nav-item');
-
-    const coverWrapper = $('coverWrapper');
-    const changeCoverBtn = $('changeCoverBtn');
+    const boardFilter = $('boardFilter');
+    const postsList = $('postsList');
+    const newPostBtn = $('newPostBtn');
+    const floatingPostBtn = $('floatingPostBtn');
+    const searchInput = $('searchInput');
 
     // ============================================================
     // 工具函数
@@ -1738,73 +862,11 @@
       return arr.map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    function isNewDay(last) {
-      if (!last) return true;
-      return new Date().toDateString() !== new Date(last).toDateString();
-    }
-
     function updateDate() {
       const now = new Date();
       currentDate.textContent = (now.getMonth() + 1) + '月' + now.getDate() + '日';
     }
     updateDate();
-
-    // ============================================================
-    // 封面功能
-    // ============================================================
-    async function setCover(url) {
-      const { error } = await supabase.from('users').update({ cover_url: url }).eq('id', currentUser.id);
-      if (error) { toast('更换失败: ' + error.message, 'error'); return; }
-      currentUser.cover_url = url;
-      updateUI();
-      toast('封面已更新', 'success');
-    }
-
-    changeCoverBtn.addEventListener('click', () => {
-      if (!currentUser) { toast('请先登录', 'error'); return; }
-      let gridHtml = '<div class="cover-preset-grid">';
-      PRESET_COVERS.forEach(url => {
-        gridHtml += `<div class="cover-preset-item" data-url="${url}" style="background-image:url('${url}');"></div>`;
-      });
-      gridHtml += '</div>';
-
-      modalContent.innerHTML = `
-        <h3>🖼️ 更换封面</h3>
-        <p style="color:var(--text-sub);font-size:13px;">点击下方图片替换封面，或上传自定义图片</p>
-        ${gridHtml}
-        <div style="margin-top:12px; display:flex; gap:8px;">
-          <input type="file" id="coverUploadInput" accept="image/*" style="flex:1;">
-          <button class="btn btn-primary btn-sm" id="coverUploadBtn">上传</button>
-        </div>
-        <div class="modal-actions">
-          <button class="btn btn-outline btn-sm" id="modalCancel">取消</button>
-        </div>
-      `;
-      modalOverlay.classList.add('show');
-
-      document.querySelectorAll('.cover-preset-item').forEach(el => {
-        el.addEventListener('click', async () => {
-          const url = el.dataset.url;
-          await setCover(url);
-          closeModal();
-        });
-      });
-
-      document.getElementById('coverUploadBtn').addEventListener('click', async () => {
-        const input = document.getElementById('coverUploadInput');
-        const file = input.files[0];
-        if (!file) { toast('请选择图片', 'error'); return; }
-        const ext = file.name.split('.').pop();
-        const name = `cover_${currentUser.id}_${Date.now()}.${ext}`;
-        const { error } = await supabase.storage.from('avatars').upload(name, file);
-        if (error) { toast('上传失败: ' + error.message, 'error'); return; }
-        const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(name);
-        await setCover(urlData.publicUrl);
-        closeModal();
-      });
-
-      document.getElementById('modalCancel').addEventListener('click', closeModal);
-    });
 
     // ============================================================
     // 登录 / 注册
@@ -1874,10 +936,12 @@
       }
     });
 
+    // ============================================================
+    // UI 更新
+    // ============================================================
     function updateUI() {
       if (!currentUser) return;
       const u = currentUser;
-      headerUsername.textContent = u.username;
       headerAvatar.style.backgroundImage = u.avatar_url ? `url('${u.avatar_url}')` : '';
       userTitle.textContent = `雾凇会馆 · ${u.username}`;
       userSignature.textContent = u.bio || '这个人很懒，什么都没写~';
@@ -1889,22 +953,11 @@
         mainAvatar.style.backgroundImage = 'none';
         mainAvatar.textContent = u.avatar || '🐱';
       }
-      mainUsername.textContent = u.username;
-      expDisplay.textContent = u.exp || 0;
-      levelDisplay.textContent = 'Lv.' + (u.level || 1);
       countGold.textContent = u.gold || 0;
-      profileUsername.textContent = u.username;
-      profileLevel.textContent = 'Lv.' + (u.level || 1);
-      profileGold.textContent = u.gold || 0;
-      profileBio.textContent = u.bio || '这个人很懒，什么都没写~';
-      profileExp.textContent = u.exp || 0;
-      wallUserName.textContent = u.username;
-
       if (coverWrapper) {
         const coverUrl = u.cover_url || PRESET_COVERS[0];
         coverWrapper.style.backgroundImage = `url('${coverUrl}')`;
       }
-
       updateCounts();
     }
 
@@ -1916,77 +969,68 @@
       const { count: pCount } = await supabase.from('posts').select('*', { count: 'exact', head: true })
         .eq('author_id', currentUser.id);
       countPosts.textContent = pCount || 0;
-      renderLeftFriends();
-      renderFriendRequests();
     }
 
-    async function renderLeftFriends() {
-      if (!currentUser) return;
-      const { data: friendRows } = await supabase.from('friends')
-        .select(
-          '*, sender:users!friends_sender_id_fkey (id, username, avatar_url), receiver:users!friends_receiver_id_fkey (id, username, avatar_url)'
-          )
-        .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`).eq('status', 'accepted');
-      const friends = friendRows ? friendRows.map(row => row.sender_id === currentUser.id ? row.receiver : row.sender) :
-        [];
-      if (friends.length === 0) {
-        friendsListLeft.innerHTML = '<li style="color:var(--text-sub);text-align:center;width:100%;height:auto;padding:20px 0;">暂无好友</li>';
-        return;
-      }
-      let html = '';
-      friends.slice(0, 6).forEach(f => {
-        html +=
-          `<li><a href="#" style="background-image: url('${f.avatar_url || ''}'); background-size: cover; background-color:#ccc; display:table-cell; vertical-align:bottom; text-align:center; color:#fff; font-weight:500;"><span>${escHtml(f.username)}</span></a></li>`;
-      });
-      friendsListLeft.innerHTML = html;
+    // ============================================================
+    // 封面更换
+    // ============================================================
+    async function setCover(url) {
+      const { error } = await supabase.from('users').update({ cover_url: url }).eq('id', currentUser.id);
+      if (error) { toast('更换失败: ' + error.message, 'error'); return; }
+      currentUser.cover_url = url;
+      updateUI();
+      toast('封面已更新', 'success');
     }
 
-    async function renderFriendRequests() {
-      if (!currentUser) return;
-      const { data: pending } = await supabase.from('friends')
-        .select('*, sender:users!friends_sender_id_fkey (id, username, avatar_url)')
-        .eq('receiver_id', currentUser.id).eq('status', 'pending');
-      if (!pending || pending.length === 0) {
-        friendRequestsList.innerHTML =
-          '<li style="color:var(--text-sub);text-align:center;padding:16px 0;">暂无请求</li>';
-        return;
-      }
-      let html = '';
-      pending.slice(0, 3).forEach(row => {
-        html +=
-          `<li><a href="#">${escHtml(row.sender.username)}</a> 想加你为好友 <button class="btn btn-success btn-sm" data-request-id="${row.id}" data-action="accept">接受</button> <button class="btn btn-danger btn-sm" data-request-id="${row.id}" data-action="reject">拒绝</button></li>`;
+    changeCoverBtn.addEventListener('click', () => {
+      if (!currentUser) { toast('请先登录', 'error'); return; }
+      let gridHtml = '<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:8px;">';
+      PRESET_COVERS.forEach(url => {
+        gridHtml += `<div data-url="${url}" style="height:70px; background-size:cover; background-position:center; border-radius:8px; cursor:pointer; border:2px solid transparent;" onclick="this.style.borderColor='#ff8200'"></div>`;
       });
-      friendRequestsList.innerHTML = html;
-      friendRequestsList.querySelectorAll('[data-request-id]').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = parseInt(btn.dataset.requestId);
-          const action = btn.dataset.action;
-          const status = action === 'accept' ? 'accepted' : 'rejected';
-          await supabase.from('friends').update({ status }).eq('id', id);
-          toast(action === 'accept' ? '已接受' : '已拒绝', 'success');
-          renderFriendRequests();
-          updateCounts();
+      gridHtml += '</div>';
+
+      modalContent.innerHTML = `
+        <h3>🖼️ 更换封面</h3>
+        <p style="color:#86909c;font-size:13px;">点击图片替换封面，或上传自定义</p>
+        ${gridHtml}
+        <div style="margin-top:12px; display:flex; gap:8px;">
+          <input type="file" id="coverUploadInput" accept="image/*" style="flex:1;">
+          <button class="btn btn-primary btn-sm" id="coverUploadBtn">上传</button>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-outline btn-sm" id="modalCancel">取消</button>
+        </div>
+      `;
+      modalOverlay.classList.add('show');
+
+      document.querySelectorAll('[data-url]').forEach(el => {
+        el.style.backgroundImage = `url('${el.dataset.url}')`;
+        el.addEventListener('click', async () => {
+          await setCover(el.dataset.url);
+          closeModal();
         });
       });
-    }
 
-    editProfileBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (!currentUser) return;
-      modalContent.innerHTML =
-        `<h3>编辑个人简介</h3><textarea id="editBio" rows="4">${escHtml(currentUser.bio || '')}</textarea><div class="modal-actions"><button class="btn btn-outline btn-sm" id="modalCancel">取消</button><button class="btn btn-primary btn-sm" id="modalSaveBio">保存</button></div>`;
-      modalOverlay.classList.add('show');
-      document.getElementById('modalCancel').addEventListener('click', closeModal);
-      document.getElementById('modalSaveBio').addEventListener('click', async () => {
-        const bio = document.getElementById('editBio').value.trim();
-        await supabase.from('users').update({ bio }).eq('id', currentUser.id);
-        currentUser.bio = bio;
-        updateUI();
-        toast('简介已更新', 'success');
+      document.getElementById('coverUploadBtn').addEventListener('click', async () => {
+        const input = document.getElementById('coverUploadInput');
+        const file = input.files[0];
+        if (!file) { toast('请选择图片', 'error'); return; }
+        const ext = file.name.split('.').pop();
+        const name = `cover_${currentUser.id}_${Date.now()}.${ext}`;
+        const { error } = await supabase.storage.from('avatars').upload(name, file);
+        if (error) { toast('上传失败: ' + error.message, 'error'); return; }
+        const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(name);
+        await setCover(urlData.publicUrl);
         closeModal();
       });
+
+      document.getElementById('modalCancel').addEventListener('click', closeModal);
     });
 
+    // ============================================================
+    // 头像上传（点击大头像）
+    // ============================================================
     mainAvatar.addEventListener('click', () => {
       if (!currentUser) return;
       const input = document.createElement('input');
@@ -2021,78 +1065,54 @@
     });
 
     // ============================================================
-    // 导航切换
+    // 底部Tab切换
     // ============================================================
-    mainNavTabs.forEach(tab => {
-      tab.addEventListener('click', (e) => {
-        e.preventDefault();
-        const tabName = tab.dataset.tab;
-        if (!tabName) return;
-        mainNavTabs.forEach(t => t.classList.remove('active'));
+    bottomTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        bottomTabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
+        const tabName = tab.dataset.tab;
         currentTab = tabName;
         viewingPostId = null;
-        renderCurrentTab();
-      });
-    });
-
-    wbNavItems.forEach(item => {
-      item.addEventListener('click', (e) => {
-        e.preventDefault();
-        wbNavItems.forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
-        const topTab = item.dataset.top;
-        if (topTab === 'home') {
-          currentTab = 'forum';
-        } else if (topTab === 'profile') {
-          currentTab = 'forum';
-        } else if (topTab === 'friends') {
-          currentTab = 'friends';
-        } else if (topTab === 'hot') {
-          currentTab = 'forum';
+        // 控制封面和统计卡片的显示（仅在主页显示）
+        if (tabName === 'forum') {
+          homeCover.style.display = 'block';
+          homeStats.style.display = 'flex';
+        } else {
+          homeCover.style.display = 'none';
+          homeStats.style.display = 'none';
         }
-        mainNavTabs.forEach(t => t.classList.remove('active'));
-        document.querySelector(`#mainNavTabs a[data-tab="${currentTab}"]`)?.classList.add('active');
-        viewingPostId = null;
         renderCurrentTab();
       });
     });
 
-    navMyHome.addEventListener('click', (e) => {
-      e.preventDefault();
-      mainNavTabs.forEach(t => t.classList.remove('active'));
-      document.querySelector('#mainNavTabs a[data-tab="forum"]')?.classList.add('active');
-      currentTab = 'forum';
-      viewingPostId = null;
-      renderCurrentTab();
-    });
-    navFriends.addEventListener('click', (e) => {
-      e.preventDefault();
-      mainNavTabs.forEach(t => t.classList.remove('active'));
-      document.querySelector('#mainNavTabs a[data-tab="friends"]')?.classList.add('active');
-      currentTab = 'friends';
-      viewingPostId = null;
-      renderCurrentTab();
-    });
-    navTasks.addEventListener('click', (e) => {
-      e.preventDefault();
-      mainNavTabs.forEach(t => t.classList.remove('active'));
-      document.querySelector('#mainNavTabs a[data-tab="tasks"]')?.classList.add('active');
-      currentTab = 'tasks';
-      viewingPostId = null;
-      renderCurrentTab();
-    });
-    moreDynamic.addEventListener('click', (e) => {
-      e.preventDefault();
-      mainNavTabs.forEach(t => t.classList.remove('active'));
-      document.querySelector('#mainNavTabs a[data-tab="forum"]')?.classList.add('active');
-      currentTab = 'forum';
-      viewingPostId = null;
-      renderCurrentTab();
+    // 悬浮发帖按钮
+    floatingPostBtn.addEventListener('click', () => {
+      if (currentTab !== 'forum') {
+        // 切换到主页
+        bottomTabs.forEach(t => t.classList.remove('active'));
+        document.querySelector('.tab-item[data-tab="forum"]').classList.add('active');
+        currentTab = 'forum';
+        homeCover.style.display = 'block';
+        homeStats.style.display = 'flex';
+        renderCurrentTab();
+      }
+      openNewPost();
     });
 
+    // 发帖按钮（主页内）
+    newPostBtn.addEventListener('click', openNewPost);
+
+    // ============================================================
+    // 渲染面板
+    // ============================================================
     function renderCurrentTab() {
-      panelContainer.innerHTML = '';
+      // 显示对应面板
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      const panelId = `panel-${currentTab}`;
+      const panel = document.getElementById(panelId);
+      if (panel) panel.classList.add('active');
+
       switch (currentTab) {
         case 'forum':
           renderForum();
@@ -2106,119 +1126,95 @@
         case 'chat':
           renderChat();
           break;
-        default:
-          renderForum();
       }
     }
 
     // ============================================================
-    // 论坛
+    // 论坛（帖子列表）
     // ============================================================
     async function renderForum() {
       if (viewingPostId) {
         await renderPostDetail(viewingPostId);
         return;
       }
+      // 获取板块
       const { data: boards } = await supabase.from('boards').select('*').order('sort_order');
-      let boardNav = `<div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;">`;
-      boardNav +=
-        `<span class="board-tab active" data-board="all" style="cursor:pointer; padding:4px 14px; border-radius:var(--radius-full); background:var(--primary); color:#fff; transition:var(--transition);">全部</span>`;
-      if (boards) boards.forEach(b => {
-        boardNav +=
-          `<span class="board-tab" data-board="${b.id}" style="cursor:pointer; padding:4px 14px; border-radius:var(--radius-full); background:var(--bg-light); color:var(--text-sub); transition:var(--transition);">${escHtml(b.name)}</span>`;
-      });
-      boardNav += `</div>`;
-      panelContainer.innerHTML =
-        `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><strong style="font-size:16px;font-weight:600;">📢 最新帖子</strong><button class="btn btn-primary btn-sm" id="newPostBtn">✏️ 发帖</button></div>${boardNav}<div id="postsList"><div style="text-align:center;padding:30px 0;color:var(--text-light);">加载中...</div></div>`;
-      document.getElementById('newPostBtn').addEventListener('click', openNewPost);
-      document.querySelectorAll('.board-tab').forEach(tab => {
+      let filterHtml = `<span class="board-tab active" data-board="all">全部</span>`;
+      if (boards) {
+        boards.forEach(b => {
+          filterHtml += `<span class="board-tab" data-board="${b.id}">${escHtml(b.name)}</span>`;
+        });
+      }
+      boardFilter.innerHTML = filterHtml;
+
+      // 绑定板块点击
+      boardFilter.querySelectorAll('.board-tab').forEach(tab => {
         tab.addEventListener('click', () => {
-          document.querySelectorAll('.board-tab').forEach(t => {
-            t.style.background = 'var(--bg-light)';
-            t.style.color = 'var(--text-sub)';
-          });
-          tab.style.background = 'var(--primary)';
-          tab.style.color = '#fff';
+          boardFilter.querySelectorAll('.board-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
           const boardId = tab.dataset.board === 'all' ? null : parseInt(tab.dataset.board);
           loadPosts(boardId);
         });
       });
-      loadPosts(null);
 
-      async function loadPosts(boardId) {
-        let query = supabase.from('posts_with_authors').select('*');
-        if (boardId) query = query.eq('board_id', boardId);
-        query = query.order('created_at', { ascending: false });
-        const { data: posts, error } = await query;
-        if (error) {
-          document.getElementById('postsList').innerHTML = `<p style="color:#f53f3f;">加载失败: ${error.message}</p>`;
-          return;
-        }
-        if (!posts || posts.length === 0) {
-          document.getElementById('postsList').innerHTML =
-            `<p style="color:var(--text-light);text-align:center;padding:30px 0;">该板块暂无帖子</p>`;
-          return;
-        }
-        const ids = posts.map(p => p.id);
-        const { data: stats } = await supabase.from('posts_stats').select('*').in('id', ids);
-        const statMap = {};
-        if (stats) stats.forEach(s => { statMap[s.id] = s; });
-        let html = '';
-        for (const post of posts) {
-          const replyCount = statMap[post.id]?.reply_count || 0;
-          const likeCount = statMap[post.id]?.like_count || 0;
-          const isHot = replyCount >= 5;
-          html +=
-            `<div class="post-item" data-postid="${post.id}"><div class="post-avatar">${escHtml(post.avatar || '🐱')}</div><div style="flex:1;"><div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><span class="post-title">${escHtml(post.title)} ${isHot ? '🔥' : ''}</span>${post.board_name ? `<span style="font-size:11px; background:var(--bg-light); padding:2px 10px; border-radius:var(--radius-full); color:var(--text-sub);">${escHtml(post.board_name)}</span>` : ''}</div><div class="post-content-preview">${escHtml(post.content.substring(0, 60))}${post.content.length>60?'...':''}</div><div class="post-meta">${escHtml(post.username || '已注销')} · ${timeAgo(post.created_at)} · ❤️ ${likeCount} · 💬 ${replyCount}${post.updated_at && post.updated_at !== post.created_at ? ' ✏️已编辑' : ''}</div></div></div>`;
-        }
-        document.getElementById('postsList').innerHTML = html;
-        document.querySelectorAll('.post-item').forEach(el => {
-          el.addEventListener('click', () => {
-            viewingPostId = parseInt(el.dataset.postid);
-            renderForum();
-          });
-        });
-      }
+      // 加载帖子
+      loadPosts(null);
     }
 
-    function openNewPost() {
-      if (!currentUser) {
-        toast('请先登录', 'error');
+    async function loadPosts(boardId) {
+      postsList.innerHTML = '<div style="text-align:center;padding:20px;color:#86909c;">加载中...</div>';
+      let query = supabase.from('posts_with_authors').select('*');
+      if (boardId) query = query.eq('board_id', boardId);
+      query = query.order('created_at', { ascending: false });
+      const { data: posts, error } = await query;
+      if (error) {
+        postsList.innerHTML = `<p style="color:#f53f3f;">加载失败: ${error.message}</p>`;
         return;
       }
-      supabase.from('boards').select('*').order('sort_order').then(({ data: boards }) => {
-        const options = boards.map(b => `<option value="${b.id}">${escHtml(b.name)}</option>`).join('');
-        modalContent.innerHTML =
-          `<h3>✏️ 发新帖</h3><div style="margin-bottom:10px;"><label style="font-size:0.85rem;color:var(--text-sub);">选择板块：</label><select id="newPostBoard">${options}</select></div><input type="text" id="newPostTitle" placeholder="标题" maxlength="100"><textarea id="newPostContent" rows="5" placeholder="内容"></textarea><div class="modal-actions"><button class="btn btn-outline btn-sm" id="modalCancel">取消</button><button class="btn btn-primary btn-sm" id="modalConfirm">发布</button></div>`;
-        modalOverlay.classList.add('show');
-        document.getElementById('modalCancel').addEventListener('click', closeModal);
-        document.getElementById('modalConfirm').addEventListener('click', async () => {
-          const boardId = parseInt(document.getElementById('newPostBoard').value);
-          const title = document.getElementById('newPostTitle').value.trim();
-          const content = document.getElementById('newPostContent').value.trim();
-          if (!title || !content) {
-            toast('请填写完整', 'error');
-            return;
-          }
-          const { error } = await supabase.from('posts').insert([{
-            title,
-            content,
-            author_id: currentUser.id,
-            board_id: boardId
-          }]);
-          if (error) {
-            toast('发布失败: ' + error.message, 'error');
-            return;
-          }
-          toast('发布成功', 'success');
-          closeModal();
-          viewingPostId = null;
+      if (!posts || posts.length === 0) {
+        postsList.innerHTML = '<p style="text-align:center;color:#86909c;">暂无帖子</p>';
+        return;
+      }
+      const ids = posts.map(p => p.id);
+      const { data: stats } = await supabase.from('posts_stats').select('*').in('id', ids);
+      const statMap = {};
+      if (stats) stats.forEach(s => { statMap[s.id] = s; });
+
+      let html = '';
+      for (const post of posts) {
+        const replyCount = statMap[post.id]?.reply_count || 0;
+        const likeCount = statMap[post.id]?.like_count || 0;
+        html += `
+          <div class="post-item" data-postid="${post.id}">
+            <div class="post-header">
+              <div class="post-avatar">${escHtml(post.avatar || '🐱')}</div>
+              <span class="post-author">${escHtml(post.username || '已注销')}</span>
+              <span class="post-time">${timeAgo(post.created_at)}</span>
+            </div>
+            <div class="post-title">${escHtml(post.title)}</div>
+            <div class="post-content-preview">${escHtml(post.content)}</div>
+            <div class="post-footer">
+              <span>❤️ ${likeCount}</span>
+              <span>💬 ${replyCount}</span>
+              ${post.board_name ? `<span># ${escHtml(post.board_name)}</span>` : ''}
+            </div>
+          </div>
+        `;
+      }
+      postsList.innerHTML = html;
+
+      // 点击帖子进入详情
+      document.querySelectorAll('.post-item').forEach(el => {
+        el.addEventListener('click', () => {
+          viewingPostId = parseInt(el.dataset.postid);
           renderForum();
-          updateUI();
         });
-      }).catch(() => toast('加载板块失败', 'error'));
+      });
     }
 
+    // ============================================================
+    // 帖子详情
+    // ============================================================
     async function renderPostDetail(postId) {
       const { data: post, error } = await supabase.from('posts_with_authors').select('*').eq('id', postId)
       .single();
@@ -2241,18 +1237,43 @@
       }
       const replyList = replies || [];
       const isAuthor = currentUser && currentUser.id === post.author_id;
-      let html =
-        `<div><button class="btn btn-outline btn-sm" id="backToList">← 返回列表</button><div style="margin-top:10px;"><h2 style="font-size:1.2rem;font-weight:600;color:var(--text-main);">${escHtml(post.title)}</h2><div style="color:var(--text-sub);font-size:0.8rem;margin:6px 0 12px;">${escHtml(post.username || '已注销')} · ${timeAgo(post.created_at)}${post.updated_at && post.updated_at !== post.created_at ? `（最后编辑 ${timeAgo(post.updated_at)}）` : ''}</div><div style="white-space:pre-wrap;word-break:break-word;background:var(--bg-light);padding:14px;border-radius:var(--radius-sm);border:1px solid var(--border);">${escHtml(post.content)}</div><div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;"><button class="btn ${userLiked ? 'btn-primary' : 'btn-outline'} btn-sm" id="likeBtn">${userLiked ? '❤️' : '🤍'} ${likeCount || 0}</button><button class="btn btn-primary btn-sm" id="replyBtn">💬 回复</button>${isAuthor ? `<button class="btn btn-primary btn-sm" id="editPostBtn">✏️ 编辑</button><button class="btn btn-danger btn-sm" id="deletePostBtn">🗑️ 删除</button>` : ''}</div></div><div style="margin-top:15px;"><strong style="font-size:15px;font-weight:600;">💬 回复 (${replyList.length})</strong>${replyList.length === 0 ? '<p style="color:var(--text-light);padding:12px 0;">还没有回复</p>' : ''}${replyList.map(r => { const a = r.users || { username:'已注销', avatar:'👻' }; return `<div style="padding:10px 0;border-bottom:1px solid var(--bg-light);"><div style="display:flex;align-items:center;gap:8px;"><span>${escHtml(a.avatar || '🐱')}</span><strong style="font-size:13px;color:var(--text-main);">${escHtml(a.username)}</strong><span style="color:var(--text-light);font-size:0.7rem;">${timeAgo(r.created_at)}</span></div><div style="margin-top:4px;color:var(--text-main);">${escHtml(r.content)}</div></div>`; }).join('')}</div></div>`;
-      panelContainer.innerHTML = html;
+
+      let html = `
+        <div style="background:#fff; border-radius:16px; padding:16px; margin-bottom:12px;">
+          <button class="btn btn-outline btn-sm" id="backToList">← 返回</button>
+          <h2 style="font-size:18px; margin:12px 0 4px;">${escHtml(post.title)}</h2>
+          <div style="color:#86909c; font-size:13px; margin-bottom:12px;">${escHtml(post.username)} · ${timeAgo(post.created_at)}</div>
+          <div style="background:#f7f8fa; padding:12px; border-radius:10px; white-space:pre-wrap; word-break:break-word;">${escHtml(post.content)}</div>
+          <div style="display:flex; gap:12px; margin-top:12px; flex-wrap:wrap;">
+            <button class="btn ${userLiked ? 'btn-primary' : 'btn-outline'} btn-sm" id="likeBtn">${userLiked ? '❤️' : '🤍'} ${likeCount}</button>
+            <button class="btn btn-primary btn-sm" id="replyBtn">💬 回复</button>
+            ${isAuthor ? `<button class="btn btn-danger btn-sm" id="deletePostBtn">删除</button>` : ''}
+          </div>
+        </div>
+        <div style="background:#fff; border-radius:16px; padding:16px;">
+          <strong>💬 回复 (${replyList.length})</strong>
+          ${replyList.length === 0 ? '<p style="color:#86909c;">还没有回复</p>' : ''}
+          ${replyList.map(r => {
+            const a = r.users || { username:'已注销', avatar:'👻' };
+            return `<div style="border-bottom:1px solid #f2f3f5; padding:10px 0;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span>${escHtml(a.avatar || '🐱')}</span>
+                <strong>${escHtml(a.username)}</strong>
+                <span style="color:#86909c; font-size:12px;">${timeAgo(r.created_at)}</span>
+              </div>
+              <div style="margin-top:4px;">${escHtml(r.content)}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      `;
+      postsList.innerHTML = html;
+
       document.getElementById('backToList').addEventListener('click', () => {
         viewingPostId = null;
         renderForum();
       });
       document.getElementById('likeBtn')?.addEventListener('click', async () => {
-        if (!currentUser) {
-          toast('请先登录', 'error');
-          return;
-        }
+        if (!currentUser) { toast('请先登录', 'error'); return; }
         const { data: existing } = await supabase.from('likes').select('*').eq('post_id', postId)
           .eq('user_id', currentUser.id).maybeSingle();
         if (existing) {
@@ -2265,7 +1286,6 @@
         renderPostDetail(postId);
       });
       document.getElementById('replyBtn').addEventListener('click', () => openReply(postId));
-      document.getElementById('editPostBtn')?.addEventListener('click', () => openEditPost(postId));
       document.getElementById('deletePostBtn')?.addEventListener('click', async () => {
         if (!confirm('确定删除此帖吗？')) return;
         await supabase.from('posts').delete().eq('id', postId);
@@ -2276,30 +1296,67 @@
       });
     }
 
+    // ============================================================
+    // 发帖、回复、编辑
+    // ============================================================
+    function openNewPost() {
+      if (!currentUser) { toast('请先登录', 'error'); return; }
+      supabase.from('boards').select('*').order('sort_order').then(({ data: boards }) => {
+        const options = boards.map(b => `<option value="${b.id}">${escHtml(b.name)}</option>`).join('');
+        modalContent.innerHTML = `
+          <h3>✏️ 发新帖</h3>
+          <div><label style="font-size:13px;color:#86909c;">选择板块：</label><select id="newPostBoard">${options}</select></div>
+          <input type="text" id="newPostTitle" placeholder="标题" maxlength="100">
+          <textarea id="newPostContent" rows="4" placeholder="内容"></textarea>
+          <div class="modal-actions">
+            <button class="btn btn-outline btn-sm" id="modalCancel">取消</button>
+            <button class="btn btn-primary btn-sm" id="modalConfirm">发布</button>
+          </div>
+        `;
+        modalOverlay.classList.add('show');
+        document.getElementById('modalCancel').addEventListener('click', closeModal);
+        document.getElementById('modalConfirm').addEventListener('click', async () => {
+          const boardId = parseInt(document.getElementById('newPostBoard').value);
+          const title = document.getElementById('newPostTitle').value.trim();
+          const content = document.getElementById('newPostContent').value.trim();
+          if (!title || !content) { toast('请填写完整', 'error'); return; }
+          const { error } = await supabase.from('posts').insert([{
+            title,
+            content,
+            author_id: currentUser.id,
+            board_id: boardId
+          }]);
+          if (error) { toast('发布失败: ' + error.message, 'error'); return; }
+          toast('发布成功', 'success');
+          closeModal();
+          viewingPostId = null;
+          renderForum();
+          updateUI();
+        });
+      }).catch(() => toast('加载板块失败', 'error'));
+    }
+
     function openReply(postId) {
-      if (!currentUser) {
-        toast('请先登录', 'error');
-        return;
-      }
-      modalContent.innerHTML =
-        `<h3>💬 回复</h3><textarea id="replyContent" rows="4" placeholder="写回复..."></textarea><div class="modal-actions"><button class="btn btn-outline btn-sm" id="modalCancel">取消</button><button class="btn btn-primary btn-sm" id="modalConfirm">发表</button></div>`;
+      if (!currentUser) { toast('请先登录', 'error'); return; }
+      modalContent.innerHTML = `
+        <h3>💬 回复</h3>
+        <textarea id="replyContent" rows="3" placeholder="写回复..."></textarea>
+        <div class="modal-actions">
+          <button class="btn btn-outline btn-sm" id="modalCancel">取消</button>
+          <button class="btn btn-primary btn-sm" id="modalConfirm">发表</button>
+        </div>
+      `;
       modalOverlay.classList.add('show');
       document.getElementById('modalCancel').addEventListener('click', closeModal);
       document.getElementById('modalConfirm').addEventListener('click', async () => {
         const content = document.getElementById('replyContent').value.trim();
-        if (!content) {
-          toast('请填写内容', 'error');
-          return;
-        }
+        if (!content) { toast('请填写内容', 'error'); return; }
         const { error } = await supabase.from('replies').insert([{
           post_id: postId,
           author_id: currentUser.id,
           content
         }]);
-        if (error) {
-          toast('回复失败: ' + error.message, 'error');
-          return;
-        }
+        if (error) { toast('回复失败: ' + error.message, 'error'); return; }
         toast('回复成功', 'success');
         closeModal();
         renderPostDetail(postId);
@@ -2307,64 +1364,38 @@
       });
     }
 
-    function openEditPost(postId) {
-      supabase.from('posts').select('title, content').eq('id', postId).single().then(({ data }) => {
-        modalContent.innerHTML =
-          `<h3>✏️ 编辑帖子</h3><input type="text" id="editPostTitle" value="${escHtml(data.title)}" maxlength="100"><textarea id="editPostContent" rows="5">${escHtml(data.content)}</textarea><div class="modal-actions"><button class="btn btn-outline btn-sm" id="modalCancel">取消</button><button class="btn btn-primary btn-sm" id="modalSaveEdit">保存</button></div>`;
-        modalOverlay.classList.add('show');
-        document.getElementById('modalCancel').addEventListener('click', closeModal);
-        document.getElementById('modalSaveEdit').addEventListener('click', async () => {
-          const title = document.getElementById('editPostTitle').value.trim();
-          const content = document.getElementById('editPostContent').value.trim();
-          if (!title || !content) {
-            toast('请填写完整', 'error');
-            return;
-          }
-          await supabase.from('posts').update({ title, content, updated_at: new Date().toISOString() })
-            .eq('id', postId);
-          toast('帖子已更新', 'success');
-          closeModal();
-          renderPostDetail(postId);
-        });
-      });
-    }
-
     // ============================================================
-    // 任务系统
+    // 任务委托
     // ============================================================
     async function renderTasks() {
       if (!currentUser) {
-        panelContainer.innerHTML =
-          '<div style="text-align:center;padding:30px 0;color:var(--text-light);">请先登录</div>';
+        panelTasks.innerHTML = '<div style="text-align:center;padding:30px;color:#86909c;">请先登录</div>';
         return;
       }
       const { data: tasks } = await supabase.from('tasks')
-        .select(
-          '*, publisher:users!publisher_id (username, avatar_url), acceptor:users!accepted_by (username, avatar_url)'
-          )
+        .select('*, publisher:users!publisher_id (username, avatar_url), acceptor:users!accepted_by (username, avatar_url)')
         .order('created_at', { ascending: false });
-      let html =
-        `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><strong style="font-size:16px;font-weight:600;">📋 任务委托</strong><button class="btn btn-primary btn-sm" id="newTaskBtn">➕ 发布任务</button></div><div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;"><button class="btn btn-outline btn-sm filter-task" data-filter="all">全部</button><button class="btn btn-outline btn-sm filter-task" data-filter="pending">待领取</button><button class="btn btn-outline btn-sm filter-task" data-filter="in_progress">进行中</button><button class="btn btn-outline btn-sm filter-task" data-filter="completed">已完成</button><button class="btn btn-outline btn-sm filter-task" data-filter="mine">我发布的</button><button class="btn btn-outline btn-sm filter-task" data-filter="accepted">我接受的</button></div><div id="taskList"></div>`;
-      panelContainer.innerHTML = html;
+      let html = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+          <strong>📋 委托任务</strong>
+          <button class="btn btn-primary btn-sm" id="newTaskBtn">发布任务</button>
+        </div>
+        <div id="taskList"></div>
+      `;
+      panelTasks.innerHTML = html;
       document.getElementById('newTaskBtn').addEventListener('click', openNewTask);
-      document.querySelectorAll('.filter-task').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const filter = btn.dataset.filter;
-          renderTaskList(tasks, filter);
-        });
-      });
-      renderTaskList(tasks, 'all');
 
-      function renderTaskList(allTasks, filter) {
-        let filtered = allTasks || [];
+      function renderTaskList(filter) {
+        let filtered = tasks || [];
         if (filter === 'pending') filtered = filtered.filter(t => t.status === 'pending');
         else if (filter === 'in_progress') filtered = filtered.filter(t => t.status === 'in_progress');
         else if (filter === 'completed') filtered = filtered.filter(t => t.status === 'completed');
         else if (filter === 'mine') filtered = filtered.filter(t => t.publisher_id === currentUser.id);
         else if (filter === 'accepted') filtered = filtered.filter(t => t.accepted_by === currentUser.id);
+
         const listDiv = document.getElementById('taskList');
         if (!filtered.length) {
-          listDiv.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:16px 0;">暂无任务</p>';
+          listDiv.innerHTML = '<p style="color:#86909c;text-align:center;">暂无任务</p>';
           return;
         }
         let html = '';
@@ -2374,48 +1405,52 @@
           const canAccept = task.status === 'pending' && !isPublisher && !task.accepted_by;
           const canComplete = task.status === 'in_progress' && isAcceptor;
           const canConfirm = task.status === 'in_progress' && isPublisher;
-          html +=
-            `<div style="border-bottom:1px solid var(--bg-light); padding:14px 0;"><div style="display:flex; justify-content:space-between; align-items:center;"><div><strong style="color:var(--text-main);">${escHtml(task.title)}</strong><span style="font-size:0.7rem; background:${task.status==='pending'?'#fef3c7':task.status==='in_progress'?'#dbeafe':'#dcfce7'}; color:${task.status==='pending'?'#92400e':task.status==='in_progress'?'#1e40af':'#166534'}; padding:2px 10px; border-radius:var(--radius-full); margin-left:6px;">${task.status === 'pending' ? '待领取' : task.status === 'in_progress' ? '进行中' : '已完成'}</span></div><div style="color:var(--text-sub);font-weight:500;">🪙 ${task.reward_gold}</div></div><div style="font-size:0.85rem; color:var(--text-sub); margin:4px 0;">${escHtml(task.description || '')}</div><div style="font-size:0.75rem; color:var(--text-light);">发布者：${escHtml(task.publisher?.username || '已注销')} · ${timeAgo(task.created_at)}${task.acceptor ? ` · 领取者：${escHtml(task.acceptor.username)}` : ''}</div><div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">${canAccept ? `<button class="btn btn-success btn-sm accept-task" data-id="${task.id}">领取任务</button>` : ''}${canComplete ? `<button class="btn btn-primary btn-sm complete-task" data-id="${task.id}">申请完成</button>` : ''}${canConfirm ? `<button class="btn btn-success btn-sm confirm-task" data-id="${task.id}">确认完成并发放金币</button>` : ''}${isPublisher && task.status === 'pending' ? `<button class="btn btn-danger btn-sm delete-task" data-id="${task.id}">删除</button>` : ''}</div></div>`;
+          html += `
+            <div class="task-item">
+              <div class="task-info">
+                <div>
+                  <strong>${escHtml(task.title)}</strong>
+                  <span style="font-size:12px; color:#86909c;">${task.status === 'pending' ? '待领取' : task.status === 'in_progress' ? '进行中' : '已完成'}</span>
+                  <div style="font-size:13px; color:#4e5a6b;">${escHtml(task.description || '')}</div>
+                  <div style="font-size:12px; color:#86909c;">发布者：${escHtml(task.publisher?.username)} · ${timeAgo(task.created_at)}</div>
+                </div>
+                <div style="font-weight:600; color:#ff8200;">🪙 ${task.reward_gold}</div>
+              </div>
+              <div class="task-action">
+                ${canAccept ? `<button class="btn btn-success btn-sm accept-task" data-id="${task.id}">领取</button>` : ''}
+                ${canComplete ? `<button class="btn btn-primary btn-sm complete-task" data-id="${task.id}">申请完成</button>` : ''}
+                ${canConfirm ? `<button class="btn btn-success btn-sm confirm-task" data-id="${task.id}">确认完成</button>` : ''}
+                ${isPublisher && task.status === 'pending' ? `<button class="btn btn-danger btn-sm delete-task" data-id="${task.id}">删除</button>` : ''}
+              </div>
+            </div>
+          `;
         }
         listDiv.innerHTML = html;
+
         listDiv.querySelectorAll('.accept-task').forEach(btn => {
           btn.addEventListener('click', async () => {
             const id = parseInt(btn.dataset.id);
             const { error } = await supabase.from('tasks').update({ status: 'in_progress',
               accepted_by: currentUser.id }).eq('id', id);
-            if (error) {
-              toast('领取失败: ' + error.message, 'error');
-              return;
-            }
-            toast('任务领取成功！', 'success');
+            if (error) { toast('领取失败', 'error'); return; }
+            toast('领取成功', 'success');
             renderTasks();
           });
         });
         listDiv.querySelectorAll('.complete-task').forEach(btn => {
-          btn.addEventListener('click', () => toast('已通知发布者，等待确认', 'success'));
+          btn.addEventListener('click', () => toast('已通知发布者', 'success'));
         });
         listDiv.querySelectorAll('.confirm-task').forEach(btn => {
           btn.addEventListener('click', async () => {
             const id = parseInt(btn.dataset.id);
             const { data: task } = await supabase.from('tasks').select('reward_gold, accepted_by')
               .eq('id', id).single();
-            if (!task || !task.accepted_by) {
-              toast('任务信息有误', 'error');
-              return;
-            }
+            if (!task || !task.accepted_by) { toast('任务信息有误', 'error'); return; }
             const { data: acceptor } = await supabase.from('users').select('gold').eq('id', task
               .accepted_by).single();
-            if (!acceptor) {
-              toast('领取者不存在', 'error');
-              return;
-            }
+            if (!acceptor) { toast('领取者不存在', 'error'); return; }
             const newGold = acceptor.gold + task.reward_gold;
-            const { error: goldError } = await supabase.from('users').update({ gold: newGold }).eq('id',
-              task.accepted_by);
-            if (goldError) {
-              toast('发放金币失败: ' + goldError.message, 'error');
-              return;
-            }
+            await supabase.from('users').update({ gold: newGold }).eq('id', task.accepted_by);
             await supabase.from('tasks').update({ status: 'completed' }).eq('id', id);
             toast('任务完成！金币已发放', 'success');
             renderTasks();
@@ -2424,40 +1459,58 @@
         });
         listDiv.querySelectorAll('.delete-task').forEach(btn => {
           btn.addEventListener('click', async () => {
-            if (!confirm('确定删除此任务吗？')) return;
+            if (!confirm('删除此任务？')) return;
             await supabase.from('tasks').delete().eq('id', parseInt(btn.dataset.id));
-            toast('任务已删除', 'success');
+            toast('已删除', 'success');
             renderTasks();
           });
         });
       }
+
+      // 添加筛选按钮
+      const filterDiv = document.createElement('div');
+      filterDiv.style.cssText = 'display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;';
+      const filters = ['all', 'pending', 'in_progress', 'completed', 'mine', 'accepted'];
+      const labels = ['全部', '待领取', '进行中', '已完成', '我发布的', '我接受的'];
+      filters.forEach((f, i) => {
+        const btn = document.createElement('span');
+        btn.textContent = labels[i];
+        btn.className = 'btn btn-outline btn-sm';
+        if (f === 'all') btn.style.background = '#ff8200';
+        btn.dataset.filter = f;
+        btn.style.cursor = 'pointer';
+        btn.addEventListener('click', () => {
+          filterDiv.querySelectorAll('span').forEach(b => { b.style.background = 'transparent'; });
+          btn.style.background = '#ff8200';
+          renderTaskList(f);
+        });
+        filterDiv.appendChild(btn);
+      });
+      panelTasks.insertBefore(filterDiv, document.getElementById('taskList'));
+      renderTaskList('all');
     }
 
     function openNewTask() {
-      if (!currentUser) {
-        toast('请先登录', 'error');
-        return;
-      }
-      modalContent.innerHTML =
-        `<h3>📝 发布新任务</h3><input type="text" id="taskTitle" placeholder="任务标题" maxlength="100"><textarea id="taskDesc" rows="4" placeholder="任务描述"></textarea><input type="number" id="taskReward" placeholder="奖励金币（正数）" min="1" value="10"><div class="modal-actions"><button class="btn btn-outline btn-sm" id="modalCancel">取消</button><button class="btn btn-primary btn-sm" id="modalConfirm">发布</button></div>`;
+      if (!currentUser) { toast('请先登录', 'error'); return; }
+      modalContent.innerHTML = `
+        <h3>📝 发布任务</h3>
+        <input type="text" id="taskTitle" placeholder="任务标题">
+        <textarea id="taskDesc" rows="3" placeholder="任务描述"></textarea>
+        <input type="number" id="taskReward" placeholder="奖励金币" min="1" value="10">
+        <div class="modal-actions">
+          <button class="btn btn-outline btn-sm" id="modalCancel">取消</button>
+          <button class="btn btn-primary btn-sm" id="modalConfirm">发布</button>
+        </div>
+      `;
       modalOverlay.classList.add('show');
       document.getElementById('modalCancel').addEventListener('click', closeModal);
       document.getElementById('modalConfirm').addEventListener('click', async () => {
         const title = document.getElementById('taskTitle').value.trim();
         const desc = document.getElementById('taskDesc').value.trim();
         const reward = parseInt(document.getElementById('taskReward').value);
-        if (!title || !desc) {
-          toast('请填写完整', 'error');
-          return;
-        }
-        if (reward < 1) {
-          toast('奖励必须大于0', 'error');
-          return;
-        }
-        if (reward > (currentUser.gold || 0)) {
-          toast('金币不足，无法发布', 'error');
-          return;
-        }
+        if (!title || !desc) { toast('请填写完整', 'error'); return; }
+        if (reward < 1) { toast('奖励必须大于0', 'error'); return; }
+        if (reward > (currentUser.gold || 0)) { toast('金币不足', 'error'); return; }
         const newGold = currentUser.gold - reward;
         await supabase.from('users').update({ gold: newGold }).eq('id', currentUser.id);
         currentUser.gold = newGold;
@@ -2467,11 +1520,8 @@
           reward_gold: reward,
           publisher_id: currentUser.id
         }]);
-        if (error) {
-          toast('发布任务失败: ' + error.message, 'error');
-          return;
-        }
-        toast('任务发布成功！', 'success');
+        if (error) { toast('发布失败', 'error'); return; }
+        toast('发布成功', 'success');
         closeModal();
         renderTasks();
         updateUI();
@@ -2483,53 +1533,88 @@
     // ============================================================
     async function renderFriends() {
       if (!currentUser) {
-        panelContainer.innerHTML =
-          '<div style="text-align:center;padding:30px 0;color:var(--text-light);">请先登录</div>';
+        panelFriends.innerHTML = '<div style="text-align:center;padding:30px;color:#86909c;">请先登录</div>';
         return;
       }
       const { data: friendRows } = await supabase.from('friends')
-        .select(
-          '*, sender:users!friends_sender_id_fkey (id, username, avatar_url, bio), receiver:users!friends_receiver_id_fkey (id, username, avatar_url, bio)'
-          )
+        .select('*, sender:users!friends_sender_id_fkey (id, username, avatar_url), receiver:users!friends_receiver_id_fkey (id, username, avatar_url)')
         .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`).eq('status', 'accepted');
       const { data: pending } = await supabase.from('friends')
         .select('*, sender:users!friends_sender_id_fkey (id, username, avatar_url)')
         .eq('receiver_id', currentUser.id).eq('status', 'pending');
-      let html =
-        `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><strong style="font-size:16px;font-weight:600;">👥 好友列表</strong></div><div style="display:flex; gap:8px; margin-bottom:12px;"><input type="text" id="searchFriendInput" placeholder="输入名号查找" style="flex:1; padding:6px 14px; border:2px solid var(--border); border-radius:var(--radius-full); outline:none; transition:var(--transition); background:var(--bg-card); color:var(--text-main);"><button class="btn btn-primary btn-sm" id="searchFriendBtn">搜索</button></div><div id="searchResult"></div><div id="friendListRight">${friendRows && friendRows.length > 0 ? friendRows.map(row => { const f = row.sender_id === currentUser.id ? row.receiver : row.sender; return `<div class="friend-item"><div style="display:flex; align-items:center;"><img src="${f.avatar_url || ''}" style="width:32px;height:32px;border-radius:var(--radius-full);background:#dde3ec;margin-right:10px;object-fit:cover;" onerror="this.style.display='none'"><span style="font-weight:500;color:var(--text-main);">${escHtml(f.username)}</span></div><div><button class="btn btn-primary btn-sm chat-friend-btn" data-friend-id="${f.id}">💬 聊天</button><button class="btn btn-danger btn-sm remove-friend-btn" data-friend-id="${f.id}">移除</button></div></div>`; }).join('') : '<p style="color:var(--text-light);text-align:center;padding:12px 0;">暂无好友</p>'}</div><hr style="border-color:var(--border);margin:12px 0;"><div><strong style="font-size:15px;font-weight:600;">📩 好友请求</strong></div>${pending && pending.length > 0 ? pending.map(row => `<div class="friend-item"><span style="color:var(--text-main);">${escHtml(row.sender.username)} 想加你为好友</span><div><button class="btn btn-success btn-sm" data-request-id="${row.id}" data-action="accept">接受</button><button class="btn btn-danger btn-sm" data-request-id="${row.id}" data-action="reject">拒绝</button></div></div>`).join('') : '<p style="color:var(--text-light);padding:8px 0;">没有新的好友请求</p>'}`;
-      panelContainer.innerHTML = html;
+
+      let html = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+          <strong>👥 好友</strong>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="searchFriendInput" placeholder="搜索名号" style="flex:1; padding:4px 12px; border:1px solid #e5e6eb; border-radius:20px; font-size:13px;">
+            <button class="btn btn-primary btn-sm" id="searchFriendBtn">搜索</button>
+          </div>
+        </div>
+        <div id="searchResult"></div>
+        <div id="friendList">
+          ${friendRows && friendRows.length > 0 ? friendRows.map(row => {
+            const f = row.sender_id === currentUser.id ? row.receiver : row.sender;
+            return `
+              <div class="friend-item">
+                <div class="friend-info">
+                  <div class="friend-avatar" style="background-image: url('${f.avatar_url || ''}');"></div>
+                  <span class="friend-name">${escHtml(f.username)}</span>
+                </div>
+                <div>
+                  <button class="btn btn-primary btn-sm chat-friend-btn" data-friend-id="${f.id}">💬 聊天</button>
+                  <button class="btn btn-danger btn-sm remove-friend-btn" data-friend-id="${f.id}">移除</button>
+                </div>
+              </div>
+            `;
+          }).join('') : '<p style="color:#86909c;">暂无好友</p>'}
+        </div>
+        <hr style="margin:16px 0; border-color:#e5e6eb;">
+        <div><strong>📩 好友请求</strong></div>
+        ${pending && pending.length > 0 ? pending.map(row => `
+          <div class="friend-item">
+            <span>${escHtml(row.sender.username)} 想加你为好友</span>
+            <div>
+              <button class="btn btn-success btn-sm" data-request-id="${row.id}" data-action="accept">接受</button>
+              <button class="btn btn-danger btn-sm" data-request-id="${row.id}" data-action="reject">拒绝</button>
+            </div>
+          </div>
+        `).join('') : '<p style="color:#86909c;">没有新的好友请求</p>'}
+      `;
+      panelFriends.innerHTML = html;
+
       document.getElementById('searchFriendBtn').addEventListener('click', async () => {
         const keyword = document.getElementById('searchFriendInput').value.trim();
-        if (!keyword) {
-          document.getElementById('searchResult').innerHTML = '';
-          return;
-        }
+        if (!keyword) { document.getElementById('searchResult').innerHTML = ''; return; }
         const { data: users } = await supabase.from('users').select('id, username, avatar_url')
           .ilike('username', `%${keyword}%`).neq('id', currentUser.id);
         const resultDiv = document.getElementById('searchResult');
         if (!users || users.length === 0) {
-          resultDiv.innerHTML = '<p style="color:var(--text-light);padding:8px 0;">未找到</p>';
+          resultDiv.innerHTML = '<p style="color:#86909c;">未找到</p>';
           return;
         }
-        const friendIds = friendRows ? friendRows.map(r => r.sender_id === currentUser.id ? r.receiver_id :
-          r.sender_id) : [];
+        const friendIds = friendRows ? friendRows.map(r => r.sender_id === currentUser.id ? r.receiver_id : r.sender_id) :
+          [];
         resultDiv.innerHTML = users.map(u => {
           const isFriend = friendIds.includes(u.id);
-          return `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--bg-light);"><span style="color:var(--text-main);">${escHtml(u.username)}</span>${isFriend ? '<span style="color:var(--text-light);">已是好友</span>' : `<button class="btn btn-primary btn-sm add-friend-btn" data-user-id="${u.id}">加好友</button>`}</div>`;
+          return `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f2f3f5;">
+              <span>${escHtml(u.username)}</span>
+              ${isFriend ? '<span style="color:#86909c;">已是好友</span>' : `<button class="btn btn-primary btn-sm add-friend-btn" data-user-id="${u.id}">加好友</button>`}
+            </div>
+          `;
         }).join('');
         document.querySelectorAll('.add-friend-btn').forEach(btn => {
           btn.addEventListener('click', async () => {
             const receiverId = parseInt(btn.dataset.userId);
-            await supabase.from('friends').insert([{
-              sender_id: currentUser.id,
-              receiver_id: receiverId,
-              status: 'pending'
-            }]);
+            await supabase.from('friends').insert([{ sender_id: currentUser.id, receiver_id: receiverId,
+              status: 'pending' }]);
             toast('好友请求已发送', 'success');
             renderFriends();
           });
         });
       });
+
       document.querySelectorAll('[data-request-id]').forEach(btn => {
         btn.addEventListener('click', async () => {
           const id = parseInt(btn.dataset.requestId);
@@ -2540,24 +1625,28 @@
           updateUI();
         });
       });
+
       document.querySelectorAll('.remove-friend-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
           const friendId = parseInt(btn.dataset.friendId);
           if (!confirm('确定移除该好友吗？')) return;
-          await supabase.from('friends').delete().or(
-            `(sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id})`).or(
-            `(sender_id.eq.${friendId},receiver_id.eq.${friendId})`).eq('status', 'accepted');
+          await supabase.from('friends').delete()
+            .or(`(sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id})`)
+            .or(`(sender_id.eq.${friendId},receiver_id.eq.${friendId})`).eq('status', 'accepted');
           toast('已移除', 'success');
           renderFriends();
           updateUI();
         });
       });
+
       document.querySelectorAll('.chat-friend-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           chatWithFriendId = parseInt(btn.dataset.friendId);
-          mainNavTabs.forEach(t => t.classList.remove('active'));
-          document.querySelector('#mainNavTabs a[data-tab="chat"]')?.classList.add('active');
+          bottomTabs.forEach(t => t.classList.remove('active'));
+          document.querySelector('.tab-item[data-tab="chat"]').classList.add('active');
           currentTab = 'chat';
+          homeCover.style.display = 'none';
+          homeStats.style.display = 'none';
           renderCurrentTab();
         });
       });
@@ -2568,34 +1657,61 @@
     // ============================================================
     async function renderChat() {
       if (!currentUser) {
-        panelContainer.innerHTML =
-          '<div style="text-align:center;padding:30px 0;color:var(--text-light);">请先登录</div>';
+        panelChat.innerHTML = '<div style="text-align:center;padding:30px;color:#86909c;">请先登录</div>';
         return;
       }
       const { data: friendRows } = await supabase.from('friends')
-        .select(
-          '*, sender:users!friends_sender_id_fkey (id, username, avatar_url), receiver:users!friends_receiver_id_fkey (id, username, avatar_url)'
-          )
+        .select('*, sender:users!friends_sender_id_fkey (id, username, avatar_url), receiver:users!friends_receiver_id_fkey (id, username, avatar_url)')
         .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`).eq('status', 'accepted');
-      const friends = friendRows ? friendRows.map(row => row.sender_id === currentUser.id ? row.receiver : row
-        .sender) : [];
-      let html =
-        `<div style="display:flex; flex-wrap:wrap; height:480px; background:var(--bg-card); border-radius:var(--radius-lg); border:1px solid var(--border); overflow:hidden;"><div style="width:180px; border-right:1px solid var(--border); overflow-y:auto; padding:12px; flex-shrink:0; background:var(--bg-light);"><h4 style="margin-bottom:12px;font-size:15px;font-weight:600;color:var(--text-main);">我的好友</h4>${friends.length === 0 ? '<p style="color:var(--text-light);font-size:0.8rem;">暂无好友</p>' : ''}${friends.map(f => `<div class="friend-item" style="padding:8px 6px; cursor:pointer; border-radius:var(--radius-sm);" data-friend-id="${f.id}"><div style="display:flex; align-items:center; gap:8px;"><img src="${f.avatar_url || ''}" style="width:28px;height:28px;border-radius:var(--radius-full);background:#dde3ec;object-fit:cover;" onerror="this.style.display='none'"><span style="font-size:0.85rem;color:var(--text-main);">${escHtml(f.username)}</span>${chatWithFriendId === f.id ? ' <span style="color:var(--primary);">✓</span>' : ''}</div></div>`).join('')}</div><div style="flex:1; display:flex; flex-direction:column; min-width:260px; padding:12px;">${chatWithFriendId ? `<div style="padding:4px 0 10px; border-bottom:1px solid var(--border); font-weight:600;color:var(--text-main);">🗨️ 与 ${escHtml(friends.find(f => f.id === chatWithFriendId)?.username || '好友')} 聊天</div><div id="chatMessages" class="chat-messages" style="flex:1; overflow-y:auto; padding:12px; background:var(--bg-light); border-radius:var(--radius-sm); margin-bottom:10px; display:flex; flex-direction:column; border:1px solid var(--border);"><div style="text-align:center;color:var(--text-light);font-size:0.8rem;">加载中...</div></div><div class="chat-input-area" style="display:flex; gap:8px; padding:4px 0;"><input type="text" id="chatInput" placeholder="输入消息..." style="flex:1; padding:8px 16px; border:2px solid var(--border); border-radius:var(--radius-full); outline:none; transition:var(--transition); background:var(--bg-card);"><button class="btn btn-primary" id="sendChatBtn">发送</button></div>` : `<div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--text-light);">请从左侧选择一位好友开始聊天</div>`}</div></div>`;
-      panelContainer.innerHTML = html;
+      const friends = friendRows ? friendRows.map(row => row.sender_id === currentUser.id ? row.receiver : row.sender) :
+        [];
+
+      let html = `
+        <div style="display:flex; gap:12px; flex-wrap:wrap; height:400px; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+          <div style="width:120px; border-right:1px solid #e5e6eb; overflow-y:auto; padding:8px; flex-shrink:0;">
+            <strong style="display:block; margin-bottom:8px;">好友</strong>
+            ${friends.length === 0 ? '<p style="color:#86909c;font-size:13px;">暂无好友</p>' : ''}
+            ${friends.map(f => `
+              <div class="friend-item" style="padding:6px 4px; cursor:pointer; border-radius:8px;" data-friend-id="${f.id}">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <div class="friend-avatar" style="width:28px;height:28px;border-radius:50%;background-size:cover;background-position:center;background-image:url('${f.avatar_url || ''}');"></div>
+                  <span style="font-size:13px;">${escHtml(f.username)}</span>
+                  ${chatWithFriendId === f.id ? ' <span style="color:#ff8200;">✓</span>' : ''}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; padding:8px; min-width:200px;">
+            ${chatWithFriendId ? `
+              <div style="font-weight:500; margin-bottom:8px;">与 ${escHtml(friends.find(f => f.id === chatWithFriendId)?.username || '好友')} 聊天</div>
+              <div id="chatMessages" style="flex:1; overflow-y:auto; background:#f7f8fa; border-radius:12px; padding:10px; margin-bottom:8px;">
+                <div style="text-align:center;color:#86909c;">加载中...</div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <input type="text" id="chatInput" placeholder="输入消息..." style="flex:1; padding:8px 12px; border:1px solid #e5e6eb; border-radius:20px; outline:none;">
+                <button class="btn btn-primary" id="sendChatBtn">发送</button>
+              </div>
+            ` : `<div style="flex:1; display:flex; align-items:center; justify-content:center; color:#86909c;">请选择好友开始聊天</div>`}
+          </div>
+        </div>
+      `;
+      panelChat.innerHTML = html;
+
       document.querySelectorAll('.friend-item[data-friend-id]').forEach(el => {
         el.addEventListener('click', () => {
           chatWithFriendId = parseInt(el.dataset.friendId);
           renderChat();
           setTimeout(() => {
-            const c = document.getElementById('chatMessages');
-            if (c) c.scrollTop = c.scrollHeight;
+            const container = document.getElementById('chatMessages');
+            if (container) container.scrollTop = container.scrollHeight;
           }, 100);
         });
       });
+
       if (chatWithFriendId) {
         await loadMessages(chatWithFriendId);
-        const c = document.getElementById('chatMessages');
-        if (c) c.scrollTop = c.scrollHeight;
+        const container = document.getElementById('chatMessages');
+        if (container) container.scrollTop = container.scrollHeight;
         document.getElementById('sendChatBtn').addEventListener('click', () => sendMessage(chatWithFriendId));
         document.getElementById('chatInput').addEventListener('keypress', (e) => {
           if (e.key === 'Enter') sendMessage(chatWithFriendId);
@@ -2607,22 +1723,24 @@
       const container = document.getElementById('chatMessages');
       if (!container) return;
       const { data: messages, error } = await supabase.from('messages').select('*')
-        .or(
-          `and(sender_id.eq.${currentUser.id},receiver_id.eq.${friendId}),and(sender_id.eq.${friendId},receiver_id.eq.${currentUser.id})`
-          )
+        .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${friendId}),and(sender_id.eq.${friendId},receiver_id.eq.${currentUser.id})`)
         .order('created_at', { ascending: true });
       if (error) {
         container.innerHTML = '<p style="color:#f53f3f;">加载失败</p>';
         return;
       }
       if (!messages || messages.length === 0) {
-        container.innerHTML =
-          '<div style="text-align:center;color:var(--text-light);font-size:0.8rem;padding:16px 0;">还没有消息，打个招呼吧 👋</div>';
+        container.innerHTML = '<div style="text-align:center;color:#86909c;">还没有消息</div>';
         return;
       }
       container.innerHTML = messages.map(msg => {
         const isSent = msg.sender_id === currentUser.id;
-        return `<div class="chat-message ${isSent ? 'sent' : 'received'}" style="max-width:75%; word-wrap:break-word; margin-bottom:6px;"><div>${escHtml(msg.content)}</div><div class="time">${timeAgo(msg.created_at)}</div></div>`;
+        return `
+          <div style="padding:6px 12px; border-radius:16px; margin-bottom:4px; max-width:75%; ${isSent ? 'background:#ff8200; color:#fff; align-self:flex-end; margin-left:auto;' : 'background:#fff; border:1px solid #e5e6eb; align-self:flex-start;'}">
+            <div>${escHtml(msg.content)}</div>
+            <div style="font-size:10px; color:${isSent ? 'rgba(255,255,255,0.7)' : '#86909c'}; text-align:right; margin-top:2px;">${timeAgo(msg.created_at)}</div>
+          </div>
+        `;
       }).join('');
       await supabase.from('messages').update({ is_read: true }).eq('sender_id', friendId)
         .eq('receiver_id', currentUser.id).eq('is_read', false);
@@ -2639,19 +1757,13 @@
         receiver_id: friendId,
         content
       }]);
-      if (error) {
-        toast('发送失败: ' + error.message, 'error');
-        return;
-      }
+      if (error) { toast('发送失败: ' + error.message, 'error'); return; }
       const container = document.getElementById('chatMessages');
       if (container) {
         const div = document.createElement('div');
-        div.className = 'chat-message sent';
-        div.style.maxWidth = '75%';
-        div.style.wordWrap = 'break-word';
-        div.style.marginBottom = '6px';
-        div.innerHTML =
-          `<div>${escHtml(content)}</div><div class="time">刚刚</div>`;
+        div.style.cssText =
+          'padding:6px 12px; border-radius:16px; margin-bottom:4px; max-width:75%; background:#ff8200; color:#fff; align-self:flex-end; margin-left:auto;';
+        div.innerHTML = `<div>${escHtml(content)}</div><div style="font-size:10px; color:rgba(255,255,255,0.7); text-align:right; margin-top:2px;">刚刚</div>`;
         container.appendChild(div);
         container.scrollTop = container.scrollHeight;
       }
@@ -2674,12 +1786,10 @@
               if (container.children.length === 1 && container.children[0].tagName === 'DIV' && container
                 .children[0].style?.textAlign === 'center') container.innerHTML = '';
               const div = document.createElement('div');
-              div.className = 'chat-message received';
-              div.style.maxWidth = '75%';
-              div.style.wordWrap = 'break-word';
-              div.style.marginBottom = '6px';
+              div.style.cssText =
+                'padding:6px 12px; border-radius:16px; margin-bottom:4px; max-width:75%; background:#fff; border:1px solid #e5e6eb; align-self:flex-start;';
               div.innerHTML =
-                `<div>${escHtml(newMsg.content)}</div><div class="time">刚刚</div>`;
+                `<div>${escHtml(newMsg.content)}</div><div style="font-size:10px; color:#86909c; text-align:right; margin-top:2px;">刚刚</div>`;
               container.appendChild(div);
               container.scrollTop = container.scrollHeight;
             }
@@ -2691,19 +1801,23 @@
     // ============================================================
     // 登出
     // ============================================================
-    headerLogout.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (chatSubscription) supabase.removeChannel(chatSubscription);
-      currentUser = null;
-      loginOverlay.classList.remove('hidden');
-      appContainer.style.display = 'none';
-      loginError.textContent = '';
-      loginUsername.value = '';
-      loginPassword.value = '';
-      loginTabs.forEach(t => t.classList.remove('active'));
-      document.querySelector('.login-tab[data-mode="login"]').classList.add('active');
-      loginMode = 'login';
-      toast('已离开会馆');
+    // 在顶部头像添加登出功能（点击头像可退出）
+    headerAvatar.addEventListener('click', () => {
+      if (currentUser) {
+        if (confirm('确定要退出登录吗？')) {
+          if (chatSubscription) supabase.removeChannel(chatSubscription);
+          currentUser = null;
+          loginOverlay.classList.remove('hidden');
+          appContainer.style.display = 'none';
+          loginError.textContent = '';
+          loginUsername.value = '';
+          loginPassword.value = '';
+          loginTabs.forEach(t => t.classList.remove('active'));
+          document.querySelector('.login-tab[data-mode="login"]').classList.add('active');
+          loginMode = 'login';
+          toast('已离开会馆');
+        }
+      }
     });
 
     // ============================================================
@@ -2718,9 +1832,23 @@
     });
     init();
 
+    // 搜索功能（简单过滤帖子标题）
+    searchInput.addEventListener('input', (e) => {
+      const keyword = e.target.value.trim().toLowerCase();
+      const items = document.querySelectorAll('.post-item');
+      items.forEach(item => {
+        const title = item.querySelector('.post-title')?.textContent?.toLowerCase() || '';
+        if (title.includes(keyword)) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+
     window.supabase = supabase;
     window.currentUser = currentUser;
-    console.log('🌲 雾凇会馆已加载（仿微博，无基建/每日）');
+    console.log('🌲 雾凇会馆（微博移动版）已加载');
   </script>
 </body>
 </html>
