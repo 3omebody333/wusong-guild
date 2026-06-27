@@ -13,12 +13,12 @@
       --primary-dark: #295C9D;
       --primary-hover: #2E62F0;
       --bg-page: #edf1f7;
-      --bg-card: #ffffff;
-      --bg-light: #f5f8fc;
-      --border: #dde3ec;
+      --bg-card: rgba(255, 255, 255, 0.65);
+      --bg-light: rgba(245, 248, 252, 0.7);
+      --border: rgba(221, 227, 236, 0.8);
       --text-main: #1f2937;
-      --text-sub: #6b7280;
-      --text-light: #9ca3af;
+      --text-sub: #4b5563;
+      --text-light: #6b7280;
       --radius-sm: 6px;
       --radius-md: 10px;
       --radius-lg: 16px;
@@ -239,15 +239,19 @@
       background: #1F1F1F;
     }
 
-    /* ===== 中间主容器 ===== */
+    /* ===== 中间主容器（全局背景，JS动态设置） ===== */
     .midbox {
       min-width: 0;
-      background: var(--bg-page);
-      background-image: linear-gradient(180deg, #e7edf5 0%, var(--bg-page) 100%);
+      /* 背景由 JS 动态设置，这里给个默认值 */
+      background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url('');
+      background-size: cover;
+      background-position: center top;
+      background-attachment: fixed;
+      min-height: calc(100vh - 41px);
       padding-top: 10px;
     }
 
-    /* ===== 封面区域 ===== */
+    /* ===== 封面区域（小预览框，用于更换封面） ===== */
     .cover-container {
       width: 920px;
       max-width: 100%;
@@ -340,11 +344,11 @@
       font-size: 26px;
       font-weight: 600;
       color: var(--primary-dark);
-      text-shadow: none;
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
     }
     .main-text {
       color: var(--primary-dark);
-      text-shadow: none;
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
     }
     .main-small {
       font-size: 14px;
@@ -369,7 +373,7 @@
       float: left;
       width: 126px;
       height: 126px;
-      border: 4px solid var(--bg-card);
+      border: 4px solid rgba(255, 255, 255, 0.8);
       border-radius: var(--radius-full);
       margin-right: 15px;
       background-size: cover;
@@ -397,7 +401,7 @@
       font-size: 26px;
       font-weight: 600;
       color: var(--primary-dark);
-      text-shadow: none;
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
       margin: 0;
     }
 
@@ -428,6 +432,7 @@
       margin-top: 6px;
       font-size: 13px;
       color: var(--text-sub);
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
     }
     .level-exp-row span {
       font-weight: 500;
@@ -452,6 +457,7 @@
       border-bottom: 3px solid transparent;
       transition: var(--transition);
       font-weight: 400;
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
     }
     .main-header-bottom ul li a:hover {
       border-bottom-color: #b8d6f0;
@@ -481,6 +487,8 @@
     /* ===== 统计卡片 ===== */
     .main-body-left-top {
       background: var(--bg-card);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       border-radius: var(--radius-md);
       border: 1px solid var(--border);
       box-shadow: var(--shadow-sm);
@@ -518,9 +526,11 @@
       color: var(--text-sub);
     }
 
-    /* ===== 面板卡片统一 ===== */
+    /* ===== 面板卡片统一（半透明毛玻璃） ===== */
     .panel {
       background: var(--bg-card);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       box-shadow: var(--shadow-sm);
@@ -535,7 +545,7 @@
       font-size: 15px;
       font-weight: 500;
       color: var(--text-main);
-      background: var(--bg-light);
+      background: rgba(245, 248, 252, 0.6);
       border-bottom: 1px solid var(--border);
     }
     .panel .panel-heading strong {
@@ -549,7 +559,7 @@
     }
     .panel .list-group li {
       padding: 10px 0;
-      border-bottom: 1px solid #f0f4fa;
+      border-bottom: 1px solid rgba(240, 244, 250, 0.6);
       font-size: 13px;
       color: var(--text-main);
     }
@@ -561,8 +571,8 @@
     }
     .panel .panel-bottom {
       padding: 8px 16px;
-      border-top: 1px solid #f0f4fa;
-      background: #fafbfc;
+      border-top: 1px solid rgba(240, 244, 250, 0.6);
+      background: rgba(250, 251, 252, 0.5);
       line-height: 30px;
     }
     .panel .panel-bottom a {
@@ -639,6 +649,8 @@
     /* 形象墙 */
     .main-body-right-top {
       background: var(--bg-card);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       box-shadow: var(--shadow-sm);
@@ -698,9 +710,9 @@
 
     /* 欢迎卡片 */
     .main-body-imgwall {
-      border: 1px solid #d7eaff;
+      border: 1px solid rgba(215, 234, 255, 0.6);
       padding: 10px 14px;
-      background: #f3f9ff;
+      background: rgba(243, 249, 255, 0.5);
       border-radius: var(--radius-sm);
       overflow: hidden;
       margin-top: 6px;
@@ -741,6 +753,8 @@
     /* 动态面板容器 */
     #panelContainer {
       background: var(--bg-card);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       box-shadow: var(--shadow-sm);
@@ -755,6 +769,8 @@
     /* 更多动态 */
     .main-body-right-bottom {
       background: var(--bg-card);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       box-shadow: var(--shadow-sm);
@@ -779,9 +795,11 @@
     /* ===== 底部 ===== */
     .footer {
       width: 100%;
-      background: var(--bg-page);
+      background: rgba(237, 241, 247, 0.6);
+      backdrop-filter: blur(4px);
       text-align: center;
       padding: 20px 0;
+      border-top: 1px solid var(--border);
     }
     .footer-main {
       width: 920px;
@@ -851,7 +869,7 @@
       padding: 10px 8px;
       border-radius: var(--radius-sm);
       transition: var(--transition);
-      border-bottom: 1px solid #f0f4fa;
+      border-bottom: 1px solid rgba(240, 244, 250, 0.6);
     }
     .friend-item:hover {
       background-color: var(--bg-light);
@@ -864,6 +882,7 @@
     }
     .build-card {
       background: var(--bg-light);
+      backdrop-filter: blur(4px);
       border-radius: var(--radius-md);
       padding: 16px;
       text-align: center;
@@ -885,7 +904,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 10px 0;
-      border-bottom: 1px solid #f0f4fa;
+      border-bottom: 1px solid rgba(240, 244, 250, 0.6);
     }
     .task-item:last-child {
       border-bottom: none;
@@ -910,6 +929,7 @@
       max-height: 300px;
       overflow-y: auto;
       background: var(--bg-light);
+      backdrop-filter: blur(4px);
       padding: 14px;
       border-radius: var(--radius-md);
       margin-bottom: 10px;
@@ -931,6 +951,7 @@
     }
     .chat-message.received {
       background: var(--bg-card);
+      backdrop-filter: blur(4px);
       border: 1px solid var(--border);
       align-self: flex-start;
       border-bottom-left-radius: 4px;
@@ -954,6 +975,7 @@
       transition: var(--transition);
       font-size: 13px;
       background: var(--bg-card);
+      backdrop-filter: blur(4px);
     }
     .chat-input-area input:focus {
       border-color: var(--primary);
@@ -1031,6 +1053,8 @@
     }
     .modal {
       background: var(--bg-card);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       padding: 24px 28px;
@@ -1059,6 +1083,7 @@
       transition: var(--transition);
       outline: none;
       background: var(--bg-card);
+      backdrop-filter: blur(4px);
       color: var(--text-main);
     }
     .modal input:focus,
@@ -1094,6 +1119,8 @@
     }
     .login-card {
       background: var(--bg-card);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       padding: 32px 28px;
@@ -1497,7 +1524,7 @@
     <!-- 底部 -->
     <div class="footer">
       <div class="footer-main">
-        <p>雾凇会馆 · 妖精公会 ｜ 吉林同人交互论坛</p>
+        <p>东北·雾凇会馆 ｜ 分会馆</p>
         <p>Copyright © 2026 雾凇公会 All Rights Reserved.</p>
       </div>
     </div>
@@ -1591,6 +1618,7 @@
     const navFriends = $('navFriends');
     const navTasks = $('navTasks');
     const moreDynamic = $('moreDynamic');
+    const midbox = document.querySelector('.midbox');
 
     // 封面相关
     const coverWrapper = $('coverWrapper');
@@ -1815,14 +1843,11 @@
       profileExp.textContent = u.exp || 0;
       wallUserName.textContent = u.username;
 
-      // 封面
-      if (coverWrapper) {
-        if (u.cover_url) {
-          coverWrapper.style.backgroundImage = `url('${u.cover_url}')`;
-        } else {
-          // 默认使用第一张预设
-          coverWrapper.style.backgroundImage = `url('${PRESET_COVERS[0]}')`;
-        }
+      // ★★★ 封面同步：小封面预览 + 全局背景（带70%白色遮罩） ★★★
+      if (coverWrapper && midbox) {
+        const coverUrl = u.cover_url || PRESET_COVERS[0];
+        coverWrapper.style.backgroundImage = `url('${coverUrl}')`;
+        midbox.style.backgroundImage = `linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), url('${coverUrl}')`;
       }
 
       updateCounts();
@@ -2717,7 +2742,7 @@
 
     window.supabase = supabase;
     window.currentUser = currentUser;
-    console.log('🌲 雾凇会馆已加载（含封面）');
+    console.log('🌲 雾凇会馆已加载');
   </script>
 </body>
 </html>
