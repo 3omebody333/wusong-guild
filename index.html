@@ -6,12 +6,12 @@
   <title>🌲 雾凇会馆 · 妖精公会</title>
   <style>
     /* ================================================================
-       仿微博移动端个人主页 · 通栏封面 · 半压头像 · 毛玻璃卡片
+       仿微博手机版 · 完整改造
        ================================================================ */
     :root {
       --primary: #ff8200;
       --primary-dark: #e67500;
-      --primary-hover: #ff9526;
+      --primary-text: #ff8200;
       --bg-page: #f7f8fa;
       --bg-card: #ffffff;
       --bg-light: #f2f3f5;
@@ -20,13 +20,13 @@
       --text-sub: #86909c;
       --text-light: #c9cdd4;
       --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-lg: 22px;
       --radius-full: 9999px;
       --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.05);
       --shadow-md: 0 3px 12px rgba(0, 0, 0, 0.08);
       --transition: all 0.24s ease;
-      --cover-height: 320px;
+      --cover-height: 300px;
     }
 
     /* ===== 公用重置 ===== */
@@ -66,7 +66,78 @@
       clear: both;
     }
 
-    /* ===== 顶部导航栏 ===== */
+    /* ===== 微博顶部导航栏 ===== */
+    .wb-top-nav {
+      width: 100%;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      position: sticky;
+      top: 41px;
+      z-index: 999;
+    }
+    .wb-nav-inner {
+      max-width: 920px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .wb-nav-item {
+      font-size: 15px;
+      color: var(--text-sub);
+      padding: 4px 0;
+      position: relative;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .wb-nav-item:hover {
+      text-decoration: none;
+    }
+    .wb-nav-item.active {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+    .wb-nav-item.active::after {
+      content: '';
+      width: 22px;
+      height: 3px;
+      background: var(--primary);
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 3px;
+    }
+    .wb-search-box {
+      flex: 1;
+      max-width: 320px;
+      position: relative;
+      margin-left: auto;
+    }
+    .wb-search-box input {
+      width: 100%;
+      padding: 7px 14px 7px 34px;
+      background: var(--bg-light);
+      border: none;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      outline: none;
+      color: var(--text-main);
+    }
+    .wb-search-box input::placeholder {
+      color: var(--text-light);
+    }
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    /* ===== 原有顶部黑色导航（保留） ===== */
     .header {
       width: 100%;
       background: rgba(31, 31, 31, 0.92);
@@ -247,102 +318,112 @@
       padding-top: 0;
     }
 
-    /* ===== 封面容器 通栏无留白 ===== */
+    /* ===== 封面容器 ===== */
     .cover-container {
       width: 100%;
       max-width: 100%;
-      margin: 0 auto;
+      margin: 0;
       padding: 0;
       position: relative;
     }
-
     .cover-wrapper {
       width: 100%;
       height: var(--cover-height);
       border-radius: 0;
-      background-color: #dde3ec;
       background-size: cover;
       background-position: center;
-      box-shadow: none;
-      transition: var(--transition);
-      position: relative;
       overflow: hidden;
-      border: none;
+      position: relative;
     }
-    .cover-wrapper:hover {
-      box-shadow: none;
-    }
-
-    /* 更换封面按钮 */
     .cover-wrapper .cover-btn {
       position: absolute;
       bottom: 16px;
       right: 16px;
-      background: rgba(0, 0, 0, 0.45);
+      background: rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
       color: #fff;
       border: none;
       border-radius: var(--radius-full);
-      padding: 7px 18px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: var(--transition);
+      padding: 6px 14px;
       display: flex;
       align-items: center;
-      gap: 6px;
-      opacity: 0.75;
+      gap: 4px;
+      font-size: 12px;
       z-index: 2;
+      cursor: pointer;
+      transition: var(--transition);
     }
     .cover-wrapper .cover-btn:hover {
-      opacity: 1;
-      background: rgba(0, 0, 0, 0.65);
+      background: rgba(0, 0, 0, 0.6);
     }
     .cover-wrapper .cover-btn::before {
       content: "🖼️";
       font-size: 14px;
     }
 
-    /* 封面左上角文字渐变遮罩 */
     .cover-top-text {
       position: absolute;
       left: 0;
       bottom: 0;
       width: 100%;
-      padding: 36px 20px 24px;
-      background: linear-gradient(transparent, rgba(0, 0, 0, 0.42) 85%);
+      padding: 40px 20px 24px;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.45) 90%);
       color: #fff;
     }
     .cover-top-text h1 {
       font-size: 28px;
       font-weight: 600;
       color: #fff;
-      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
-      margin-bottom: 2px;
+      margin: 0;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
     }
     .cover-top-text .main-small {
       font-size: 15px;
-      color: rgba(255, 255, 255, 0.88);
+      color: rgba(255, 255, 255, 0.85);
       display: block;
+      margin: 4px 0;
     }
     .cover-top-text .weather {
       position: absolute;
       right: 20px;
       bottom: 24px;
-      float: none;
       text-align: right;
     }
-    .cover-top-text .weather .city,
-    .cover-top-text .weather #currentDate {
-      color: rgba(255, 255, 255, 0.85);
-      font-size: 13px;
-    }
-    .cover-top-text .weather .city {
+    .cover-top-text .city,
+    .cover-top-text #currentDate {
       display: block;
+      color: rgba(255, 255, 255, 0.8);
       font-size: 13px;
     }
 
-    /* 预设封面网格 */
+    /* ===== 错位头像 ===== */
+    .user-img-lg {
+      position: absolute;
+      left: 20px;
+      bottom: -60px;
+      width: 120px;
+      height: 120px;
+      border: 5px solid var(--bg-card);
+      border-radius: var(--radius-full);
+      background-size: cover;
+      background-position: center;
+      background-color: #ccc;
+      box-shadow: var(--shadow-md);
+      z-index: 3;
+      text-align: center;
+      line-height: 120px;
+      font-size: 60px;
+      color: #fff;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .user-img-lg:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    }
+
+    /* ===== 预设封面网格 ===== */
     .cover-preset-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -362,53 +443,22 @@
       border-color: var(--primary);
       transform: scale(1.02);
     }
-    .cover-preset-item.active {
-      border-color: var(--primary);
-    }
 
-    /* ===== 微博标志性半压封面头像 ===== */
-    .user-img-lg {
-      position: absolute;
-      left: 20px;
-      bottom: -64px;
-      width: 128px;
-      height: 128px;
-      border: 5px solid var(--bg-card);
-      border-radius: var(--radius-full);
-      margin-right: 0;
-      background-size: cover;
-      background-position: center;
-      background-color: #ccc;
-      text-align: center;
-      line-height: 128px;
-      font-size: 62px;
-      color: #fff;
-      box-shadow: var(--shadow-md);
-      cursor: pointer;
-      transition: var(--transition);
-      z-index: 3;
-    }
-    .user-img-lg:hover {
-      transform: scale(1.03);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-    }
-
-    /* ===== 资料+导航区域 ===== */
+    /* ===== 信息+Tab区域 ===== */
     .info-tab-wrap {
       width: 92%;
       max-width: 920px;
-      margin: 72px auto 0;
+      margin: 70px auto 0;
       padding: 0 10px;
-      position: relative;
     }
-
     .main-header-bottom-top h1 {
       font-size: 26px;
       font-weight: 700;
       color: var(--text-main);
+      margin: 0;
     }
     .level-exp-row {
-      margin-top: 4px;
+      margin-top: 6px;
       font-size: 14px;
       color: var(--text-sub);
     }
@@ -417,13 +467,13 @@
       color: var(--text-main);
     }
 
-    /* 微博导航Tab */
+    /* ===== 底部导航Tab ===== */
     #mainNavTabs {
-      margin-top: 20px;
       display: flex;
-      gap: 8px;
+      gap: 28px;
+      padding: 16px 0;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 2px;
+      margin: 12px 0 20px;
       flex-wrap: wrap;
     }
     #mainNavTabs li {
@@ -431,30 +481,70 @@
       display: inline-block;
     }
     #mainNavTabs li a {
-      font-size: 15px;
+      font-size: 16px;
       color: var(--text-sub);
-      padding: 10px 4px 10px;
-      border-bottom: 3px solid transparent;
-      transition: var(--transition);
+      padding: 6px 0;
+      position: relative;
+      cursor: pointer;
       font-weight: 400;
-      display: inline-block;
+    }
+    #mainNavTabs li a:hover {
+      text-decoration: none;
     }
     #mainNavTabs li a.active {
-      border-bottom-color: var(--primary);
       color: var(--text-main);
       font-weight: 600;
     }
-    #mainNavTabs li a:hover {
-      color: var(--primary);
-      border-bottom-color: rgba(255, 130, 0, 0.3);
-      text-decoration: none;
+    #mainNavTabs li a.active::after {
+      content: '';
+      width: 100%;
+      height: 3px;
+      background: var(--primary);
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      border-radius: 3px;
+    }
+
+    /* ===== 三栏统计卡片 ===== */
+    .stats-card {
+      width: 92%;
+      max-width: 920px;
+      margin: 0 auto 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-item {
+      text-align: center;
+      padding: 18px 0;
+      border-right: 1px solid var(--bg-light);
+    }
+    .stat-item:last-child {
+      border-right: none;
+    }
+    .stat-item strong {
+      display: block;
+      font-size: 32px;
+      color: var(--primary-text);
+      font-weight: 600;
+    }
+    .stat-item span {
+      font-size: 14px;
+      color: var(--text-sub);
+      margin-top: 4px;
+      display: block;
     }
 
     /* ===== 主体左右两栏 ===== */
     .main-body {
       width: 92%;
       max-width: 920px;
-      margin: 24px auto 60px;
+      margin: 0 auto 60px;
       padding: 0;
       overflow: hidden;
     }
@@ -465,7 +555,6 @@
     .main-body-left>div {
       margin-bottom: 16px;
     }
-
     .main-body-right {
       float: right;
       width: calc(100% - 300px);
@@ -475,54 +564,10 @@
       margin-bottom: 16px;
     }
 
-    /* ===== 统计卡片（微博简约风格） ===== */
-    .main-body-left-top {
-      background: rgba(255, 255, 255, 0.88);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-      padding: 0;
-      height: 72px;
-    }
-    .main-body-left-top div {
-      float: left;
-      width: 33.33%;
-      height: 72px;
-      border-left: 1px solid var(--border);
-      text-align: center;
-      padding: 12px 0;
-      transition: var(--transition);
-    }
-    .main-body-left-top div:first-child {
-      border-left: 0;
-    }
-    .main-body-left-top div:hover {
-      background-color: var(--bg-light);
-    }
-    .main-body-left-top div a {
-      display: block;
-      color: var(--text-main);
-    }
-    .main-body-left-top div a strong {
-      display: block;
-      font-size: 22px;
-      color: var(--primary);
-    }
-    .main-body-left-top div a span {
-      display: block;
-      font-size: 12px;
-      color: var(--text-sub);
-    }
-
-    /* ===== 面板卡片 微博毛玻璃风格 ===== */
+    /* ===== 面板卡片 ===== */
     .panel {
-      background: rgba(255, 255, 255, 0.88);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
+      background: var(--bg-card);
+      border: none;
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-sm);
       overflow: hidden;
@@ -541,7 +586,6 @@
     }
     .panel .panel-heading strong {
       font-weight: 600;
-      color: var(--text-main);
     }
     .panel .list-group {
       margin: 0;
@@ -574,15 +618,7 @@
       text-decoration: underline;
     }
 
-    /* 好友请求列表 */
-    .panel .list-group .board textarea {
-      display: none;
-    }
-    .board-bar {
-      display: none;
-    }
-
-    /* 左侧好友列表（圆形网格） */
+    /* 左侧好友列表 */
     .main-body-left-bottom .panel .list-group {
       padding: 10px 12px;
       display: flex;
@@ -627,12 +663,10 @@
       font-weight: 500;
     }
 
-    /* ===== 右侧主内容 ===== */
+    /* ===== 右侧内容 ===== */
     .main-body-right-top {
-      background: rgba(255, 255, 255, 0.88);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
+      background: var(--bg-card);
+      border: none;
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-sm);
       padding: 0;
@@ -643,9 +677,6 @@
     }
     .main-body-panel {
       padding: 14px 18px 18px;
-    }
-    .main-body-panel li {
-      font-size: 14px;
     }
     .main-body-userinfo {
       display: block;
@@ -736,12 +767,10 @@
       transform: translateY(-1px);
     }
 
-    /* 动态面板容器 */
+    /* ===== 动态面板容器 ===== */
     #panelContainer {
-      background: rgba(255, 255, 255, 0.88);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
+      background: var(--bg-card);
+      border: none;
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-sm);
       padding: 18px 20px;
@@ -752,12 +781,10 @@
       box-shadow: var(--shadow-md);
     }
 
-    /* 更多动态 */
+    /* ===== 更多动态 ===== */
     .main-body-right-bottom {
-      background: rgba(255, 255, 255, 0.88);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
+      background: var(--bg-card);
+      border: none;
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-sm);
       height: 44px;
@@ -964,7 +991,7 @@
       box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
     }
 
-    /* ===== 按钮统一样式 ===== */
+    /* ===== 按钮 ===== */
     .btn {
       display: inline-block;
       padding: 6px 20px;
@@ -1218,7 +1245,7 @@
       }
     }
 
-    /* ===== 自定义细窄滚动条 ===== */
+    /* ===== 自定义滚动条 ===== */
     ::-webkit-scrollbar {
       width: 5px;
       height: 5px;
@@ -1252,9 +1279,6 @@
       .main-body-left {
         margin-bottom: 20px;
       }
-      .main-body-left-top div {
-        width: 33.33%;
-      }
       .main-body-right {
         max-width: 100%;
       }
@@ -1277,6 +1301,9 @@
       .cover-top-text h1 {
         font-size: 24px;
       }
+      .wb-nav-inner {
+        gap: 16px;
+      }
     }
     @media (max-width: 768px) {
       .main-body-left-bottom .panel .list-group li {
@@ -1294,6 +1321,28 @@
       }
       .map-grid {
         grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      }
+      .stats-card .stat-item strong {
+        font-size: 26px;
+      }
+      #mainNavTabs {
+        gap: 16px;
+      }
+      #mainNavTabs li a {
+        font-size: 14px;
+      }
+      .wb-nav-item {
+        font-size: 14px;
+      }
+      .wb-nav-inner {
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .wb-search-box {
+        max-width: 100%;
+        flex-basis: 100%;
+        margin-left: 0;
+        margin-top: 6px;
       }
     }
     @media (max-width: 600px) {
@@ -1339,11 +1388,11 @@
         right: 12px;
       }
       .user-img-lg {
-        width: 80px;
-        height: 80px;
-        bottom: -40px;
-        line-height: 80px;
-        font-size: 40px;
+        width: 90px;
+        height: 90px;
+        bottom: -45px;
+        line-height: 90px;
+        font-size: 44px;
         border-width: 4px;
       }
       .cover-top-text {
@@ -1360,7 +1409,7 @@
         font-size: 12px;
       }
       .info-tab-wrap {
-        margin-top: 46px;
+        margin-top: 52px;
         width: 96%;
       }
       .main-header-bottom-top h1 {
@@ -1369,13 +1418,18 @@
       .level-exp-row {
         font-size: 13px;
       }
-      #mainNavTabs li a {
-        font-size: 14px;
-        padding: 8px 2px 8px;
-      }
       .main-body {
         width: 96%;
-        margin: 16px auto 40px;
+        margin: 0 auto 40px;
+      }
+      .stats-card {
+        width: 96%;
+      }
+      .stats-card .stat-item strong {
+        font-size: 22px;
+      }
+      .stats-card .stat-item {
+        padding: 14px 0;
       }
       .panel .panel-heading {
         font-size: 15px;
@@ -1394,11 +1448,19 @@
       .post-item {
         padding: 12px 6px;
       }
-      .cover-wrapper .cover-btn {
-        font-size: 10px;
-        padding: 4px 12px;
-        bottom: 10px;
-        right: 10px;
+      .wb-top-nav {
+        padding: 8px 12px;
+      }
+      .wb-nav-item {
+        font-size: 13px;
+      }
+      #mainNavTabs {
+        gap: 12px;
+        padding: 12px 0;
+      }
+      #mainNavTabs li a {
+        font-size: 13px;
+        padding: 4px 0;
       }
     }
   </style>
@@ -1425,7 +1487,7 @@
   <!-- ===== 主应用 ===== -->
   <div id="appContainer" style="display:none;">
 
-    <!-- 顶部导航条 -->
+    <!-- ===== 顶部黑色导航 ===== -->
     <div class="header">
       <div class="header-box">
         <div class="header-left">
@@ -1454,57 +1516,77 @@
 
     <div class="top-hold"></div>
 
+    <!-- ===== 微博顶部导航 ===== -->
+    <div class="wb-top-nav">
+      <div class="wb-nav-inner">
+        <a href="#" class="wb-nav-item active" data-top="home">首页</a>
+        <a href="#" class="wb-nav-item" data-top="profile">个人</a>
+        <a href="#" class="wb-nav-item" data-top="friends">好友</a>
+        <a href="#" class="wb-nav-item" data-top="hot">热搜</a>
+        <div class="wb-search-box">
+          <input type="text" placeholder="搜索用户/帖子/委托">
+          <span class="search-icon">🔍</span>
+        </div>
+      </div>
+    </div>
+
     <div class="midbox">
 
-      <!-- ===== 封面容器 通栏 ===== -->
+      <!-- ===== 封面容器 ===== -->
       <div class="cover-container">
         <div class="cover-wrapper" id="coverWrapper" style="background-image: url('');">
           <button class="cover-btn" id="changeCoverBtn">更换封面</button>
           <div class="cover-top-text">
-            <div class="main-header-top">
-              <h1 id="userTitle">雾凇会馆 · admin</h1>
-              <small class="main-text main-small" id="userSignature">这个人很懒，什么都没写~</small>
-            </div>
+            <h1 id="userTitle">雾凇会馆 · admin</h1>
+            <small class="main-text main-small" id="userSignature">这个人很懒，什么都没写~</small>
             <div class="weather">
-              <div><small class="city main-text">吉林</small><small id="currentDate">6月27日</small></div>
+              <small class="city main-text">吉林</small>
+              <small id="currentDate">6月27日</small>
             </div>
           </div>
         </div>
-        <!-- 头像独立出来，错位叠在封面底部 -->
         <a href="#" class="user-img-lg" id="mainAvatar">🐱</a>
       </div>
 
-      <!-- 资料+导航区域 -->
+      <!-- ===== 昵称 + Tab ===== -->
       <div class="info-tab-wrap">
-        <div class="main-header-bottom clear">
-          <div class="main-header-bottom-top">
-            <h1 id="mainUsername">admin</h1>
-            <div class="level-exp-row">
-              成长值&nbsp;<span id="expDisplay">0</span>&nbsp;&nbsp;|&nbsp; 等级&nbsp;<span id="levelDisplay">Lv.1</span>
-            </div>
+        <div class="main-header-bottom-top">
+          <h1 id="mainUsername">admin</h1>
+          <div class="level-exp-row">
+            成长值&nbsp;<span id="expDisplay">0</span>&nbsp;&nbsp;|&nbsp; 等级&nbsp;<span id="levelDisplay">Lv.1</span>
           </div>
-          <ul id="mainNavTabs">
-            <li><a href="#" class="active" data-tab="forum">主页</a></li>
-            <li><a href="#" data-tab="tasks">委托</a></li>
-            <li><a href="#" data-tab="friends">好友</a></li>
-            <li><a href="#" data-tab="chat">聊天</a></li>
-            <li><a href="#" data-tab="build">基建</a></li>
-            <li><a href="#" data-tab="daily">每日</a></li>
-          </ul>
+        </div>
+        <ul id="mainNavTabs">
+          <li><a href="#" class="active" data-tab="forum">主页</a></li>
+          <li><a href="#" data-tab="tasks">委托</a></li>
+          <li><a href="#" data-tab="friends">好友</a></li>
+          <li><a href="#" data-tab="chat">聊天</a></li>
+          <li><a href="#" data-tab="build">基建</a></li>
+          <li><a href="#" data-tab="daily">每日</a></li>
+        </ul>
+      </div>
+
+      <!-- ===== 三栏统计卡片 ===== -->
+      <div class="stats-card">
+        <div class="stat-item">
+          <strong id="countPosts">0</strong>
+          <span>帖子</span>
+        </div>
+        <div class="stat-item">
+          <strong id="countFriends">0</strong>
+          <span>好友</span>
+        </div>
+        <div class="stat-item">
+          <strong id="countGold">0</strong>
+          <span>金币</span>
         </div>
       </div>
 
-      <!-- 主体 -->
+      <!-- ===== 主体 ===== -->
       <div class="main-body clear">
 
         <!-- 左侧 -->
         <div class="main-body-left">
-          <div class="main-body-left-top">
-            <div><a href="#"><strong id="countPosts">0</strong><span>帖子</span></a></div>
-            <div><a href="#"><strong id="countFriends">0</strong><span>好友</span></a></div>
-            <div><a href="#"><strong id="countGold">0</strong><span>金币</span></a></div>
-          </div>
-
           <div class="main-body-left-middle">
             <div class="panel">
               <div class="panel-heading"><strong>个人档</strong></div>
@@ -1560,7 +1642,6 @@
             </ul>
           </div>
 
-          <!-- 动态面板 -->
           <div id="panelContainer"></div>
 
           <div class="main-body-right-bottom">
@@ -1571,7 +1652,7 @@
       </div>
     </div>
 
-    <!-- 底部 -->
+    <!-- ===== 底部 ===== -->
     <div class="footer">
       <div class="footer-main">
         <p>雾凇会馆 · 妖精公会 ｜ 吉林同人交互论坛</p>
@@ -1668,11 +1749,14 @@
     const navFriends = $('navFriends');
     const navTasks = $('navTasks');
     const moreDynamic = $('moreDynamic');
+    const wbNavItems = document.querySelectorAll('.wb-nav-item');
 
     const coverWrapper = $('coverWrapper');
     const changeCoverBtn = $('changeCoverBtn');
 
+    // ============================================================
     // 工具函数
+    // ============================================================
     function toast(msg, type = '') {
       const el = document.createElement('div');
       el.className = `toast ${type}`;
@@ -1891,7 +1975,6 @@
       profileExp.textContent = u.exp || 0;
       wallUserName.textContent = u.username;
 
-      // 封面赋值
       if (coverWrapper) {
         const coverUrl = u.cover_url || PRESET_COVERS[0];
         coverWrapper.style.backgroundImage = `url('${coverUrl}')`;
@@ -2012,7 +2095,9 @@
       input.click();
     });
 
+    // ============================================================
     // 导航切换
+    // ============================================================
     mainNavTabs.forEach(tab => {
       tab.addEventListener('click', (e) => {
         e.preventDefault();
@@ -2025,6 +2110,31 @@
         renderCurrentTab();
       });
     });
+
+    // 微博顶部导航切换
+    wbNavItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        wbNavItems.forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        const topTab = item.dataset.top;
+        if (topTab === 'home') {
+          currentTab = 'forum';
+        } else if (topTab === 'profile') {
+          currentTab = 'forum';
+        } else if (topTab === 'friends') {
+          currentTab = 'friends';
+        } else if (topTab === 'hot') {
+          currentTab = 'forum';
+        }
+        // 同步下方Tab高亮
+        mainNavTabs.forEach(t => t.classList.remove('active'));
+        document.querySelector(`#mainNavTabs a[data-tab="${currentTab}"]`)?.classList.add('active');
+        viewingPostId = null;
+        renderCurrentTab();
+      });
+    });
+
     navMyHome.addEventListener('click', (e) => {
       e.preventDefault();
       mainNavTabs.forEach(t => t.classList.remove('active'));
@@ -2084,9 +2194,9 @@
       }
     }
 
-    // ================================================================
+    // ============================================================
     // 论坛
-    // ================================================================
+    // ============================================================
     async function renderForum() {
       if (viewingPostId) {
         await renderPostDetail(viewingPostId);
@@ -2304,9 +2414,9 @@
       });
     }
 
-    // ================================================================
+    // ============================================================
     // 任务系统
-    // ================================================================
+    // ============================================================
     async function renderTasks() {
       if (!currentUser) {
         panelContainer.innerHTML =
@@ -2453,9 +2563,9 @@
       });
     }
 
-    // ================================================================
+    // ============================================================
     // 好友
-    // ================================================================
+    // ============================================================
     async function renderFriends() {
       if (!currentUser) {
         panelContainer.innerHTML =
@@ -2538,9 +2648,9 @@
       });
     }
 
-    // ================================================================
+    // ============================================================
     // 聊天
-    // ================================================================
+    // ============================================================
     async function renderChat() {
       if (!currentUser) {
         panelContainer.innerHTML =
@@ -2663,9 +2773,9 @@
         }).subscribe();
     }
 
-    // ================================================================
+    // ============================================================
     // 基建
-    // ================================================================
+    // ============================================================
     async function renderBuild() {
       if (!currentUser) {
         panelContainer.innerHTML =
@@ -2700,9 +2810,9 @@
       });
     }
 
-    // ================================================================
+    // ============================================================
     // 每日任务
-    // ================================================================
+    // ============================================================
     async function renderDaily() {
       if (!currentUser) {
         panelContainer.innerHTML =
@@ -2774,9 +2884,9 @@
       updateUI();
     }
 
-    // ================================================================
+    // ============================================================
     // 登出
-    // ================================================================
+    // ============================================================
     headerLogout.addEventListener('click', (e) => {
       e.preventDefault();
       if (chatSubscription) supabase.removeChannel(chatSubscription);
@@ -2792,9 +2902,9 @@
       toast('已离开会馆');
     });
 
-    // ================================================================
+    // ============================================================
     // 初始化
-    // ================================================================
+    // ============================================================
     function init() {
       loginOverlay.classList.remove('hidden');
       appContainer.style.display = 'none';
@@ -2806,7 +2916,7 @@
 
     window.supabase = supabase;
     window.currentUser = currentUser;
-    console.log('🌲 雾凇会馆已加载（仿微博移动端）');
+    console.log('🌲 雾凇会馆已加载（仿微博手机版）');
   </script>
 </body>
 </html>
