@@ -26,7 +26,7 @@
       --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
       --shadow-md: 0 2px 10px rgba(0, 0, 0, 0.08);
       --transition: all 0.2s ease;
-      --cover-height: 300px; /* 拉高封面，容纳文字 */
+      --cover-height: 340px; /* 增高，容纳文字 */
     }
 
     /* ----- 公用重置 & 全局基础 ----- */
@@ -239,7 +239,7 @@
       background: #1F1F1F;
     }
 
-    /* ===== 中间主容器（恢复浅色背景，不再全局铺图） ===== */
+    /* ===== 中间主容器 ===== */
     .midbox {
       min-width: 0;
       background: var(--bg-page);
@@ -253,6 +253,7 @@
       max-width: 100%;
       margin: 0 auto 10px;
       padding: 0 15px;
+      position: relative;
     }
 
     /* ===== 封面包装器（大容器，文字叠在内部） ===== */
@@ -262,25 +263,26 @@
       border-radius: var(--radius-md);
       background-color: #dde3ec;
       background-size: cover;
-      background-position: center;
+      background-position: center center;
       box-shadow: var(--shadow-sm);
       transition: var(--transition);
       position: relative;
       overflow: hidden;
       border: 1px solid var(--border);
-      padding: 20px;
+      padding: 0;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
+      align-items: stretch;
     }
     .cover-wrapper:hover {
       box-shadow: var(--shadow-md);
     }
 
-    /* 更换封面按钮（右上角悬浮） */
+    /* 更换封面按钮（右下角悬浮，z-index提升） */
     .cover-wrapper .cover-btn {
       position: absolute;
-      top: 12px;
+      bottom: 12px;
       right: 12px;
       background: rgba(0, 0, 0, 0.55);
       backdrop-filter: blur(4px);
@@ -296,7 +298,7 @@
       align-items: center;
       gap: 4px;
       opacity: 0.8;
-      z-index: 5;
+      z-index: 10;
     }
     .cover-wrapper .cover-btn:hover {
       opacity: 1;
@@ -331,20 +333,26 @@
       border-color: var(--primary);
     }
 
-    /* ===== 封面内部的个人信息区域（半透蒙版叠在封面上） ===== */
+    /* ===== 封面内部的个人信息区域（修正偏移） ===== */
     .cover-wrapper .main-header {
-      width: calc(100% + 40px);
-      max-width: unset;
+      width: 100%;
+      max-width: 100%;
       margin: 0;
-      margin-left: -20px;
-      padding: 16px 20px;
-      background: linear-gradient(transparent, rgba(255, 255, 255, 0.75));
+      padding: 30px 20px 20px;
+      background: linear-gradient(transparent 45%, rgba(255, 255, 255, 0.68) 100%);
       border-radius: 0 0 var(--radius-md) var(--radius-md);
       position: relative;
-      left: -20px;
-      bottom: -20px;
-      /* 用负边距让蒙版延伸到卡片底部边缘 */
       flex-shrink: 0;
+    }
+
+    /* 重置原独立main-header的全局边距 */
+    .main-header {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      height: auto !important;
+      min-height: auto;
     }
 
     .main-header-top {
@@ -380,20 +388,22 @@
     .main-header-bottom {
       width: 100%;
       height: auto !important;
+      overflow: hidden;
     }
     .user-img-lg {
       float: left;
-      width: 80px;
-      height: 80px;
-      border: 3px solid rgba(255, 255, 255, 0.8);
+      width: 126px;
+      height: 126px;
+      border: 4px solid rgba(255, 255, 255, 0.8);
       border-radius: var(--radius-full);
-      margin-right: 14px;
+      margin-right: 15px;
+      margin-left: 0;
       background-size: cover;
       background-position: center;
       background-color: #ccc;
       text-align: center;
-      line-height: 80px;
-      font-size: 38px;
+      line-height: 126px;
+      font-size: 60px;
       color: #fff;
       box-shadow: var(--shadow-sm);
       cursor: pointer;
@@ -405,24 +415,25 @@
     }
     .main-header-bottom-top {
       float: left;
-      width: calc(100% - 100px);
+      width: calc(100% - 150px);
       height: auto;
     }
     .main-header-bottom-top h1 {
       display: inline-block;
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 600;
       color: var(--primary-dark);
       text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
       margin: 0;
     }
 
-    /* 简化的天气/日期 */
+    /* 天气 */
     .weather {
       float: right;
       width: auto;
       height: auto;
-      margin-top: 2px;
+      margin-top: 6px;
+      margin-right: 0;
     }
     .weather .city {
       font-size: 13px;
@@ -441,9 +452,8 @@
       display: none;
     }
 
-    /* 等级/经验行 */
     .level-exp-row {
-      margin-top: 2px;
+      margin-top: 4px;
       font-size: 13px;
       color: var(--text-sub);
       text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
@@ -455,11 +465,11 @@
 
     .main-header-bottom ul {
       clear: both;
-      padding-top: 8px;
+      padding-top: 10px;
     }
     .main-header-bottom ul li {
       display: inline-block;
-      margin-left: 24px;
+      margin-left: 28px;
     }
     .main-header-bottom ul li:first-child {
       margin-left: 0;
@@ -498,7 +508,6 @@
       margin-bottom: 15px;
     }
 
-    /* ===== 统计卡片 ===== */
     .main-body-left-top {
       background: var(--bg-card);
       backdrop-filter: blur(6px);
@@ -540,7 +549,6 @@
       color: var(--text-sub);
     }
 
-    /* ===== 面板卡片通用（半透明毛玻璃） ===== */
     .panel {
       background: var(--bg-card);
       backdrop-filter: blur(6px);
@@ -641,7 +649,6 @@
       font-weight: 500;
     }
 
-    /* ===== 右侧主内容 ===== */
     .main-body-right {
       float: right;
       width: calc(100% - 320px);
@@ -793,7 +800,6 @@
       color: var(--primary);
     }
 
-    /* ===== 底部 ===== */
     .footer {
       width: 100%;
       background: rgba(237, 241, 247, 0.6);
@@ -983,7 +989,6 @@
       box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
     }
 
-    /* ===== 按钮统一样式 ===== */
     .btn {
       display: inline-block;
       padding: 6px 18px;
@@ -1034,7 +1039,6 @@
       background: #16a34a;
     }
 
-    /* ===== 模态框 ===== */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -1100,7 +1104,6 @@
       margin-top: 16px;
     }
 
-    /* ===== 登录弹窗 ===== */
     .login-overlay {
       position: fixed;
       top: 0;
@@ -1203,7 +1206,6 @@
       margin-top: 8px;
     }
 
-    /* ===== Toast ===== */
     .toast-container {
       position: fixed;
       top: 60px;
@@ -1242,7 +1244,6 @@
       }
     }
 
-    /* ===== 自定义细窄滚动条 ===== */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -1260,7 +1261,6 @@
       background: var(--primary-dark);
     }
 
-    /* ===== 响应式 ===== */
     @media (max-width: 1050px) {
       .header-box,
       .cover-container,
@@ -1285,25 +1285,25 @@
         max-height: 260px;
       }
       .cover-wrapper {
-        height: 260px;
+        height: 280px;
       }
       .cover-wrapper .main-header {
-        padding: 12px 16px;
+        padding: 20px 16px 16px;
       }
       .user-img-lg {
-        width: 64px;
-        height: 64px;
-        line-height: 64px;
-        font-size: 30px;
+        width: 80px;
+        height: 80px;
+        line-height: 80px;
+        font-size: 36px;
       }
       .main-header-bottom-top {
-        width: calc(100% - 80px);
+        width: calc(100% - 96px);
       }
       .main-header-bottom-top h1 {
-        font-size: 18px;
+        font-size: 20px;
       }
       .main-header-bottom ul li {
-        margin-left: 16px;
+        margin-left: 18px;
       }
       .main-body-left-top div {
         width: 33.33%;
@@ -1321,10 +1321,10 @@
         width: 60px;
       }
       .cover-wrapper {
-        height: 220px;
+        height: 240px;
       }
       .cover-wrapper .main-header {
-        padding: 10px 12px;
+        padding: 14px 12px 12px;
       }
       .cover-wrapper .main-header-top h1 {
         font-size: 18px;
@@ -1333,14 +1333,14 @@
         font-size: 12px;
       }
       .user-img-lg {
-        width: 50px;
-        height: 50px;
-        line-height: 50px;
-        font-size: 24px;
+        width: 56px;
+        height: 56px;
+        line-height: 56px;
+        font-size: 26px;
         margin-right: 10px;
       }
       .main-header-bottom-top {
-        width: calc(100% - 64px);
+        width: calc(100% - 70px);
       }
       .main-header-bottom-top h1 {
         font-size: 16px;
@@ -1355,7 +1355,7 @@
         font-size: 11px;
       }
       .main-header-bottom ul li {
-        margin-left: 10px;
+        margin-left: 12px;
       }
       .main-header-bottom ul li a {
         font-size: 12px;
@@ -1385,7 +1385,7 @@
       .cover-wrapper .cover-btn {
         font-size: 10px;
         padding: 4px 12px;
-        top: 8px;
+        bottom: 8px;
         right: 8px;
       }
     }
@@ -1658,7 +1658,6 @@
     const navTasks = $('navTasks');
     const moreDynamic = $('moreDynamic');
 
-    // 封面相关
     const coverWrapper = $('coverWrapper');
     const changeCoverBtn = $('changeCoverBtn');
 
@@ -1881,7 +1880,7 @@
       profileExp.textContent = u.exp || 0;
       wallUserName.textContent = u.username;
 
-      // 封面赋值（只给 coverWrapper，不再同步 midbox）
+      // 封面赋值（只给 coverWrapper）
       if (coverWrapper) {
         const coverUrl = u.cover_url || PRESET_COVERS[0];
         coverWrapper.style.backgroundImage = `url('${coverUrl}')`;
@@ -2073,7 +2072,9 @@
       }
     }
 
-    // ===== 论坛 =====
+    // ================================================================
+    // 论坛
+    // ================================================================
     async function renderForum() {
       if (viewingPostId) {
         await renderPostDetail(viewingPostId);
@@ -2779,7 +2780,7 @@
 
     window.supabase = supabase;
     window.currentUser = currentUser;
-    console.log('🌲 雾凇会馆已加载（封面融合版）');
+    console.log('🌲 雾凇会馆已加载（封面修正版）');
   </script>
 </body>
 </html>
