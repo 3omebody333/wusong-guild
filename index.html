@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>🌲 雾凇会馆</title>
   <style>
-    /* ===== 全局重置 & 基础 ===== */
+    /* ===== 全局重置 ===== */
     * {
       margin: 0;
       padding: 0;
@@ -16,8 +16,8 @@
       background: #f7f8fa;
       color: #1d2129;
       font-size: 14px;
-      padding-top: 100px;
-      padding-bottom: 60px;
+      padding-top: 54px;
+      padding-bottom: 64px;
       -webkit-font-smoothing: antialiased;
     }
     a {
@@ -27,7 +27,8 @@
     ul {
       list-style: none;
     }
-    /* ===== 顶部导航（固定） ===== */
+
+    /* ===== 顶部导航（仅logo+搜索） ===== */
     .top-nav {
       position: fixed;
       top: 0;
@@ -73,18 +74,8 @@
       font-size: 14px;
       color: #c9cdd4;
     }
-    .top-nav .user-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background-size: cover;
-      background-position: center;
-      background-color: #ddd;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
 
-    /* ===== 封面区域（仅主页显示） ===== */
+    /* ===== 封面（仅主页显示） ===== */
     .cover-section {
       width: 100%;
       position: relative;
@@ -166,7 +157,7 @@
       color: #fff;
     }
 
-    /* ===== 用户信息卡片（统计） ===== */
+    /* ===== 统计卡片（主页） ===== */
     .user-stats {
       background: #fff;
       border-radius: 16px;
@@ -191,7 +182,7 @@
       color: #86909c;
     }
 
-    /* ===== 内容面板（主体） ===== */
+    /* ===== 内容面板 ===== */
     .main-content {
       padding: 0 16px 16px;
     }
@@ -288,7 +279,7 @@
       color: #fff;
     }
 
-    /* ===== 发帖按钮 ===== */
+    /* ===== 发帖按钮（悬浮） ===== */
     .post-btn {
       position: fixed;
       right: 20px;
@@ -312,7 +303,7 @@
       transform: scale(1.05);
     }
 
-    /* ===== 底部Tab导航（固定） ===== */
+    /* ===== 底部导航 ===== */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -347,7 +338,7 @@
       color: #ff8200;
     }
 
-    /* ===== 好友、聊天、委托列表样式 ===== */
+    /* ===== 好友/委托/聊天列表 ===== */
     .friend-item,
     .task-item,
     .chat-item {
@@ -381,6 +372,67 @@
     .task-item .task-action {
       display: flex;
       gap: 8px;
+    }
+
+    /* ===== 个人中心“我”页面 ===== */
+    .profile-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .profile-card .profile-avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: #ccc;
+      background-size: cover;
+      background-position: center;
+      margin-bottom: 10px;
+      cursor: pointer;
+      border: 3px solid #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+    .profile-card .profile-name {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .profile-card .profile-level {
+      font-size: 14px;
+      color: #86909c;
+      margin-top: 2px;
+    }
+    .profile-card .profile-bio {
+      font-size: 14px;
+      color: #4e5a6b;
+      margin: 8px 0;
+      padding: 8px 16px;
+      background: #f7f8fa;
+      border-radius: 20px;
+      width: 100%;
+      cursor: pointer;
+    }
+    .profile-card .profile-stats {
+      display: flex;
+      gap: 30px;
+      margin-top: 12px;
+    }
+    .profile-card .profile-stats div {
+      text-align: center;
+    }
+    .profile-card .profile-stats strong {
+      display: block;
+      font-size: 18px;
+      color: #ff8200;
+    }
+    .profile-card .profile-stats span {
+      font-size: 13px;
+      color: #86909c;
     }
 
     /* ===== 按钮 ===== */
@@ -634,6 +686,10 @@
         bottom: 72px;
         right: 16px;
       }
+      .profile-card .profile-avatar {
+        width: 80px;
+        height: 80px;
+      }
     }
   </style>
 </head>
@@ -659,17 +715,16 @@
   <!-- ===== 主应用 ===== -->
   <div id="appContainer" style="display:none;">
 
-    <!-- ===== 顶部导航 ===== -->
+    <!-- ===== 顶部导航（仅logo+搜索） ===== -->
     <div class="top-nav">
       <div class="logo">🌲 雾凇</div>
       <div class="search-box">
         <span class="icon-search">🔍</span>
         <input type="text" placeholder="搜索用户/帖子" id="searchInput">
       </div>
-      <div class="user-avatar" id="headerAvatar" onclick="location.reload()"></div>
     </div>
 
-    <!-- ===== 封面+用户信息（仅主页显示） ===== -->
+    <!-- ===== 封面（仅主页显示） ===== -->
     <div class="cover-section" id="homeCover">
       <div class="cover-wrapper" id="coverWrapper">
         <button class="cover-btn" id="changeCoverBtn">更换封面</button>
@@ -685,7 +740,7 @@
       </div>
     </div>
 
-    <!-- ===== 统计卡片 ===== -->
+    <!-- ===== 统计卡片（主页） ===== -->
     <div class="user-stats" id="homeStats">
       <div class="stat-item"><strong id="countPosts">0</strong><span>帖子</span></div>
       <div class="stat-item"><strong id="countFriends">0</strong><span>好友</span></div>
@@ -694,7 +749,7 @@
 
     <!-- ===== 内容面板 ===== -->
     <div class="main-content" id="mainContent">
-      <!-- 主页面板 -->
+      <!-- 主页 -->
       <div class="panel active" id="panel-forum">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <div class="board-filter" id="boardFilter">
@@ -705,17 +760,20 @@
         <div id="postsList">加载中...</div>
       </div>
 
-      <!-- 委托面板 -->
+      <!-- 委托 -->
       <div class="panel" id="panel-tasks"></div>
 
-      <!-- 好友面板 -->
+      <!-- 好友 -->
       <div class="panel" id="panel-friends"></div>
 
-      <!-- 聊天面板 -->
+      <!-- 聊天 -->
       <div class="panel" id="panel-chat"></div>
+
+      <!-- 个人中心 “我” -->
+      <div class="panel" id="panel-profile"></div>
     </div>
 
-    <!-- ===== 底部Tab导航 ===== -->
+    <!-- ===== 底部导航 ===== -->
     <div class="bottom-nav" id="bottomNav">
       <div class="tab-item active" data-tab="forum">
         <span class="tab-icon">🏠</span>
@@ -732,6 +790,10 @@
       <div class="tab-item" data-tab="chat">
         <span class="tab-icon">💬</span>
         <span>聊天</span>
+      </div>
+      <div class="tab-item" data-tab="profile">
+        <span class="tab-icon">👤</span>
+        <span>我</span>
       </div>
     </div>
 
@@ -799,6 +861,7 @@
     const panelTasks = $('panel-tasks');
     const panelFriends = $('panel-friends');
     const panelChat = $('panel-chat');
+    const panelProfile = $('panel-profile');
     const toastContainer = $('toastContainer');
     const modalOverlay = $('modalOverlay');
     const modalContent = $('modalContent');
@@ -808,7 +871,6 @@
     const coverWrapper = $('coverWrapper');
     const changeCoverBtn = $('changeCoverBtn');
     const mainAvatar = $('mainAvatar');
-    const headerAvatar = $('headerAvatar');
     const userTitle = $('userTitle');
     const userSignature = $('userSignature');
     const currentDate = $('currentDate');
@@ -942,7 +1004,6 @@
     function updateUI() {
       if (!currentUser) return;
       const u = currentUser;
-      headerAvatar.style.backgroundImage = u.avatar_url ? `url('${u.avatar_url}')` : '';
       userTitle.textContent = `雾凇会馆 · ${u.username}`;
       userSignature.textContent = u.bio || '这个人很懒，什么都没写~';
       if (u.avatar_url) {
@@ -1029,9 +1090,9 @@
     });
 
     // ============================================================
-    // 头像上传（点击大头像）
+    // 头像上传（点击大头像和“我”页面的头像）
     // ============================================================
-    mainAvatar.addEventListener('click', () => {
+    function triggerAvatarUpload() {
       if (!currentUser) return;
       const input = document.createElement('input');
       input.type = 'file';
@@ -1059,10 +1120,14 @@
         await supabase.from('users').update({ avatar_url: urlData.publicUrl }).eq('id', currentUser.id);
         currentUser.avatar_url = urlData.publicUrl;
         updateUI();
+        // 如果当前在“我”页面，重新渲染
+        if (currentTab === 'profile') renderProfile();
         toast('头像更新成功', 'success');
       };
       input.click();
-    });
+    }
+
+    mainAvatar.addEventListener('click', triggerAvatarUpload);
 
     // ============================================================
     // 底部Tab切换
@@ -1074,7 +1139,7 @@
         const tabName = tab.dataset.tab;
         currentTab = tabName;
         viewingPostId = null;
-        // 控制封面和统计卡片的显示（仅在主页显示）
+        // 封面和统计仅在主页显示
         if (tabName === 'forum') {
           homeCover.style.display = 'block';
           homeStats.style.display = 'flex';
@@ -1089,7 +1154,6 @@
     // 悬浮发帖按钮
     floatingPostBtn.addEventListener('click', () => {
       if (currentTab !== 'forum') {
-        // 切换到主页
         bottomTabs.forEach(t => t.classList.remove('active'));
         document.querySelector('.tab-item[data-tab="forum"]').classList.add('active');
         currentTab = 'forum';
@@ -1100,14 +1164,12 @@
       openNewPost();
     });
 
-    // 发帖按钮（主页内）
     newPostBtn.addEventListener('click', openNewPost);
 
     // ============================================================
     // 渲染面板
     // ============================================================
     function renderCurrentTab() {
-      // 显示对应面板
       document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
       const panelId = `panel-${currentTab}`;
       const panel = document.getElementById(panelId);
@@ -1126,6 +1188,9 @@
         case 'chat':
           renderChat();
           break;
+        case 'profile':
+          renderProfile();
+          break;
       }
     }
 
@@ -1137,7 +1202,6 @@
         await renderPostDetail(viewingPostId);
         return;
       }
-      // 获取板块
       const { data: boards } = await supabase.from('boards').select('*').order('sort_order');
       let filterHtml = `<span class="board-tab active" data-board="all">全部</span>`;
       if (boards) {
@@ -1147,7 +1211,6 @@
       }
       boardFilter.innerHTML = filterHtml;
 
-      // 绑定板块点击
       boardFilter.querySelectorAll('.board-tab').forEach(tab => {
         tab.addEventListener('click', () => {
           boardFilter.querySelectorAll('.board-tab').forEach(t => t.classList.remove('active'));
@@ -1157,7 +1220,6 @@
         });
       });
 
-      // 加载帖子
       loadPosts(null);
     }
 
@@ -1203,7 +1265,6 @@
       }
       postsList.innerHTML = html;
 
-      // 点击帖子进入详情
       document.querySelectorAll('.post-item').forEach(el => {
         el.addEventListener('click', () => {
           viewingPostId = parseInt(el.dataset.postid);
@@ -1297,7 +1358,7 @@
     }
 
     // ============================================================
-    // 发帖、回复、编辑
+    // 发帖、回复
     // ============================================================
     function openNewPost() {
       if (!currentUser) { toast('请先登录', 'error'); return; }
@@ -1467,7 +1528,6 @@
         });
       }
 
-      // 添加筛选按钮
       const filterDiv = document.createElement('div');
       filterDiv.style.cssText = 'display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;';
       const filters = ['all', 'pending', 'in_progress', 'completed', 'mine', 'accepted'];
@@ -1799,25 +1859,126 @@
     }
 
     // ============================================================
-    // 登出
+    // 个人中心 “我”
     // ============================================================
-    // 在顶部头像添加登出功能（点击头像可退出）
-    headerAvatar.addEventListener('click', () => {
-      if (currentUser) {
-        if (confirm('确定要退出登录吗？')) {
-          if (chatSubscription) supabase.removeChannel(chatSubscription);
-          currentUser = null;
-          loginOverlay.classList.remove('hidden');
-          appContainer.style.display = 'none';
-          loginError.textContent = '';
-          loginUsername.value = '';
-          loginPassword.value = '';
-          loginTabs.forEach(t => t.classList.remove('active'));
-          document.querySelector('.login-tab[data-mode="login"]').classList.add('active');
-          loginMode = 'login';
-          toast('已离开会馆');
-        }
+    async function renderProfile() {
+      if (!currentUser) {
+        panelProfile.innerHTML = '<div style="text-align:center;padding:30px;color:#86909c;">请先登录</div>';
+        return;
       }
+      const u = currentUser;
+      // 好友数
+      const { count: friendCount } = await supabase.from('friends').select('*', { count: 'exact', head: true })
+        .or(`sender_id.eq.${u.id},receiver_id.eq.${u.id}`).eq('status', 'accepted');
+      const { count: postCount } = await supabase.from('posts').select('*', { count: 'exact', head: true })
+        .eq('author_id', u.id);
+
+      let html = `
+        <div class="profile-card">
+          <div class="profile-avatar" id="profileAvatar" style="background-image: url('${u.avatar_url || ''}'); background-size: cover; background-position: center;"></div>
+          <div class="profile-name">${escHtml(u.username)}</div>
+          <div class="profile-level">Lv.${u.level || 1} · 🪙 ${u.gold || 0}</div>
+          <div class="profile-bio" id="profileBio">${escHtml(u.bio || '这个人很懒，什么都没写~')}</div>
+          <div class="profile-stats">
+            <div><strong>${postCount || 0}</strong><span>帖子</span></div>
+            <div><strong>${friendCount || 0}</strong><span>好友</span></div>
+            <div><strong>${u.exp || 0}</strong><span>经验</span></div>
+          </div>
+        </div>
+      `;
+      panelProfile.innerHTML = html;
+
+      // 点击头像上传（个人中心）
+      document.getElementById('profileAvatar').addEventListener('click', triggerAvatarUpload);
+
+      // 点击简介编辑
+      document.getElementById('profileBio').addEventListener('click', () => {
+        modalContent.innerHTML = `
+          <h3>✏️ 编辑简介</h3>
+          <textarea id="editBioInput" rows="3" placeholder="写点什么...">${escHtml(currentUser.bio || '')}</textarea>
+          <div class="modal-actions">
+            <button class="btn btn-outline btn-sm" id="modalCancel">取消</button>
+            <button class="btn btn-primary btn-sm" id="modalSaveBio">保存</button>
+          </div>
+        `;
+        modalOverlay.classList.add('show');
+        document.getElementById('modalCancel').addEventListener('click', closeModal);
+        document.getElementById('modalSaveBio').addEventListener('click', async () => {
+          const bio = document.getElementById('editBioInput').value.trim();
+          if (bio === currentUser.bio) { closeModal(); return; }
+          const { error } = await supabase.from('users').update({ bio }).eq('id', currentUser.id);
+          if (error) { toast('更新失败', 'error'); return; }
+          currentUser.bio = bio;
+          updateUI();
+          if (currentTab === 'profile') renderProfile();
+          toast('简介已更新', 'success');
+          closeModal();
+        });
+      });
+    }
+
+    // ============================================================
+    // 登出（点击顶部logo或其他方式，这里用点击logo两次？简单加一个隐藏按钮）
+    // 我们在顶部logo增加长按或双击登出，但为方便，在个人中心添加退出按钮
+    // 我们在底部“我”页面右上角加一个登出图标？
+    // 为简洁，在个人中心卡片下方加一个“退出登录”按钮
+    // 通过监听profile渲染后追加按钮
+    // 但为了干净，我们在renderProfile中动态添加退出按钮。
+    // 修改renderProfile，追加一个退出按钮。
+    // 但由于已经渲染，我们可以在panelProfile内追加。
+    // 更好的方式：在profile卡片下方加一个按钮。
+    // 重新调整renderProfile：
+    // 在最后追加退出按钮。
+    // 我们直接修改上面的renderProfile函数。
+    // 但因为代码已经生成，我们可以在函数末尾动态追加。
+    // 但为了整洁，在renderProfile最后添加：
+    // const logoutBtn = document.createElement('button');
+    // logoutBtn.className = 'btn btn-danger btn-sm';
+    // logoutBtn.textContent = '退出登录';
+    // logoutBtn.style.cssText = 'margin-top:16px; width:100%;';
+    // logoutBtn.addEventListener('click', () => { ... 登出逻辑 ... });
+    // panelProfile.appendChild(logoutBtn);
+    // 但当前renderProfile已经生成完毕，我们可以在函数内部添加。
+    // 我将在完整的代码中修改。
+
+    // 但由于这是最终输出，我将在下面完整代码中调整。
+
+    // ============================================================
+    // 登出逻辑
+    // ============================================================
+    function doLogout() {
+      if (confirm('确定要退出登录吗？')) {
+        if (chatSubscription) supabase.removeChannel(chatSubscription);
+        currentUser = null;
+        loginOverlay.classList.remove('hidden');
+        appContainer.style.display = 'none';
+        loginError.textContent = '';
+        loginUsername.value = '';
+        loginPassword.value = '';
+        loginTabs.forEach(t => t.classList.remove('active'));
+        document.querySelector('.login-tab[data-mode="login"]').classList.add('active');
+        loginMode = 'login';
+        toast('已离开会馆');
+      }
+    }
+
+    // 因为上面renderProfile已经写了，但为了完整，我将在最终输出中整合。
+    // 现在返回完整代码
+
+    // ============================================================
+    // 搜索过滤
+    // ============================================================
+    searchInput.addEventListener('input', (e) => {
+      const keyword = e.target.value.trim().toLowerCase();
+      const items = document.querySelectorAll('.post-item');
+      items.forEach(item => {
+        const title = item.querySelector('.post-title')?.textContent?.toLowerCase() || '';
+        if (title.includes(keyword)) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
     });
 
     // ============================================================
@@ -1832,23 +1993,70 @@
     });
     init();
 
-    // 搜索功能（简单过滤帖子标题）
-    searchInput.addEventListener('input', (e) => {
-      const keyword = e.target.value.trim().toLowerCase();
-      const items = document.querySelectorAll('.post-item');
-      items.forEach(item => {
-        const title = item.querySelector('.post-title')?.textContent?.toLowerCase() || '';
-        if (title.includes(keyword)) {
-          item.style.display = '';
-        } else {
-          item.style.display = 'none';
-        }
+    // 修正renderProfile加入退出按钮（因为上面已定义，但实际执行时会被覆盖，所以重写）
+    // 重新定义renderProfile以包含退出按钮
+    // 但为了避免重复，我们直接覆盖原函数
+    const originalRenderProfile = renderProfile;
+    renderProfile = async function() {
+      if (!currentUser) {
+        panelProfile.innerHTML = '<div style="text-align:center;padding:30px;color:#86909c;">请先登录</div>';
+        return;
+      }
+      const u = currentUser;
+      const { count: friendCount } = await supabase.from('friends').select('*', { count: 'exact', head: true })
+        .or(`sender_id.eq.${u.id},receiver_id.eq.${u.id}`).eq('status', 'accepted');
+      const { count: postCount } = await supabase.from('posts').select('*', { count: 'exact', head: true })
+        .eq('author_id', u.id);
+
+      let html = `
+        <div class="profile-card">
+          <div class="profile-avatar" id="profileAvatar" style="background-image: url('${u.avatar_url || ''}'); background-size: cover; background-position: center;"></div>
+          <div class="profile-name">${escHtml(u.username)}</div>
+          <div class="profile-level">Lv.${u.level || 1} · 🪙 ${u.gold || 0}</div>
+          <div class="profile-bio" id="profileBio">${escHtml(u.bio || '这个人很懒，什么都没写~')}</div>
+          <div class="profile-stats">
+            <div><strong>${postCount || 0}</strong><span>帖子</span></div>
+            <div><strong>${friendCount || 0}</strong><span>好友</span></div>
+            <div><strong>${u.exp || 0}</strong><span>经验</span></div>
+          </div>
+          <button class="btn btn-danger btn-sm" id="logoutBtn" style="margin-top:16px; width:100%;">退出登录</button>
+        </div>
+      `;
+      panelProfile.innerHTML = html;
+
+      document.getElementById('profileAvatar').addEventListener('click', triggerAvatarUpload);
+      document.getElementById('profileBio').addEventListener('click', () => {
+        modalContent.innerHTML = `
+          <h3>✏️ 编辑简介</h3>
+          <textarea id="editBioInput" rows="3" placeholder="写点什么...">${escHtml(currentUser.bio || '')}</textarea>
+          <div class="modal-actions">
+            <button class="btn btn-outline btn-sm" id="modalCancel">取消</button>
+            <button class="btn btn-primary btn-sm" id="modalSaveBio">保存</button>
+          </div>
+        `;
+        modalOverlay.classList.add('show');
+        document.getElementById('modalCancel').addEventListener('click', closeModal);
+        document.getElementById('modalSaveBio').addEventListener('click', async () => {
+          const bio = document.getElementById('editBioInput').value.trim();
+          if (bio === currentUser.bio) { closeModal(); return; }
+          const { error } = await supabase.from('users').update({ bio }).eq('id', currentUser.id);
+          if (error) { toast('更新失败', 'error'); return; }
+          currentUser.bio = bio;
+          updateUI();
+          if (currentTab === 'profile') renderProfile();
+          toast('简介已更新', 'success');
+          closeModal();
+        });
       });
-    });
+      document.getElementById('logoutBtn').addEventListener('click', doLogout);
+    };
+
+    // 将覆盖后的renderProfile赋值给原变量（但已覆盖）
+    // 现在调用renderCurrentTab时会使用新的renderProfile
 
     window.supabase = supabase;
     window.currentUser = currentUser;
-    console.log('🌲 雾凇会馆（微博移动版）已加载');
+    console.log('🌲 雾凇会馆（微博移动版 + 个人中心）已加载');
   </script>
 </body>
 </html>
