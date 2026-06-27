@@ -6,7 +6,7 @@
   <title>🌲 雾凇会馆 · 妖精公会</title>
   <style>
     /* ================================================================
-       CSS 变量 · 统一配色（一键控制全站色调）
+       CSS 变量 · 统一配色
        ================================================================ */
     :root {
       --primary: #53A6E7;
@@ -26,9 +26,11 @@
       --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
       --shadow-md: 0 2px 10px rgba(0, 0, 0, 0.08);
       --transition: all 0.2s ease;
+      /* 默认封面图（可被用户切换覆盖） */
+      --cover-image: url('https://picsum.photos/id/1015/1200/400');
     }
 
-    /* ----- 公用重置 & 全局基础 ----- */
+    /* ----- 公用重置 ----- */
     *,
     *::before,
     *::after {
@@ -64,7 +66,7 @@
       clear: both;
     }
 
-    /* ===== 顶部导航栏（磨砂质感） ===== */
+    /* ===== 顶部导航栏 ===== */
     .header {
       width: 100%;
       background: rgba(31, 31, 31, 0.92);
@@ -238,7 +240,7 @@
       background: #1F1F1F;
     }
 
-    /* ===== 中间主容器（渐变背景） ===== */
+    /* ===== 中间主容器 ===== */
     .midbox {
       min-width: 0;
       background: var(--bg-page);
@@ -246,121 +248,258 @@
       padding-top: 10px;
     }
 
-    /* ===== 个人信息头部（自适应高度） ===== */
+    /* ================================================================
+       封面区（核心新增）
+       ================================================================ */
+    .cover-wrapper {
+      position: relative;
+      width: 920px;
+      max-width: 100%;
+      margin: 0 auto;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+    .cover-wrapper:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .cover-image {
+      width: 100%;
+      height: 220px;
+      background-image: var(--cover-image);
+      background-size: cover;
+      background-position: center;
+      background-color: #c8d6e5;
+      transition: background-image 0.6s ease;
+      position: relative;
+    }
+
+    /* 封面遮罩层（让文字清晰可读） */
+    .cover-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg,
+          rgba(0, 0, 0, 0.15) 0%,
+          rgba(0, 0, 0, 0.35) 60%,
+          rgba(0, 0, 0, 0.55) 100%);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* 封面上的内容（文字、头像等） */
+    .cover-content {
+      position: absolute;
+      bottom: 20px;
+      left: 30px;
+      z-index: 2;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      pointer-events: none;
+    }
+    .cover-content h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 2px;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+    .cover-content .cover-sub {
+      font-size: 14px;
+      opacity: 0.85;
+      color: #fff;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    /* 更换封面按钮 */
+    .cover-change-btn {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      z-index: 10;
+      padding: 6px 16px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: var(--radius-full);
+      color: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      pointer-events: auto;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+    .cover-change-btn:hover {
+      background: rgba(255, 255, 255, 0.35);
+      transform: scale(1.04);
+    }
+    .cover-change-btn i {
+      margin-right: 4px;
+    }
+
+    /* 封面选择面板（弹出） */
+    .cover-picker {
+      display: none;
+      position: absolute;
+      top: 56px;
+      right: 16px;
+      z-index: 20;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      width: 320px;
+      max-height: 340px;
+      overflow-y: auto;
+      pointer-events: auto;
+    }
+    .cover-picker.show {
+      display: block;
+      animation: fadeIn 0.25s ease;
+    }
+    .cover-picker-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .cover-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .cover-picker-item {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: var(--transition);
+      background-size: cover;
+      background-position: center;
+      background-color: #ddd;
+    }
+    .cover-picker-item:hover {
+      transform: scale(1.05);
+      border-color: var(--primary);
+    }
+    .cover-picker-item.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(83, 166, 231, 0.3);
+    }
+    .cover-picker-close {
+      display: block;
+      margin: 10px auto 0;
+      padding: 4px 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text-sub);
+      transition: var(--transition);
+    }
+    .cover-picker-close:hover {
+      background: var(--bg-light);
+    }
+
+    /* 原 main-header 改造：整合到封面内 */
     .main-header {
       width: 920px;
       max-width: 100%;
       margin: 0 auto;
-      padding: 30px 15px 20px;
+      padding: 10px 0 20px;
       height: auto !important;
       min-height: auto;
     }
-    .main-header-top {
-      width: 100%;
-      margin-bottom: 20px;
-    }
-    .main-header-top h1 {
-      display: inline-block;
-      font-size: 26px;
-      font-weight: 600;
-      color: var(--primary-dark);
-      text-shadow: none;
-    }
-    .main-text {
-      color: var(--primary-dark);
-      text-shadow: none;
-    }
-    .main-small {
-      font-size: 14px;
-    }
 
-    /* 隐藏无用黄钻/VIP */
-    .icon-vip-open,
-    .main-header-bottom-vip,
-    .icon-qzlv,
-    .icon-qzlv-num1,
-    .icon-qzlv-num2,
-    .icon-qzphone,
-    .icon-vip-lv {
-      display: none !important;
+    /* 头像、昵称等信息 —— 浮在封面底部，但头像可独立控制 */
+    .cover-avatar-area {
+      display: flex;
+      align-items: flex-end;
+      gap: 18px;
+      margin-top: -40px;
+      padding: 0 30px 10px;
+      position: relative;
+      z-index: 3;
+      pointer-events: none;
     }
-
-    .main-header-bottom {
-      width: 100%;
-      height: auto !important;
-    }
-    .user-img-lg {
-      float: left;
-      width: 126px;
-      height: 126px;
+    .cover-avatar-area .user-img-lg {
+      float: none;
+      width: 100px;
+      height: 100px;
       border: 4px solid var(--bg-card);
       border-radius: var(--radius-full);
-      margin-right: 15px;
       background-size: cover;
       background-position: center;
       background-color: #ccc;
       text-align: center;
-      line-height: 126px;
-      font-size: 60px;
+      line-height: 100px;
+      font-size: 48px;
       color: #fff;
       box-shadow: var(--shadow-sm);
       cursor: pointer;
       transition: var(--transition);
+      flex-shrink: 0;
+      pointer-events: auto;
     }
-    .user-img-lg:hover {
-      transform: scale(1.03);
+    .cover-avatar-area .user-img-lg:hover {
+      transform: scale(1.04);
       box-shadow: var(--shadow-md);
     }
-    .main-header-bottom-top {
-      float: left;
-      width: calc(100% - 150px);
-      height: auto;
+    .cover-avatar-area .user-info {
+      flex: 1;
+      padding-bottom: 6px;
+      pointer-events: auto;
     }
-    .main-header-bottom-top h1 {
-      display: inline-block;
-      font-size: 26px;
+    .cover-avatar-area .user-info h1 {
+      font-size: 24px;
       font-weight: 600;
-      color: var(--primary-dark);
-      text-shadow: none;
+      color: var(--text-main);
       margin: 0;
+      text-shadow: none;
     }
-
-    /* 简化的天气/日期 */
-    .weather {
-      float: right;
-      width: auto;
-      height: auto;
-      margin-top: 6px;
-    }
-    .weather .city {
+    .cover-avatar-area .user-info .user-meta {
       font-size: 13px;
       color: var(--text-sub);
+      margin-top: 2px;
     }
-    .weather #currentDate {
-      font-size: 12px;
+    .cover-avatar-area .user-info .user-meta span {
+      margin-right: 16px;
+    }
+    .cover-avatar-area .user-info .user-meta .label {
       color: var(--text-light);
     }
-    .weather p,
-    .weather strong,
-    .weather span,
-    .weather div:not(:last-child) {
+
+    /* 隐藏原版大头像位置（已迁移） */
+    .main-header-bottom .user-img-lg {
+      display: none;
+    }
+    .main-header-bottom-top {
+      display: none;
+    }
+    .main-header-top {
       display: none;
     }
 
-    /* 等级/经验行 */
-    .level-exp-row {
-      margin-top: 6px;
-      font-size: 13px;
-      color: var(--text-sub);
-    }
-    .level-exp-row span {
-      font-weight: 500;
-      color: var(--text-main);
-    }
-
+    /* 导航标签放在封面下方 */
     .main-header-bottom ul {
       clear: both;
-      padding-top: 15px;
+      padding: 12px 30px 0;
+      margin: 0;
+      border-top: 1px solid var(--border);
+      background: var(--bg-card);
+      border-radius: 0 0 var(--radius-md) var(--radius-md);
     }
     .main-header-bottom ul li {
       display: inline-block;
@@ -372,10 +511,11 @@
     .main-header-bottom ul li a {
       font-size: 14px;
       color: var(--text-main);
-      padding: 6px 0;
+      padding: 10px 0 12px;
       border-bottom: 3px solid transparent;
       transition: var(--transition);
       font-weight: 400;
+      display: inline-block;
     }
     .main-header-bottom ul li a:hover {
       border-bottom-color: #b8d6f0;
@@ -390,7 +530,7 @@
     .main-body {
       width: 920px;
       max-width: 100%;
-      margin: 30px auto 60px;
+      margin: 20px auto 60px;
       padding: 0 15px;
       overflow: hidden;
     }
@@ -402,7 +542,6 @@
       margin-bottom: 15px;
     }
 
-    /* ===== 统计卡片 ===== */
     .main-body-left-top {
       background: var(--bg-card);
       border-radius: var(--radius-md);
@@ -442,7 +581,6 @@
       color: var(--text-sub);
     }
 
-    /* ===== 面板卡片统一 ===== */
     .panel {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -497,7 +635,6 @@
       text-decoration: underline;
     }
 
-    /* 好友请求列表 */
     .panel .list-group .board textarea {
       display: none;
     }
@@ -505,7 +642,6 @@
       display: none;
     }
 
-    /* 左侧好友列表（圆形网格） */
     .main-body-left-bottom .panel .list-group {
       padding: 8px;
       display: flex;
@@ -560,7 +696,6 @@
       margin-bottom: 20px;
     }
 
-    /* 形象墙 */
     .main-body-right-top {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -620,7 +755,6 @@
       font-size: 18px;
     }
 
-    /* 欢迎卡片 */
     .main-body-imgwall {
       border: 1px solid #d7eaff;
       padding: 10px 14px;
@@ -662,7 +796,6 @@
       transform: translateY(-1px);
     }
 
-    /* 动态面板容器 */
     #panelContainer {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -676,7 +809,6 @@
       box-shadow: var(--shadow-md);
     }
 
-    /* 更多动态 */
     .main-body-right-bottom {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -700,7 +832,6 @@
       color: var(--primary);
     }
 
-    /* ===== 底部（自定义） ===== */
     .footer {
       width: 100%;
       background: var(--bg-page);
@@ -727,7 +858,7 @@
       text-decoration: none;
     }
 
-    /* ===== 论坛功能附加样式 ===== */
+    /* ===== 帖子/好友/基建/聊天/任务样式（不变） ===== */
     .post-item {
       padding: 14px 6px;
       border-bottom: 1px solid var(--border);
@@ -998,7 +1129,7 @@
       margin-top: 16px;
     }
 
-    /* ===== 登录弹窗（融合全局主题） ===== */
+    /* ===== 登录弹窗 ===== */
     .login-overlay {
       position: fixed;
       top: 0;
@@ -1138,7 +1269,7 @@
       }
     }
 
-    /* ===== 自定义细窄滚动条（复古Qzone风格） ===== */
+    /* ===== 滚动条 ===== */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -1159,6 +1290,7 @@
     /* ===== 响应式 ===== */
     @media (max-width: 1050px) {
       .header-box,
+      .cover-wrapper,
       .main-header,
       .main-body,
       .footer-main {
@@ -1166,36 +1298,56 @@
         min-width: 0;
         padding: 0 10px;
       }
+      .cover-wrapper {
+        padding: 0;
+      }
+      .cover-image {
+        height: 160px;
+      }
+      .cover-content h1 {
+        font-size: 22px;
+      }
+      .cover-avatar-area {
+        flex-wrap: wrap;
+        padding: 0 16px 10px;
+        margin-top: -30px;
+      }
+      .cover-avatar-area .user-img-lg {
+        width: 80px;
+        height: 80px;
+        line-height: 80px;
+        font-size: 36px;
+      }
+      .cover-avatar-area .user-info h1 {
+        font-size: 20px;
+      }
       .main-body-left,
       .main-body-right {
         float: none;
         width: 100%;
       }
-      .main-header {
-        height: auto;
-      }
-      .main-header-bottom .user-img-lg {
-        float: none;
-        margin: 0 auto 10px;
-        display: block;
+      .main-body-right {
+        max-width: 100%;
       }
       .main-body-left-top div {
         width: 33.33%;
       }
-      .main-body-right {
-        max-width: 100%;
-      }
       .chat-messages {
         max-height: 260px;
       }
-      .main-header-bottom-top {
-        width: 100%;
-        text-align: center;
+      .cover-picker {
+        right: 10px;
+        width: 280px;
       }
-      .weather {
-        float: none;
-        text-align: center;
-        margin-top: 4px;
+      .main-header-bottom ul {
+        padding: 8px 16px 0;
+      }
+      .main-header-bottom ul li {
+        margin-left: 16px;
+      }
+      .main-header-bottom ul li a {
+        font-size: 13px;
+        padding: 8px 0 10px;
       }
     }
     @media (max-width: 600px) {
@@ -1208,6 +1360,37 @@
       }
       .header-right-input {
         width: 60px;
+      }
+      .cover-image {
+        height: 120px;
+      }
+      .cover-content {
+        bottom: 12px;
+        left: 16px;
+      }
+      .cover-content h1 {
+        font-size: 18px;
+      }
+      .cover-content .cover-sub {
+        font-size: 12px;
+      }
+      .cover-change-btn {
+        top: 10px;
+        right: 10px;
+        font-size: 11px;
+        padding: 4px 12px;
+      }
+      .cover-avatar-area .user-img-lg {
+        width: 64px;
+        height: 64px;
+        line-height: 64px;
+        font-size: 28px;
+      }
+      .cover-avatar-area .user-info h1 {
+        font-size: 17px;
+      }
+      .cover-avatar-area .user-info .user-meta {
+        font-size: 12px;
       }
       .main-body-left-top div a strong {
         font-size: 18px;
@@ -1230,6 +1413,23 @@
       }
       .login-card {
         padding: 24px 16px;
+      }
+      .cover-picker {
+        width: 240px;
+        max-height: 280px;
+        right: 6px;
+        top: 48px;
+      }
+      .cover-picker-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+      }
+      .main-header-bottom ul li {
+        margin-left: 10px;
+      }
+      .main-header-bottom ul li a {
+        font-size: 12px;
+        padding: 6px 0 8px;
       }
     }
   </style>
@@ -1287,26 +1487,51 @@
 
     <div class="midbox">
 
-      <!-- 个人信息头部 -->
-      <div class="main-header">
-        <div class="main-header-top clear">
-          <h1 id="userTitle">I'm going to control my life</h1>
-          <br>
-          <small class="main-text main-small" id="userSignature">My first step coming soon!</small>
+      <!-- ============================================================
+           封面区（新增）
+           ============================================================ -->
+      <div class="cover-wrapper" id="coverWrapper">
+        <div class="cover-image" id="coverImage"></div>
+        <div class="cover-overlay"></div>
+
+        <!-- 封面上的文字 -->
+        <div class="cover-content">
+          <h1 id="coverTitle">雾凇会馆</h1>
+          <div class="cover-sub" id="coverSub">—— 东北吉林 · 妖精公会 ——</div>
         </div>
 
+        <!-- 更换封面按钮 -->
+        <button class="cover-change-btn" id="coverChangeBtn">
+          <i>🖼️</i> 更换封面
+        </button>
+
+        <!-- 封面选择面板 -->
+        <div class="cover-picker" id="coverPicker">
+          <div class="cover-picker-title">选择封面</div>
+          <div class="cover-picker-grid" id="coverPickerGrid">
+            <!-- 由 JS 动态生成 -->
+          </div>
+          <button class="cover-picker-close" id="coverPickerClose">关闭</button>
+        </div>
+      </div>
+
+      <!-- ===== 个人信息头部（整合到封面下方） ===== -->
+      <div class="main-header">
         <div class="main-header-bottom clear">
-          <a href="#" class="user-img-lg" id="mainAvatar">🐱</a>
-          <div class="main-header-bottom-top">
-            <h1 id="mainUsername">雾凇会馆</h1>
-            <div class="weather" style="float:right;">
-              <div><small class="city main-text">吉林</small><small id="currentDate">5月18日</small></div>
-            </div>
-            <div style="clear:both;"></div>
-            <div class="level-exp-row">
-              成长值&nbsp;<span id="expDisplay">0</span>&nbsp;&nbsp;|&nbsp; 等级&nbsp;<span id="levelDisplay">Lv.1</span>
+          <!-- 头像 + 昵称 + 等级/金币（浮在封面底部下方） -->
+          <div class="cover-avatar-area">
+            <a href="#" class="user-img-lg" id="mainAvatar">🐱</a>
+            <div class="user-info">
+              <h1 id="mainUsername">雾凇会馆</h1>
+              <div class="user-meta">
+                <span><span class="label">等级</span> <span id="levelDisplay">Lv.1</span></span>
+                <span><span class="label">金币</span> <span id="goldDisplay">0</span></span>
+                <span><span class="label">经验</span> <span id="expDisplay">0</span></span>
+              </div>
             </div>
           </div>
+
+          <!-- 导航标签 -->
           <ul id="mainNavTabs">
             <li><a href="#" class="active" data-tab="forum">主页</a></li>
             <li><a href="#" data-tab="tasks">委托</a></li>
@@ -1420,6 +1645,155 @@
   </script>
 
   <script type="module">
+    // ================================================================
+    // 封面功能 JS（独立于 Supabase，优先加载）
+    // ================================================================
+
+    // 预设封面列表（6张不同风格）
+    const COVERS = [{
+      id: 1,
+      name: '山间晨雾',
+      url: 'https://picsum.photos/id/1015/1200/400'
+    }, {
+      id: 2,
+      name: '城市夜景',
+      url: 'https://picsum.photos/id/21/1200/400'
+    }, {
+      id: 3,
+      name: '星空银河',
+      url: 'https://picsum.photos/id/100/1200/400'
+    }, {
+      id: 4,
+      name: '森林秘境',
+      url: 'https://picsum.photos/id/104/1200/400'
+    }, {
+      id: 5,
+      name: '海洋日落',
+      url: 'https://picsum.photos/id/24/1200/400'
+    }, {
+      id: 6,
+      name: '极简几何',
+      url: 'https://picsum.photos/id/1010/1200/400'
+    }];
+
+    // 默认封面
+    const DEFAULT_COVER = COVERS[0];
+
+    // DOM 引用
+    const coverImage = document.getElementById('coverImage');
+    const coverChangeBtn = document.getElementById('coverChangeBtn');
+    const coverPicker = document.getElementById('coverPicker');
+    const coverPickerGrid = document.getElementById('coverPickerGrid');
+    const coverPickerClose = document.getElementById('coverPickerClose');
+    const coverWrapper = document.getElementById('coverWrapper');
+
+    // 当前选中的封面
+    let currentCover = DEFAULT_COVER;
+
+    // 从 localStorage 加载用户选择的封面
+    function loadCoverFromStorage() {
+      try {
+        const saved = localStorage.getItem('forum_cover');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          // 验证是否在预设列表中
+          const found = COVERS.find(c => c.id === parsed.id);
+          if (found) {
+            currentCover = found;
+            return;
+          }
+        }
+      } catch (e) {}
+      // 如果没有保存或无效，使用默认
+      currentCover = DEFAULT_COVER;
+    }
+
+    // 保存封面到 localStorage
+    function saveCoverToStorage(cover) {
+      try {
+        localStorage.setItem('forum_cover', JSON.stringify({ id: cover.id, url: cover.url }));
+      } catch (e) {}
+    }
+
+    // 应用封面
+    function applyCover(cover) {
+      currentCover = cover;
+      coverImage.style.setProperty('--cover-image', `url('${cover.url}')`);
+      coverImage.style.backgroundImage = `url('${cover.url}')`;
+      saveCoverToStorage(cover);
+      // 更新选择面板中的激活状态
+      document.querySelectorAll('.cover-picker-item').forEach(el => {
+        el.classList.toggle('active', parseInt(el.dataset.id) === cover.id);
+      });
+    }
+
+    // 渲染封面选择面板
+    function renderCoverPicker() {
+      coverPickerGrid.innerHTML = COVERS.map(c => `
+          <div class="cover-picker-item ${c.id === currentCover.id ? 'active' : ''}"
+               data-id="${c.id}"
+               style="background-image: url('${c.url}');"
+               title="${c.name}">
+          </div>
+        `).join('');
+
+      // 点击选择封面
+      coverPickerGrid.querySelectorAll('.cover-picker-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const id = parseInt(el.dataset.id);
+          const cover = COVERS.find(c => c.id === id);
+          if (cover) {
+            applyCover(cover);
+            coverPicker.classList.remove('show');
+            toast('封面已更换 🎨', 'success');
+          }
+        });
+      });
+    }
+
+    // 切换面板显示
+    function togglePicker(e) {
+      e.stopPropagation();
+      coverPicker.classList.toggle('show');
+      if (coverPicker.classList.contains('show')) {
+        renderCoverPicker();
+      }
+    }
+
+    // 关闭面板
+    function closePicker() {
+      coverPicker.classList.remove('show');
+    }
+
+    // 点击外部关闭
+    document.addEventListener('click', (e) => {
+      if (coverPicker.classList.contains('show') &&
+        !coverPicker.contains(e.target) &&
+        e.target !== coverChangeBtn &&
+        !coverChangeBtn.contains(e.target)) {
+        closePicker();
+      }
+    });
+
+    // 初始化封面
+    function initCover() {
+      loadCoverFromStorage();
+      applyCover(currentCover);
+      coverChangeBtn.addEventListener('click', togglePicker);
+      coverPickerClose.addEventListener('click', closePicker);
+    }
+
+    // 等 DOM 加载完初始化封面
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initCover);
+    } else {
+      initCover();
+    }
+
+    // ================================================================
+    // 以下是原有 Supabase 功能（保持不变）
+    // ================================================================
+
     import { createClient } from '@supabase/supabase-js';
 
     // ★★★ 请替换为你的真实 Supabase 配置 ★★★
@@ -1453,12 +1827,11 @@
     const headerUsername = $('headerUsername');
     const headerAvatar = $('headerAvatar');
     const headerLogout = $('headerLogout');
-    const userTitle = $('userTitle');
-    const userSignature = $('userSignature');
     const mainAvatar = $('mainAvatar');
     const mainUsername = $('mainUsername');
     const expDisplay = $('expDisplay');
     const levelDisplay = $('levelDisplay');
+    const goldDisplay = $('goldDisplay');
     const currentDate = $('currentDate');
     const countPosts = $('countPosts');
     const countFriends = $('countFriends');
@@ -1618,8 +1991,6 @@
       const u = currentUser;
       headerUsername.textContent = u.username;
       headerAvatar.style.backgroundImage = u.avatar_url ? `url('${u.avatar_url}')` : '';
-      userTitle.textContent = `雾凇会馆 · ${u.username}`;
-      userSignature.textContent = u.bio || '这个人很懒，什么都没写~';
       if (u.avatar_url) {
         mainAvatar.style.backgroundImage = `url('${u.avatar_url}')`;
         mainAvatar.style.backgroundSize = 'cover';
@@ -1631,6 +2002,7 @@
       mainUsername.textContent = u.username;
       expDisplay.textContent = u.exp || 0;
       levelDisplay.textContent = 'Lv.' + (u.level || 1);
+      goldDisplay.textContent = u.gold || 0;
       countGold.textContent = u.gold || 0;
       profileUsername.textContent = u.username;
       profileLevel.textContent = 'Lv.' + (u.level || 1);
@@ -1933,7 +2305,7 @@
 
     async function renderPostDetail(postId) {
       const { data: post, error } = await supabase.from('posts_with_authors').select('*').eq('id', postId)
-      .single();
+        .single();
       if (error || !post) {
         toast('帖子不存在', 'error');
         viewingPostId = null;
@@ -2530,7 +2902,8 @@
 
     window.supabase = supabase;
     window.currentUser = currentUser;
-    console.log('🌲 雾凇会馆已加载（最终优化版）');
+    console.log('🌲 雾凇会馆已加载（含封面）');
+
   </script>
 </body>
 </html>
