@@ -6,7 +6,7 @@
   <title>🌲 雾凇会馆 · 妖精公会</title>
   <style>
     /* ================================================================
-       仿微博手机版 · 完整改造
+       仿微博手机版 · 删除基建/每日任务
        ================================================================ */
     :root {
       --primary: #ff8200;
@@ -467,7 +467,7 @@
       color: var(--text-main);
     }
 
-    /* ===== 底部导航Tab ===== */
+    /* ===== 底部导航Tab（删除了基建和每日） ===== */
     #mainNavTabs {
       display: flex;
       gap: 28px;
@@ -888,55 +888,6 @@
       background-color: var(--bg-light);
     }
 
-    .map-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 12px;
-    }
-    .build-card {
-      background: var(--bg-light);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      text-align: center;
-      border: 1px solid var(--border);
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    .build-card:hover {
-      border-color: var(--primary);
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
-    }
-    .build-card .icon {
-      font-size: 2.4rem;
-    }
-
-    .task-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--bg-light);
-    }
-    .task-item:last-child {
-      border-bottom: none;
-    }
-    .task-progress {
-      flex: 1;
-      margin: 0 14px;
-      height: 6px;
-      background: #e5ebf3;
-      border-radius: var(--radius-full);
-      overflow: hidden;
-    }
-    .task-progress-bar {
-      height: 100%;
-      background: var(--primary);
-      width: 0%;
-      transition: width 0.4s ease;
-      border-radius: var(--radius-full);
-    }
-
     .chat-messages {
       max-height: 300px;
       overflow-y: auto;
@@ -1319,9 +1270,6 @@
         width: 80px;
         height: 60px;
       }
-      .map-grid {
-        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-      }
       .stats-card .stat-item strong {
         font-size: 26px;
       }
@@ -1374,9 +1322,6 @@
       .main-body-imgwall img {
         width: 70px;
         height: 55px;
-      }
-      .map-grid {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
       }
       .login-card {
         padding: 24px 16px;
@@ -1548,7 +1493,7 @@
         <a href="#" class="user-img-lg" id="mainAvatar">🐱</a>
       </div>
 
-      <!-- ===== 昵称 + Tab ===== -->
+      <!-- ===== 昵称 + Tab（删除了基建和每日） ===== -->
       <div class="info-tab-wrap">
         <div class="main-header-bottom-top">
           <h1 id="mainUsername">admin</h1>
@@ -1561,8 +1506,6 @@
           <li><a href="#" data-tab="tasks">委托</a></li>
           <li><a href="#" data-tab="friends">好友</a></li>
           <li><a href="#" data-tab="chat">聊天</a></li>
-          <li><a href="#" data-tab="build">基建</a></li>
-          <li><a href="#" data-tab="daily">每日</a></li>
         </ul>
       </div>
 
@@ -1919,7 +1862,6 @@
           currentUser = user;
           loginOverlay.classList.add('hidden');
           appContainer.style.display = 'block';
-          await resetDailyTasksIfNeeded();
           updateUI();
           currentTab = 'forum';
           renderCurrentTab();
@@ -1931,23 +1873,6 @@
         console.error(err);
       }
     });
-
-    async function resetDailyTasksIfNeeded() {
-      if (!currentUser) return;
-      const tasks = currentUser.daily_tasks || {};
-      const last = tasks.last_reset;
-      if (isNewDay(last)) {
-        const newTasks = {
-          signed: false,
-          posted: false,
-          replied: false,
-          built: false,
-          last_reset: new Date().toISOString()
-        };
-        await supabase.from('users').update({ daily_tasks: newTasks }).eq('id', currentUser.id);
-        currentUser.daily_tasks = newTasks;
-      }
-    }
 
     function updateUI() {
       if (!currentUser) return;
@@ -2111,7 +2036,6 @@
       });
     });
 
-    // 微博顶部导航切换
     wbNavItems.forEach(item => {
       item.addEventListener('click', (e) => {
         e.preventDefault();
@@ -2127,7 +2051,6 @@
         } else if (topTab === 'hot') {
           currentTab = 'forum';
         }
-        // 同步下方Tab高亮
         mainNavTabs.forEach(t => t.classList.remove('active'));
         document.querySelector(`#mainNavTabs a[data-tab="${currentTab}"]`)?.classList.add('active');
         viewingPostId = null;
@@ -2182,12 +2105,6 @@
           break;
         case 'chat':
           renderChat();
-          break;
-        case 'build':
-          renderBuild();
-          break;
-        case 'daily':
-          renderDaily();
           break;
         default:
           renderForum();
@@ -2293,7 +2210,6 @@
             toast('发布失败: ' + error.message, 'error');
             return;
           }
-          await completeDailyTask('posted');
           toast('发布成功', 'success');
           closeModal();
           viewingPostId = null;
@@ -2384,7 +2300,6 @@
           toast('回复失败: ' + error.message, 'error');
           return;
         }
-        await completeDailyTask('replied');
         toast('回复成功', 'success');
         closeModal();
         renderPostDetail(postId);
@@ -2774,117 +2689,6 @@
     }
 
     // ============================================================
-    // 基建
-    // ============================================================
-    async function renderBuild() {
-      if (!currentUser) {
-        panelContainer.innerHTML =
-          '<div style="text-align:center;padding:30px 0;color:var(--text-light);">请先登录</div>';
-        return;
-      }
-      const buildings = currentUser.buildings || { farm: 0, house: 0, land: 0 };
-      const gold = currentUser.gold || 0;
-      panelContainer.innerHTML =
-        `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><strong style="font-size:16px;font-weight:600;">🏗️ 基建中心</strong></div><p style="color:var(--text-main);margin-bottom:12px;">🪙 金币：<strong style="color:var(--primary);">${gold}</strong></p><div class="map-grid"><div class="build-card" data-type="farm"><div class="icon">🌾</div><div style="font-weight:500;color:var(--text-main);">灵质农场</div><div style="color:var(--text-sub);">拥有：${buildings.farm || 0} 块</div><div style="font-size:0.7rem;color:var(--text-light);">💰50 金币/块</div><button class="btn btn-primary btn-sm" style="margin-top:8px;">购买</button></div><div class="build-card" data-type="house"><div class="icon">🏡</div><div style="font-weight:500;color:var(--text-main);">妖精小屋</div><div style="color:var(--text-sub);">拥有：${buildings.house || 0} 间</div><div style="font-size:0.7rem;color:var(--text-light);">💰200 金币/间</div><button class="btn btn-primary btn-sm" style="margin-top:8px;">购买</button></div><div class="build-card" data-type="land"><div class="icon">🏔️</div><div style="font-weight:500;color:var(--text-main);">山区领地</div><div style="color:var(--text-sub);">拥有：${buildings.land || 0} 处</div><div style="font-size:0.7rem;color:var(--text-light);">💰500 金币/处</div><button class="btn btn-primary btn-sm" style="margin-top:8px;">购买</button></div></div>`;
-      document.querySelectorAll('.build-card').forEach(card => {
-        card.querySelector('button').addEventListener('click', async () => {
-          const type = card.dataset.type;
-          const costs = { farm: 50, house: 200, land: 500 };
-          const cost = costs[type];
-          if ((currentUser.gold || 0) < cost) {
-            toast('金币不足', 'error');
-            return;
-          }
-          const newBuildings = { ...(currentUser.buildings || {}) };
-          newBuildings[type] = (newBuildings[type] || 0) + 1;
-          const newGold = (currentUser.gold || 0) - cost;
-          await supabase.from('users').update({ gold: newGold, buildings: newBuildings }).eq('id',
-            currentUser.id);
-          currentUser.gold = newGold;
-          currentUser.buildings = newBuildings;
-          await completeDailyTask('built');
-          updateUI();
-          renderBuild();
-          toast('建设成功！', 'success');
-        });
-      });
-    }
-
-    // ============================================================
-    // 每日任务
-    // ============================================================
-    async function renderDaily() {
-      if (!currentUser) {
-        panelContainer.innerHTML =
-          '<div style="text-align:center;padding:30px 0;color:var(--text-light);">请先登录</div>';
-        return;
-      }
-      const tasks = currentUser.daily_tasks || {};
-      const signed = tasks.signed || false;
-      const posted = tasks.posted || false;
-      const replied = tasks.replied || false;
-      const built = tasks.built || false;
-      const total = 4;
-      const done = [signed, posted, replied, built].filter(Boolean).length;
-      const progress = Math.round((done / total) * 100);
-      panelContainer.innerHTML =
-        `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><strong style="font-size:16px;font-weight:600;">📌 每日任务</strong></div><div style="margin-bottom:12px;"><span style="color:var(--text-sub);">进度：${done}/${total}</span><div class="task-progress" style="margin-top:4px;"><div class="task-progress-bar" style="width:${progress}%;"></div></div></div><div class="task-item"><span style="color:var(--text-main);">📌 签到</span><span>${signed ? '✅ 已完成' : '<button class="btn btn-primary btn-sm" id="taskSign">签到</button>'}</span></div><div class="task-item"><span style="color:var(--text-main);">📝 发帖（每日1帖）</span><span>${posted ? '✅ 已完成' : '⏳ 未完成'}</span></div><div class="task-item"><span style="color:var(--text-main);">💬 回复（每日1次）</span><span>${replied ? '✅ 已完成' : '⏳ 未完成'}</span></div><div class="task-item"><span style="color:var(--text-main);">🏗️ 基建（购买1次）</span><span>${built ? '✅ 已完成' : '⏳ 未完成'}</span></div><div style="margin-top:12px; text-align:right;"><button class="btn btn-success" id="claimRewardBtn">🎁 领取奖励（${done === 4 ? '可领取' : '未完成'}）</button></div>`;
-      document.getElementById('taskSign')?.addEventListener('click', async () => {
-        if (signed) {
-          toast('今日已签到', 'error');
-          return;
-        }
-        await completeDailyTask('signed');
-        toast('签到成功！获得20金币', 'success');
-        renderDaily();
-        updateUI();
-      });
-      document.getElementById('claimRewardBtn').addEventListener('click', async () => {
-        if (done !== 4) {
-          toast('请先完成所有任务', 'error');
-          return;
-        }
-        const newGold = (currentUser.gold || 0) + 50;
-        const newExp = (currentUser.exp || 0) + 30;
-        await supabase.from('users').update({ gold: newGold, exp: newExp }).eq('id', currentUser.id);
-        currentUser.gold = newGold;
-        currentUser.exp = newExp;
-        toast('🎉 获得50金币和30经验！', 'success');
-        const resetTasks = {
-          signed: false,
-          posted: false,
-          replied: false,
-          built: false,
-          last_reset: new Date().toISOString()
-        };
-        await supabase.from('users').update({ daily_tasks: resetTasks }).eq('id', currentUser.id);
-        currentUser.daily_tasks = resetTasks;
-        updateUI();
-        renderDaily();
-      });
-    }
-
-    async function completeDailyTask(taskKey) {
-      if (!currentUser) return;
-      const tasks = currentUser.daily_tasks || {};
-      if (tasks[taskKey]) return;
-      tasks[taskKey] = true;
-      await supabase.from('users').update({ daily_tasks: tasks }).eq('id', currentUser.id);
-      currentUser.daily_tasks = tasks;
-      if (taskKey !== 'signed') {
-        const bonusGold = 10,
-          bonusExp = 5;
-        const newGold = (currentUser.gold || 0) + bonusGold;
-        const newExp = (currentUser.exp || 0) + bonusExp;
-        await supabase.from('users').update({ gold: newGold, exp: newExp }).eq('id', currentUser.id);
-        currentUser.gold = newGold;
-        currentUser.exp = newExp;
-        toast(`任务完成！+${bonusGold}金币 +${bonusExp}经验`, 'success');
-      }
-      updateUI();
-    }
-
-    // ============================================================
     // 登出
     // ============================================================
     headerLogout.addEventListener('click', (e) => {
@@ -2916,7 +2720,7 @@
 
     window.supabase = supabase;
     window.currentUser = currentUser;
-    console.log('🌲 雾凇会馆已加载（仿微博手机版）');
+    console.log('🌲 雾凇会馆已加载（仿微博，无基建/每日）');
   </script>
 </body>
 </html>
