@@ -26,7 +26,7 @@
       --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
       --shadow-md: 0 2px 10px rgba(0, 0, 0, 0.08);
       --transition: all 0.2s ease;
-      --cover-height: 180px;
+      --cover-height: 300px; /* 拉高封面，容纳文字 */
     }
 
     /* ----- 公用重置 & 全局基础 ----- */
@@ -239,26 +239,23 @@
       background: #1F1F1F;
     }
 
-    /* ===== 中间主容器（全局背景，JS动态设置） ===== */
+    /* ===== 中间主容器（恢复浅色背景，不再全局铺图） ===== */
     .midbox {
       min-width: 0;
-      /* 背景由 JS 动态设置，这里给个默认值 */
-      background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url('');
-      background-size: cover;
-      background-position: center top;
-      background-attachment: fixed;
-      min-height: calc(100vh - 41px);
+      background: var(--bg-page);
+      background-image: linear-gradient(180deg, #e7edf5 0%, var(--bg-page) 100%);
       padding-top: 10px;
     }
 
-    /* ===== 封面区域（小预览框，用于更换封面） ===== */
+    /* ===== 封面容器 ===== */
     .cover-container {
       width: 920px;
       max-width: 100%;
       margin: 0 auto 10px;
       padding: 0 15px;
-      position: relative;
     }
+
+    /* ===== 封面包装器（大容器，文字叠在内部） ===== */
     .cover-wrapper {
       width: 100%;
       height: var(--cover-height);
@@ -271,13 +268,19 @@
       position: relative;
       overflow: hidden;
       border: 1px solid var(--border);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
     }
     .cover-wrapper:hover {
       box-shadow: var(--shadow-md);
     }
+
+    /* 更换封面按钮（右上角悬浮） */
     .cover-wrapper .cover-btn {
       position: absolute;
-      bottom: 12px;
+      top: 12px;
       right: 12px;
       background: rgba(0, 0, 0, 0.55);
       backdrop-filter: blur(4px);
@@ -293,6 +296,7 @@
       align-items: center;
       gap: 4px;
       opacity: 0.8;
+      z-index: 5;
     }
     .cover-wrapper .cover-btn:hover {
       opacity: 1;
@@ -302,7 +306,8 @@
       content: "🖼️";
       font-size: 14px;
     }
-    /* 预设封面网格 */
+
+    /* 预设封面网格（弹窗内） */
     .cover-preset-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -326,29 +331,36 @@
       border-color: var(--primary);
     }
 
-    /* ===== 个人信息头部 ===== */
-    .main-header {
-      width: 920px;
-      max-width: 100%;
-      margin: 0 auto;
-      padding: 16px 15px 20px;
-      height: auto !important;
-      min-height: auto;
+    /* ===== 封面内部的个人信息区域（半透蒙版叠在封面上） ===== */
+    .cover-wrapper .main-header {
+      width: calc(100% + 40px);
+      max-width: unset;
+      margin: 0;
+      margin-left: -20px;
+      padding: 16px 20px;
+      background: linear-gradient(transparent, rgba(255, 255, 255, 0.75));
+      border-radius: 0 0 var(--radius-md) var(--radius-md);
+      position: relative;
+      left: -20px;
+      bottom: -20px;
+      /* 用负边距让蒙版延伸到卡片底部边缘 */
+      flex-shrink: 0;
     }
+
     .main-header-top {
       width: 100%;
-      margin-bottom: 20px;
+      margin-bottom: 8px;
     }
     .main-header-top h1 {
       display: inline-block;
       font-size: 26px;
       font-weight: 600;
       color: var(--primary-dark);
-      text-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
     }
     .main-text {
       color: var(--primary-dark);
-      text-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
     }
     .main-small {
       font-size: 14px;
@@ -371,17 +383,17 @@
     }
     .user-img-lg {
       float: left;
-      width: 126px;
-      height: 126px;
-      border: 4px solid rgba(255, 255, 255, 0.8);
+      width: 80px;
+      height: 80px;
+      border: 3px solid rgba(255, 255, 255, 0.8);
       border-radius: var(--radius-full);
-      margin-right: 15px;
+      margin-right: 14px;
       background-size: cover;
       background-position: center;
       background-color: #ccc;
       text-align: center;
-      line-height: 126px;
-      font-size: 60px;
+      line-height: 80px;
+      font-size: 38px;
       color: #fff;
       box-shadow: var(--shadow-sm);
       cursor: pointer;
@@ -393,15 +405,15 @@
     }
     .main-header-bottom-top {
       float: left;
-      width: calc(100% - 150px);
+      width: calc(100% - 100px);
       height: auto;
     }
     .main-header-bottom-top h1 {
       display: inline-block;
-      font-size: 26px;
+      font-size: 22px;
       font-weight: 600;
       color: var(--primary-dark);
-      text-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
       margin: 0;
     }
 
@@ -410,15 +422,17 @@
       float: right;
       width: auto;
       height: auto;
-      margin-top: 6px;
+      margin-top: 2px;
     }
     .weather .city {
       font-size: 13px;
       color: var(--text-sub);
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
     }
     .weather #currentDate {
       font-size: 12px;
       color: var(--text-light);
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
     }
     .weather p,
     .weather strong,
@@ -429,10 +443,10 @@
 
     /* 等级/经验行 */
     .level-exp-row {
-      margin-top: 6px;
+      margin-top: 2px;
       font-size: 13px;
       color: var(--text-sub);
-      text-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
     }
     .level-exp-row span {
       font-weight: 500;
@@ -441,11 +455,11 @@
 
     .main-header-bottom ul {
       clear: both;
-      padding-top: 15px;
+      padding-top: 8px;
     }
     .main-header-bottom ul li {
       display: inline-block;
-      margin-left: 30px;
+      margin-left: 24px;
     }
     .main-header-bottom ul li:first-child {
       margin-left: 0;
@@ -453,11 +467,11 @@
     .main-header-bottom ul li a {
       font-size: 14px;
       color: var(--text-main);
-      padding: 6px 0;
+      padding: 4px 0;
       border-bottom: 3px solid transparent;
       transition: var(--transition);
       font-weight: 400;
-      text-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
     }
     .main-header-bottom ul li a:hover {
       border-bottom-color: #b8d6f0;
@@ -472,7 +486,7 @@
     .main-body {
       width: 920px;
       max-width: 100%;
-      margin: 20px auto 60px;
+      margin: 10px auto 60px;
       padding: 0 15px;
       overflow: hidden;
     }
@@ -526,7 +540,7 @@
       color: var(--text-sub);
     }
 
-    /* ===== 面板卡片统一（半透明毛玻璃） ===== */
+    /* ===== 面板卡片通用（半透明毛玻璃） ===== */
     .panel {
       background: var(--bg-card);
       backdrop-filter: blur(6px);
@@ -583,15 +597,6 @@
       text-decoration: underline;
     }
 
-    /* 好友请求列表 */
-    .panel .list-group .board textarea {
-      display: none;
-    }
-    .board-bar {
-      display: none;
-    }
-
-    /* 左侧好友列表（圆形网格） */
     .main-body-left-bottom .panel .list-group {
       padding: 8px;
       display: flex;
@@ -646,7 +651,6 @@
       margin-bottom: 20px;
     }
 
-    /* 形象墙 */
     .main-body-right-top {
       background: var(--bg-card);
       backdrop-filter: blur(6px);
@@ -708,7 +712,6 @@
       font-size: 18px;
     }
 
-    /* 欢迎卡片 */
     .main-body-imgwall {
       border: 1px solid rgba(215, 234, 255, 0.6);
       padding: 10px 14px;
@@ -750,7 +753,6 @@
       transform: translateY(-1px);
     }
 
-    /* 动态面板容器 */
     #panelContainer {
       background: var(--bg-card);
       backdrop-filter: blur(6px);
@@ -766,7 +768,6 @@
       box-shadow: var(--shadow-md);
     }
 
-    /* 更多动态 */
     .main-body-right-bottom {
       background: var(--bg-card);
       backdrop-filter: blur(6px);
@@ -1263,7 +1264,6 @@
     @media (max-width: 1050px) {
       .header-box,
       .cover-container,
-      .main-header,
       .main-body,
       .footer-main {
         width: calc(100% - 20px);
@@ -1278,34 +1278,35 @@
         float: none;
         width: 100%;
       }
-      .main-header {
-        height: auto;
-      }
-      .main-header-bottom .user-img-lg {
-        float: none;
-        margin: 0 auto 10px;
-        display: block;
-      }
-      .main-body-left-top div {
-        width: 33.33%;
-      }
       .main-body-right {
         max-width: 100%;
       }
       .chat-messages {
         max-height: 260px;
       }
-      .main-header-bottom-top {
-        width: 100%;
-        text-align: center;
-      }
-      .weather {
-        float: none;
-        text-align: center;
-        margin-top: 4px;
-      }
       .cover-wrapper {
-        height: 120px;
+        height: 260px;
+      }
+      .cover-wrapper .main-header {
+        padding: 12px 16px;
+      }
+      .user-img-lg {
+        width: 64px;
+        height: 64px;
+        line-height: 64px;
+        font-size: 30px;
+      }
+      .main-header-bottom-top {
+        width: calc(100% - 80px);
+      }
+      .main-header-bottom-top h1 {
+        font-size: 18px;
+      }
+      .main-header-bottom ul li {
+        margin-left: 16px;
+      }
+      .main-body-left-top div {
+        width: 33.33%;
       }
     }
     @media (max-width: 600px) {
@@ -1318,6 +1319,46 @@
       }
       .header-right-input {
         width: 60px;
+      }
+      .cover-wrapper {
+        height: 220px;
+      }
+      .cover-wrapper .main-header {
+        padding: 10px 12px;
+      }
+      .cover-wrapper .main-header-top h1 {
+        font-size: 18px;
+      }
+      .cover-wrapper .main-small {
+        font-size: 12px;
+      }
+      .user-img-lg {
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        font-size: 24px;
+        margin-right: 10px;
+      }
+      .main-header-bottom-top {
+        width: calc(100% - 64px);
+      }
+      .main-header-bottom-top h1 {
+        font-size: 16px;
+      }
+      .weather .city {
+        font-size: 11px;
+      }
+      .weather #currentDate {
+        font-size: 10px;
+      }
+      .level-exp-row {
+        font-size: 11px;
+      }
+      .main-header-bottom ul li {
+        margin-left: 10px;
+      }
+      .main-header-bottom ul li a {
+        font-size: 12px;
       }
       .main-body-left-top div a strong {
         font-size: 18px;
@@ -1341,13 +1382,10 @@
       .login-card {
         padding: 24px 16px;
       }
-      .cover-wrapper {
-        height: 90px;
-      }
       .cover-wrapper .cover-btn {
         font-size: 10px;
         padding: 4px 12px;
-        bottom: 8px;
+        top: 8px;
         right: 8px;
       }
     }
@@ -1406,41 +1444,42 @@
 
     <div class="midbox">
 
-      <!-- 封面区域 -->
+      <!-- ===== 封面容器（内部包含全部个人信息） ===== -->
       <div class="cover-container">
         <div class="cover-wrapper" id="coverWrapper" style="background-image: url('');">
+          <!-- 更换封面按钮 -->
           <button class="cover-btn" id="changeCoverBtn">更换封面</button>
-        </div>
-      </div>
 
-      <!-- 个人信息头部 -->
-      <div class="main-header">
-        <div class="main-header-top clear">
-          <h1 id="userTitle">I'm going to control my life</h1>
-          <br>
-          <small class="main-text main-small" id="userSignature">My first step coming soon!</small>
-        </div>
-
-        <div class="main-header-bottom clear">
-          <a href="#" class="user-img-lg" id="mainAvatar">🐱</a>
-          <div class="main-header-bottom-top">
-            <h1 id="mainUsername">雾凇会馆</h1>
-            <div class="weather" style="float:right;">
-              <div><small class="city main-text">吉林</small><small id="currentDate">5月18日</small></div>
+          <!-- 个人信息全部浮在封面上 -->
+          <div class="main-header">
+            <div class="main-header-top clear">
+              <h1 id="userTitle">I'm going to control my life</h1>
+              <br>
+              <small class="main-text main-small" id="userSignature">My first step coming soon!</small>
             </div>
-            <div style="clear:both;"></div>
-            <div class="level-exp-row">
-              成长值&nbsp;<span id="expDisplay">0</span>&nbsp;&nbsp;|&nbsp; 等级&nbsp;<span id="levelDisplay">Lv.1</span>
+
+            <div class="main-header-bottom clear">
+              <a href="#" class="user-img-lg" id="mainAvatar">🐱</a>
+              <div class="main-header-bottom-top">
+                <h1 id="mainUsername">雾凇会馆</h1>
+                <div class="weather" style="float:right;">
+                  <div><small class="city main-text">吉林</small><small id="currentDate">5月18日</small></div>
+                </div>
+                <div style="clear:both;"></div>
+                <div class="level-exp-row">
+                  成长值&nbsp;<span id="expDisplay">0</span>&nbsp;&nbsp;|&nbsp; 等级&nbsp;<span id="levelDisplay">Lv.1</span>
+                </div>
+              </div>
+              <ul id="mainNavTabs">
+                <li><a href="#" class="active" data-tab="forum">主页</a></li>
+                <li><a href="#" data-tab="tasks">委托</a></li>
+                <li><a href="#" data-tab="friends">好友</a></li>
+                <li><a href="#" data-tab="chat">聊天</a></li>
+                <li><a href="#" data-tab="build">基建</a></li>
+                <li><a href="#" data-tab="daily">每日</a></li>
+              </ul>
             </div>
           </div>
-          <ul id="mainNavTabs">
-            <li><a href="#" class="active" data-tab="forum">主页</a></li>
-            <li><a href="#" data-tab="tasks">委托</a></li>
-            <li><a href="#" data-tab="friends">好友</a></li>
-            <li><a href="#" data-tab="chat">聊天</a></li>
-            <li><a href="#" data-tab="build">基建</a></li>
-            <li><a href="#" data-tab="daily">每日</a></li>
-          </ul>
         </div>
       </div>
 
@@ -1524,7 +1563,7 @@
     <!-- 底部 -->
     <div class="footer">
       <div class="footer-main">
-        <p>东北·雾凇会馆 ｜ 分会馆</p>
+        <p>雾凇会馆 · 妖精公会 ｜ 吉林同人交互论坛</p>
         <p>Copyright © 2026 雾凇公会 All Rights Reserved.</p>
       </div>
     </div>
@@ -1618,7 +1657,6 @@
     const navFriends = $('navFriends');
     const navTasks = $('navTasks');
     const moreDynamic = $('moreDynamic');
-    const midbox = document.querySelector('.midbox');
 
     // 封面相关
     const coverWrapper = $('coverWrapper');
@@ -1843,11 +1881,10 @@
       profileExp.textContent = u.exp || 0;
       wallUserName.textContent = u.username;
 
-      // ★★★ 封面同步：小封面预览 + 全局背景（带70%白色遮罩） ★★★
-      if (coverWrapper && midbox) {
+      // 封面赋值（只给 coverWrapper，不再同步 midbox）
+      if (coverWrapper) {
         const coverUrl = u.cover_url || PRESET_COVERS[0];
         coverWrapper.style.backgroundImage = `url('${coverUrl}')`;
-        midbox.style.backgroundImage = `linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), url('${coverUrl}')`;
       }
 
       updateCounts();
@@ -2742,7 +2779,7 @@
 
     window.supabase = supabase;
     window.currentUser = currentUser;
-    console.log('🌲 雾凇会馆已加载');
+    console.log('🌲 雾凇会馆已加载（封面融合版）');
   </script>
 </body>
 </html>
